@@ -1,100 +1,3 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Medidor por Foto</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, system-ui, Arial;
-      background: #0b0b0f;
-      color: #fff;
-    }
-
-    header {
-      padding: 12px;
-      background: #0f0f16;
-      border-bottom: 1px solid #222;
-    }
-
-    .box {
-      background: #171722;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-
-    input[type="file"] {
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      border-radius: 10px;
-      border: none;
-      background: #2b5cff;
-      color: #fff;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      margin-top: 6px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      border-radius: 10px;
-      border: none;
-      margin-top: 8px;
-      background: #2b5cff;
-      color: #fff;
-    }
-
-    #result {
-      font-size: 22px;
-      font-weight: bold;
-      margin-top: 6px;
-    }
-
-    canvas {
-      width: 100%;
-      height: calc(100vh - 320px);
-      background: #000;
-      touch-action: none;
-      display: block;
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <div class="box">
-    <div><b>1) Subir foto</b></div>
-    <input id="file" type="file" accept="image/*">
-  </div>
-
-  <div class="box">
-    <div><b>2) Medida real conocida (cm)</b></div>
-    <input id="realValue" type="number" placeholder="Ej: 200">
-    <button id="setScale">Guardar escala</button>
-  </div>
-
-  <div class="box">
-    <div><b>Resultado</b></div>
-    <div id="result">—</div>
-    <button id="reset">Reset puntos</button>
-  </div>
-</header>
-
-<canvas id="canvas"></canvas>
-
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -108,23 +11,50 @@ const resultEl = document.getElementById('result');
 let img = new Image();
 let imgLoaded = false;
 
+// Imagen sin deformar
+let imgScale = 1;
+let imgOffsetX = 0;
+let imgOffsetY = 0;
+
+// Puntos en coordenadas CANVAS
 let p1 = null;
 let p2 = null;
-let realPerPx = null;
+
+// Escala real (cm por pixel)
+let cmPerPx = null;
 
 function resize() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
+  if (imgLoaded) fitImage();
   draw();
 }
 window.addEventListener('resize', resize);
 
-function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function fitImage() {
+  const scaleX = canvas.width / img.width;
+  const scaleY = canvas.height / img.height;
+  imgScale = Math.min(scaleX, scaleY);
 
+  const imgW = img.width * imgScale;
+  const imgH = img.height * imgScale;
+
+  imgOffsetX = (canvas.width - imgW) / 2;
+  imgOffsetY = (canvas.height - imgH) / 2;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!imgLoaded) return;
 
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  // Imagen sin deformar
+  ctx.drawImage(
+    img,
+    imgOffsetX,
+    imgOffsetY,
+    img.width * imgScale,
+    img.height * imgScale
+  );
 
   if (p1) drawPoint(p1);
   if (p1 && p2) {
@@ -155,14 +85,15 @@ function dist(a, b) {
 }
 
 function showResult() {
-  if (!realPerPx) {
-    resultEl.textContent = dist(p1, p2).toFixed(1) + " px";
-  } else {
-    resultEl.textContent = (dist(p1, p2) * realPerPx).toFixed(1) + " cm";
+  if (!cmPerPx) {
+    resultEl.textContent = "Definí una medida real primero";
+    return;
   }
+  const cm = dist(p1, p2) * cmPerPx;
+  resultEl.textContent = cm.toFixed(1) + " cm";
 }
 
-// 👉 CARGA DE FOTO (iPhone SAFE)
+// 📸 Cargar imagen (iPhone safe)
 fileInput.addEventListener('change', () => {
   const file = fileInput.files && fileInput.files[0];
   if (!file) return;
@@ -174,15 +105,16 @@ fileInput.addEventListener('change', () => {
       imgLoaded = true;
       p1 = null;
       p2 = null;
-      realPerPx = null;
-      resize();
+      cmPerPx = null;
+      fitImage();
+      draw();
     };
     img.src = reader.result;
   };
   reader.readAsDataURL(file);
 });
 
-// 👉 TOQUES EN CANVAS
+// 👉 Tap en canvas
 canvas.addEventListener('click', (e) => {
   if (!imgLoaded) return;
 
@@ -202,22 +134,23 @@ canvas.addEventListener('click', (e) => {
   draw();
 });
 
-// 👉 GUARDAR ESCALA
+// 📐 Guardar escala real (regla de 3)
 setScaleBtn.addEventListener('click', () => {
   if (!p1 || !p2) {
-    alert("Marcá 2 puntos primero");
+    alert("Marcá primero la medida conocida");
     return;
   }
-  const real = Number(realInput.value);
-  if (!real || real <= 0) {
-    alert("Ingresá una medida real válida");
+  const realCm = Number(realInput.value);
+  if (!realCm || realCm <= 0) {
+    alert("Ingresá una medida real en cm");
     return;
   }
-  realPerPx = real / dist(p1, p2);
+
+  cmPerPx = realCm / dist(p1, p2);
   draw();
 });
 
-// 👉 RESET
+// 🔄 Reset
 resetBtn.addEventListener('click', () => {
   p1 = null;
   p2 = null;
@@ -227,7 +160,3 @@ resetBtn.addEventListener('click', () => {
 
 resize();
 </script>
-
-</body>
-</html>
-
