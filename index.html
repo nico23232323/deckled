@@ -1,438 +1,233 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Medidor por Foto</title>
+
   <style>
-    :root { --pad: 12px; }
-    body { margin:0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; background:#0b0b0f; color:#fff; }
-    header { padding: var(--pad); display:flex; gap:10px; align-items:center; flex-wrap:wrap; border-bottom: 1px solid #222; background:#0f0f16; position: sticky; top: 0; z-index: 10; }
-    button, input, select {
-      font-size: 16px; border-radius: 10px; border: 1px solid #2a2a3a; background:#171722; color:#fff;
-      padding: 10px 12px;
+    body {
+      margin: 0;
+      font-family: -apple-system, system-ui, Arial;
+      background: #0b0b0f;
+      color: #fff;
     }
-    button { cursor:pointer; }
-    button.primary { background:#2b5cff; border-color:#2b5cff; }
-    button.danger { background:#ff3b30; border-color:#ff3b30; }
-    .pill { padding: 10px 12px; border:1px solid #2a2a3a; border-radius: 10px; background:#171722; }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    #wrap { position: relative; height: calc(100vh - 84px); }
-    #stage {
-      width: 100%; height: 100%;
-      touch-action: none; /* permite pan/zoom propio */
-      background:#0b0b0f;
-      display:block;
+
+    header {
+      padding: 12px;
+      background: #0f0f16;
+      border-bottom: 1px solid #222;
     }
-    .hint { opacity:.85; font-size: 13px; }
-    .small { font-size: 13px; opacity:.9; }
-    label { font-size: 13px; opacity:.9; }
-    input[type="number"]{ width:120px; }
-    .footer { padding: var(--pad); border-top:1px solid #222; background:#0f0f16; }
+
+    .box {
+      background: #171722;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      background: #2b5cff;
+      color: #fff;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 8px;
+      background: #2b5cff;
+      color: #fff;
+    }
+
+    #result {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    canvas {
+      width: 100%;
+      height: calc(100vh - 320px);
+      background: #000;
+      touch-action: none;
+      display: block;
+    }
   </style>
 </head>
+
 <body>
-  <header>
-    <div class="row">
-      <label class="pill">
-        Subir foto
-        <input id="file" type="file" accept="image/*" style="display:none;">
-      </label>
 
-      <select id="mode">
-        <option value="calibrate">Calibrar</option>
-        <option value="measure">Medir</option>
-      </select>
-
-      <div class="pill">
-        <label>Referencia real</label>
-        <div class="row">
-          <input id="realValue" type="number" min="0" step="0.1" placeholder="200" />
-          <select id="unit">
-            <option value="cm">cm</option>
-            <option value="mm">mm</option>
-            <option value="m">m</option>
-          </select>
-          <button id="setScale" class="primary">Guardar escala</button>
-        </div>
-        <div class="small" id="scaleInfo">Escala: —</div>
-      </div>
-
-      <button id="resetPoints" class="danger">Reset puntos</button>
-      <button id="fit">Centrar</button>
-      <button id="export">Exportar imagen</button>
-
-      <div class="pill">
-        <div><b>Resultado</b></div>
-        <div id="result">—</div>
-        <div class="hint">Tip: 1 dedo mueve / 2 dedos zoom</div>
-      </div>
-    </div>
-  </header>
-
-  <div id="wrap">
-    <canvas id="stage"></canvas>
+<header>
+  <div class="box">
+    <div><b>1) Subir foto</b></div>
+    <input id="file" type="file" accept="image/*">
   </div>
 
+  <div class="box">
+    <div><b>2) Medida real conocida (cm)</b></div>
+    <input id="realValue" type="number" placeholder="Ej: 200">
+    <button id="setScale">Guardar escala</button>
+  </div>
+
+  <div class="box">
+    <div><b>Resultado</b></div>
+    <div id="result">—</div>
+    <button id="reset">Reset puntos</button>
+  </div>
+</header>
+
+<canvas id="canvas"></canvas>
+
 <script>
-(() => {
-  const fileInput = document.getElementById('file');
-  const modeEl = document.getElementById('mode');
-  const realValueEl = document.getElementById('realValue');
-  const unitEl = document.getElementById('unit');
-  const setScaleBtn = document.getElementById('setScale');
-  const resetBtn = document.getElementById('resetPoints');
-  const fitBtn = document.getElementById('fit');
-  const exportBtn = document.getElementById('export');
-  const resultEl = document.getElementById('result');
-  const scaleInfoEl = document.getElementById('scaleInfo');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-  const canvas = document.getElementById('stage');
-  const ctx = canvas.getContext('2d');
+const fileInput = document.getElementById('file');
+const realInput = document.getElementById('realValue');
+const setScaleBtn = document.getElementById('setScale');
+const resetBtn = document.getElementById('reset');
+const resultEl = document.getElementById('result');
 
-  // Estado
-  let img = new Image();
-  let imgLoaded = false;
+let img = new Image();
+let imgLoaded = false;
 
-  // Transform (pan/zoom)
-  let scale = 1;
-  let offsetX = 0;
-  let offsetY = 0;
+let p1 = null;
+let p2 = null;
+let realPerPx = null;
 
-  // Puntos en coordenadas "imagen"
-  let p1 = null, p2 = null;
+function resize() {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  draw();
+}
+window.addEventListener('resize', resize);
 
-  // Escala real: unidades por pixel
-  let realPerPx = null; // ej cm/px
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Gestos
-  let pointers = new Map(); // pointerId -> {x,y}
-  let lastPan = null;
-  let lastPinchDist = null;
-  let lastPinchScale = null;
-  let lastPinchMid = null;
+  if (!imgLoaded) return;
 
-  function resize() {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = Math.floor(rect.width * devicePixelRatio);
-    canvas.height = Math.floor(rect.height * devicePixelRatio);
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    draw();
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  if (p1) drawPoint(p1);
+  if (p1 && p2) {
+    drawPoint(p2);
+    drawLine(p1, p2);
+    showResult();
   }
-  window.addEventListener('resize', resize);
+}
 
-  function toScreen(ix, iy) { // imagen -> pantalla
-    return { x: ix * scale + offsetX, y: iy * scale + offsetY };
+function drawPoint(p) {
+  ctx.fillStyle = "#ffcc00";
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawLine(a, b) {
+  ctx.strokeStyle = "#2b5cff";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
+  ctx.stroke();
+}
+
+function dist(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function showResult() {
+  if (!realPerPx) {
+    resultEl.textContent = dist(p1, p2).toFixed(1) + " px";
+  } else {
+    resultEl.textContent = (dist(p1, p2) * realPerPx).toFixed(1) + " cm";
   }
-  function toImage(sx, sy) { // pantalla -> imagen
-    return { x: (sx - offsetX) / scale, y: (sy - offsetY) / scale };
-  }
-  function dist(a,b){
-    const dx = a.x - b.x, dy = a.y - b.y;
-    return Math.hypot(dx, dy);
-  }
+}
 
-  function clearPoints(){
-    p1 = null; p2 = null;
-    updateResult();
-    draw();
-  }
+// 👉 CARGA DE FOTO (iPhone SAFE)
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) return;
 
-  function updateScaleInfo(){
-    if(realPerPx == null){
-      scaleInfoEl.textContent = "Escala: —";
-      return;
-    }
-    scaleInfoEl.textContent = `Escala: 1 px = ${realPerPx.toFixed(4)} ${unitEl.value}`;
-  }
-
-  function updateResult() {
-    if(!p1 || !p2){
-      resultEl.textContent = "—";
-      return;
-    }
-    const dpx = dist(p1, p2);
-    if(realPerPx == null){
-      resultEl.textContent = `Distancia: ${dpx.toFixed(1)} px (sin escala)`;
-      return;
-    }
-    const val = dpx * realPerPx;
-    resultEl.textContent = `${val.toFixed(1)} ${unitEl.value}`;
-  }
-
-  function fitToScreen(){
-    if(!imgLoaded) return;
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    const s = Math.min(w / img.width, h / img.height);
-    scale = s;
-    offsetX = (w - img.width * scale) / 2;
-    offsetY = (h - img.height * scale) / 2;
-    draw();
-  }
-
-  function draw(){
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    ctx.clearRect(0,0,w,h);
-
-    if(!imgLoaded){
-      // placeholder
-      ctx.fillStyle = "#fff";
-      ctx.globalAlpha = 0.8;
-      ctx.font = "16px -apple-system, system-ui, Arial";
-      ctx.fillText("Subí una foto para empezar", 16, 40);
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    // Imagen
-    ctx.save();
-    ctx.translate(offsetX, offsetY);
-    ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0);
-    ctx.restore();
-
-    // Puntos y línea
-    if(p1 && p2){
-      const s1 = toScreen(p1.x, p1.y);
-      const s2 = toScreen(p2.x, p2.y);
-
-      // línea
-      ctx.strokeStyle = "#2b5cff";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(s1.x, s1.y);
-      ctx.lineTo(s2.x, s2.y);
-      ctx.stroke();
-
-      // texto resultado sobre la línea
-      ctx.fillStyle = "#ffffff";
-      ctx.strokeStyle = "rgba(0,0,0,0.6)";
-      ctx.lineWidth = 6;
-
-      const mid = { x:(s1.x+s2.x)/2, y:(s1.y+s2.y)/2 };
-      const label = (realPerPx == null) ? `${dist(p1,p2).toFixed(1)} px` : `${(dist(p1,p2)*realPerPx).toFixed(1)} ${unitEl.value}`;
-      ctx.font = "bold 16px -apple-system, system-ui, Arial";
-      ctx.strokeText(label, mid.x + 8, mid.y - 8);
-      ctx.fillText(label, mid.x + 8, mid.y - 8);
-
-      // puntos
-      drawPoint(s1.x, s1.y, "A");
-      drawPoint(s2.x, s2.y, "B");
-    } else if(p1){
-      const s1 = toScreen(p1.x, p1.y);
-      drawPoint(s1.x, s1.y, "A");
-    }
-  }
-
-  function drawPoint(x,y,label){
-    ctx.fillStyle = "#ffcc00";
-    ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(x,y,9,0,Math.PI*2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#000";
-    ctx.font = "bold 12px -apple-system, system-ui, Arial";
-    ctx.fillText(label, x - 4, y + 4);
-  }
-
-  // Tap para definir puntos (usa coordenadas en pantalla -> imagen)
-  function addPointFromScreen(sx, sy){
-    if(!imgLoaded) return;
-    const ip = toImage(sx, sy);
-    if(!p1) p1 = ip;
-    else if(!p2) p2 = ip;
-    else { p1 = ip; p2 = null; } // si ya hay 2, reinicia con nuevo A
-    updateResult();
-    draw();
-  }
-
-  // Eventos puntero (pan/zoom + tap)
-  canvas.addEventListener('pointerdown', (e) => {
-    canvas.setPointerCapture(e.pointerId);
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if(pointers.size === 1){
-      lastPan = { x: e.clientX, y: e.clientY };
-      lastPinchDist = null;
-      lastPinchScale = null;
-      lastPinchMid = null;
-    } else if(pointers.size === 2){
-      const pts = [...pointers.values()];
-      lastPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      lastPinchScale = scale;
-      lastPinchMid = { x:(pts[0].x + pts[1].x)/2, y:(pts[0].y + pts[1].y)/2 };
-    }
-  });
-
-  canvas.addEventListener('pointermove', (e) => {
-    if(!pointers.has(e.pointerId)) return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if(pointers.size === 1 && lastPan){
-      const dx = e.clientX - lastPan.x;
-      const dy = e.clientY - lastPan.y;
-      offsetX += dx;
-      offsetY += dy;
-      lastPan = { x: e.clientX, y: e.clientY };
-      draw();
-    } else if(pointers.size === 2){
-      const pts = [...pointers.values()];
-      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      const mid = { x:(pts[0].x + pts[1].x)/2, y:(pts[0].y + pts[1].y)/2 };
-
-      const factor = d / lastPinchDist;
-      const newScale = clamp(lastPinchScale * factor, 0.1, 10);
-
-      // Zoom alrededor del punto medio
-      const before = toImage(mid.x, mid.y);
-      scale = newScale;
-      const after = toScreen(before.x, before.y);
-      offsetX += (mid.x - after.x);
-      offsetY += (mid.y - after.y);
-
-      draw();
-    }
-  });
-
-  canvas.addEventListener('pointerup', (e) => {
-    // Detectar tap (sin mover mucho)
-    const start = pointers.get(e.pointerId);
-    pointers.delete(e.pointerId);
-
-    if(start){
-      const moved = Math.hypot(e.clientX - start.x, e.clientY - start.y);
-      const isTap = moved < 8 && e.timeStamp - e.pressure < 999999; // simple
-      // Solo consideramos tap si NO estabas pinchando con 2 dedos
-      if(isTap && pointers.size === 0){
-        // Tap pone puntos SOLO si el modo es calibrar o medir
-        addPointFromScreen(e.clientX, e.clientY);
-      }
-    }
-
-    if(pointers.size === 0){
-      lastPan = null;
-      lastPinchDist = null;
-      lastPinchScale = null;
-      lastPinchMid = null;
-    }
-  });
-
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-
-  // Subir imagen
-  document.querySelector('label.pill').addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', async () => {
-    const f = fileInput.files?.[0];
-    if(!f) return;
-
-    const url = URL.createObjectURL(f);
+  const reader = new FileReader();
+  reader.onload = () => {
     img = new Image();
     img.onload = () => {
       imgLoaded = true;
-      clearPoints();
+      p1 = null;
+      p2 = null;
       realPerPx = null;
-      updateScaleInfo();
-      fitToScreen();
       resize();
     };
-    img.src = url;
-  });
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
 
-  // Guardar escala desde puntos actuales
-  setScaleBtn.addEventListener('click', () => {
-    if(!p1 || !p2){
-      alert("Primero marcá 2 puntos sobre una medida que conozcas.");
-      return;
-    }
-    const realVal = Number(realValueEl.value);
-    if(!realVal || realVal <= 0){
-      alert("Ingresá una medida real válida (ej: 200).");
-      return;
-    }
-    const dpx = dist(p1,p2);
-    realPerPx = realVal / dpx;
-    updateScaleInfo();
-    updateResult();
-    draw();
-  });
+// 👉 TOQUES EN CANVAS
+canvas.addEventListener('click', (e) => {
+  if (!imgLoaded) return;
 
-  // Reset puntos
-  resetBtn.addEventListener('click', clearPoints);
+  const rect = canvas.getBoundingClientRect();
+  const p = {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
 
-  // Centrar
-  fitBtn.addEventListener('click', fitToScreen);
+  if (!p1) p1 = p;
+  else if (!p2) p2 = p;
+  else {
+    p1 = p;
+    p2 = null;
+  }
 
-  // Exportar imagen (con lo que se ve + línea + texto)
-  exportBtn.addEventListener('click', () => {
-    if(!imgLoaded){
-      alert("Subí una imagen primero.");
-      return;
-    }
-    // Render a un canvas temporal en tamaño pantalla
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    const out = document.createElement('canvas');
-    out.width = w * devicePixelRatio;
-    out.height = h * devicePixelRatio;
-    const octx = out.getContext('2d');
-    octx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  draw();
+});
 
-    // Dibuja igual que draw()
-    octx.clearRect(0,0,w,h);
+// 👉 GUARDAR ESCALA
+setScaleBtn.addEventListener('click', () => {
+  if (!p1 || !p2) {
+    alert("Marcá 2 puntos primero");
+    return;
+  }
+  const real = Number(realInput.value);
+  if (!real || real <= 0) {
+    alert("Ingresá una medida real válida");
+    return;
+  }
+  realPerPx = real / dist(p1, p2);
+  draw();
+});
 
-    octx.save();
-    octx.translate(offsetX, offsetY);
-    octx.scale(scale, scale);
-    octx.drawImage(img, 0, 0);
-    octx.restore();
+// 👉 RESET
+resetBtn.addEventListener('click', () => {
+  p1 = null;
+  p2 = null;
+  resultEl.textContent = "—";
+  draw();
+});
 
-    // Línea/puntos si existen
-    if(p1 && p2){
-      const s1 = toScreen(p1.x, p1.y);
-      const s2 = toScreen(p2.x, p2.y);
-
-      octx.strokeStyle = "#2b5cff";
-      octx.lineWidth = 3;
-      octx.beginPath();
-      octx.moveTo(s1.x, s1.y);
-      octx.lineTo(s2.x, s2.y);
-      octx.stroke();
-
-      const mid = { x:(s1.x+s2.x)/2, y:(s1.y+s2.y)/2 };
-      const label = (realPerPx == null) ? `${dist(p1,p2).toFixed(1)} px` : `${(dist(p1,p2)*realPerPx).toFixed(1)} ${unitEl.value}`;
-      octx.fillStyle = "#ffffff";
-      octx.strokeStyle = "rgba(0,0,0,0.6)";
-      octx.lineWidth = 6;
-      octx.font = "bold 16px -apple-system, system-ui, Arial";
-      octx.strokeText(label, mid.x + 8, mid.y - 8);
-      octx.fillText(label, mid.x + 8, mid.y - 8);
-    }
-
-    // Descarga
-    const a = document.createElement('a');
-    a.download = 'medicion.png';
-    a.href = out.toDataURL('image/png');
-    a.click();
-  });
-
-  // Modo: solo cambia texto guía (la app siempre deja marcar puntos)
-  modeEl.addEventListener('change', () => {
-    if(modeEl.value === 'calibrate'){
-      resultEl.textContent = "Marcá 2 puntos sobre una medida conocida y tocá “Guardar escala”.";
-    } else {
-      updateResult();
-    }
-  });
-
-  // Init
-  resize();
-  resultEl.textContent = "Subí una foto. Luego marcá 2 puntos.";
-})();
+resize();
 </script>
+
 </body>
 </html>
+
