@@ -1,3 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DeckLed</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:#101010;
+  color:#fff;
+}
+
+.app{
+  max-width:720px;
+  margin:auto;
+  padding:10px;
+}
+
+h1{
+  margin:6px 0 10px;
+  text-align:center;
+  font-size:22px;
+}
+
+.card{
+  background:#1b1b1b;
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:8px;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+input,button,textarea{
+  width:100%;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+  padding:10px;
+}
+
+input{
+  background:#fff;
+  color:#111;
+}
+
+input[type="file"]{
+  background:#2b5cff;
+  color:#fff;
+}
+
+textarea{
+  height:230px;
+  margin-top:8px;
+  resize:none;
+  background:#fff;
+  color:#111;
+}
+
+button{
+  background:#00c853;
+  color:white;
+  font-weight:700;
+  margin-top:8px;
+}
+
+button.blue{background:#2b5cff}
+button.dark{background:#333}
+button.small{font-size:14px;padding:9px}
+
+#canvas{
+  width:100%;
+  height:58vh;
+  min-height:390px;
+  max-height:72vh;
+  background:#000;
+  border-radius:14px;
+  display:block;
+  touch-action:none;
+}
+
+.result{
+  text-align:center;
+  background:#000;
+  border-radius:12px;
+  padding:10px;
+  margin-top:8px;
+}
+
+.medida{
+  font-size:32px;
+  font-weight:800;
+  color:#00ff99;
+}
+
+.precio{
+  font-size:32px;
+  font-weight:900;
+  color:#00ff99;
+}
+
+.mini{
+  font-size:12px;
+  opacity:.75;
+}
+
+#err{
+  display:none;
+  background:#ff3b30;
+  padding:8px;
+  border-radius:10px;
+  margin-bottom:8px;
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>DeckLed</h1>
+
+<div id="err"></div>
+
+<div class="card">
+  <div class="row">
+    <input id="file" type="file" accept="image/*">
+    <input id="realValue" type="number" placeholder="Escala cm ej: 200">
+  </div>
+
+  <div class="row">
+    <button class="blue small" id="setScale">Guardar escala</button>
+    <button class="dark small" id="resetZoom">Reset zoom</button>
+  </div>
+
+  <div class="mini" style="margin-top:6px;text-align:center;">
+    1 dedo: puntos · 2 dedos: zoom/mover
+  </div>
+</div>
+
+<div class="card">
+  <canvas id="canvas"></canvas>
+
+  <div class="result">
+    <div id="result">Subí foto y calibrá.</div>
+  </div>
+
+  <div class="row">
+    <button class="dark small" id="resetPoints">Reset puntos</button>
+    <button class="dark small" onclick="limpiarMedidas()">Limpiar medidas</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <input type="number" id="ancho" placeholder="Ancho cm">
+    <input type="number" id="alto" placeholder="Alto cm">
+  </div>
+
+  <button onclick="calcularPrecio()">Calcular</button>
+
+  <div class="result" id="resultadoPrecio">
+    Precio sugerido
+  </div>
+
+  <button class="blue" onclick="copiarTextoWsp()">Copiar texto WhatsApp</button>
+
+  <textarea id="textoWsp" placeholder="Acá aparece el texto listo para WhatsApp"></textarea>
+</div>
+
+</div>
+
+<script>
+let ultimaMedidaCm = null;
+let precioPixelGlobal = 0;
+let precioMonoGlobal = 0;
+
+function calcularPrecio(){
+  let ancho = parseFloat(document.getElementById("ancho").value);
+  let alto = parseFloat(document.getElementById("alto").value);
+
+  if(!ancho || !alto){
+    alert("Ingresá ancho y alto");
+    return;
+  }
+
+  let area = (ancho / 100) * (alto / 100);
+
+  let precioPixel = (area * 500000) + 650000;
+
+  if(precioPixel < 990000) precioPixel = 990000;
+
+  precioPixel = Math.round(precioPixel / 10000) * 10000;
+
+  let precioMono = precioPixel / 1.1;
+  precioMono = Math.round(precioMono / 10000) * 10000;
+
+  precioPixelGlobal = precioPixel;
+  precioMonoGlobal = precioMono;
+
+  document.getElementById("resultadoPrecio").innerHTML = `
+    <div class="mini">Blanco frío / color fijo</div>
+    <div class="precio">$${precioMono.toLocaleString("es-AR")}</div>
+
+    <div class="mini" style="margin-top:10px;">Pixel LED app celular</div>
+    <div class="precio">$${precioPixel.toLocaleString("es-AR")}</div>
+
+    <div class="mini">${ancho} x ${alto} cm · ${area.toFixed(2)} m²</div>
+  `;
+
+  generarTextoWsp();
+}
+
 function generarTextoWsp(){
   if(!precioPixelGlobal || !precioMonoGlobal) return;
 
@@ -25,9 +248,378 @@ function copiarTextoWsp(){
   generarTextoWsp();
 
   let campo = document.getElementById("textoWsp");
+
+  if(!campo.value){
+    alert("Primero calculá el precio");
+    return;
+  }
+
   campo.select();
   campo.setSelectionRange(0, 99999);
   document.execCommand("copy");
 
   alert("Texto copiado para WhatsApp");
 }
+
+function limpiarMedidas(){
+  document.getElementById("ancho").value = "";
+  document.getElementById("alto").value = "";
+  document.getElementById("resultadoPrecio").innerHTML = "Precio sugerido";
+  document.getElementById("textoWsp").value = "";
+  precioPixelGlobal = 0;
+  precioMonoGlobal = 0;
+}
+
+(() => {
+  const errBox = document.getElementById('err');
+
+  function showErr(e){
+    errBox.style.display = 'block';
+    errBox.textContent = 'Error: ' + (e && e.message ? e.message : String(e));
+  }
+
+  try {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const fileInput = document.getElementById('file');
+    const realInput = document.getElementById('realValue');
+    const setScaleBtn = document.getElementById('setScale');
+    const resetPointsBtn = document.getElementById('resetPoints');
+    const resetZoomBtn = document.getElementById('resetZoom');
+    const resultEl = document.getElementById('result');
+
+    let img = new Image();
+    let imgLoaded = false;
+
+    let baseScale = 1;
+    let baseOffX = 0;
+    let baseOffY = 0;
+
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+
+    let p1 = null;
+    let p2 = null;
+    let cmPerPx = null;
+
+    let lastCanvasWidth = 0;
+
+    function resizeCanvas() {
+      const r = canvas.getBoundingClientRect();
+      const newWidth = Math.max(1, Math.round(r.width));
+      const newHeight = Math.max(1, Math.round(r.height));
+
+      if(imgLoaded && Math.abs(newWidth - lastCanvasWidth) < 5){
+        return;
+      }
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      lastCanvasWidth = newWidth;
+
+      if(imgLoaded) fitImage(false);
+      draw();
+    }
+
+    function fitImage(resetView = false) {
+      const sx = canvas.width / img.width;
+      const sy = canvas.height / img.height;
+
+      baseScale = Math.min(sx, sy);
+
+      const w = img.width * baseScale;
+      const h = img.height * baseScale;
+
+      baseOffX = (canvas.width - w) / 2;
+      baseOffY = (canvas.height - h) / 2;
+
+      if(resetView){
+        zoom = 1;
+        panX = 0;
+        panY = 0;
+      }
+    }
+
+    function currentScale(){
+      return baseScale * zoom;
+    }
+
+    function imageRectOnCanvas(){
+      const s = currentScale();
+      return {
+        x: baseOffX + panX,
+        y: baseOffY + panY,
+        w: img.width * s,
+        h: img.height * s
+      };
+    }
+
+    function insideImage(p){
+      if(!imgLoaded) return false;
+      const r = imageRectOnCanvas();
+      return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
+    }
+
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      if(!imgLoaded) return;
+
+      const s = currentScale();
+
+      ctx.drawImage(
+        img,
+        baseOffX + panX,
+        baseOffY + panY,
+        img.width * s,
+        img.height * s
+      );
+
+      if(p1) drawPoint(p1);
+
+      if(p1 && p2){
+        drawPoint(p2);
+        drawLine(p1,p2);
+        showResult();
+      }
+    }
+
+    function drawPoint(p){
+      ctx.fillStyle = "#ffcc00";
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,7,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    function drawLine(a,b){
+      ctx.strokeStyle="#00c853";
+      ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.moveTo(a.x,a.y);
+      ctx.lineTo(b.x,b.y);
+      ctx.stroke();
+    }
+
+    function dist(a,b){
+      return Math.hypot(a.x-b.x, a.y-b.y);
+    }
+
+    function showResult(){
+      if(!cmPerPx){
+        resultEl.textContent = "Marcá medida conocida y guardá escala.";
+        return;
+      }
+
+      const cm = dist(p1,p2) * cmPerPx;
+      ultimaMedidaCm = cm;
+
+      resultEl.innerHTML = `
+        <div class="medida">${cm.toFixed(1)} cm</div>
+        <div class="row">
+          <button class="small" onclick="usarComoAncho()">Ancho</button>
+          <button class="small" onclick="usarComoAlto()">Alto</button>
+        </div>
+      `;
+    }
+
+    window.usarComoAncho = function(){
+      if(ultimaMedidaCm){
+        document.getElementById("ancho").value = ultimaMedidaCm.toFixed(1);
+      }
+    }
+
+    window.usarComoAlto = function(){
+      if(ultimaMedidaCm){
+        document.getElementById("alto").value = ultimaMedidaCm.toFixed(1);
+      }
+    }
+
+    fileInput.addEventListener('change', () => {
+      const f = fileInput.files && fileInput.files[0];
+      if(!f) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        const newImg = new Image();
+
+        newImg.onload = () => {
+          img = newImg;
+          imgLoaded = true;
+
+          p1 = null;
+          p2 = null;
+          cmPerPx = null;
+
+          resultEl.textContent = "Imagen cargada. Marcá 2 puntos.";
+
+          const r = canvas.getBoundingClientRect();
+          canvas.width = Math.max(1, Math.round(r.width));
+          canvas.height = Math.max(1, Math.round(r.height));
+          lastCanvasWidth = canvas.width;
+
+          fitImage(true);
+          draw();
+        };
+
+        newImg.onerror = () => showErr("No se pudo cargar la imagen.");
+        newImg.src = dataUrl;
+      };
+
+      reader.onerror = () => showErr("FileReader falló.");
+      reader.readAsDataURL(f);
+    });
+
+    canvas.addEventListener('click', (e) => {
+      if(!imgLoaded) return;
+      if(isPinching) return;
+
+      const rect = canvas.getBoundingClientRect();
+
+      const p = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+
+      if(!insideImage(p)) return;
+
+      if(!p1){
+        p1 = p;
+      } else if(!p2){
+        p2 = p;
+      } else {
+        p1 = p;
+        p2 = null;
+      }
+
+      draw();
+    });
+
+    setScaleBtn.addEventListener('click', () => {
+      if(!p1 || !p2){
+        alert("Marcá 2 puntos sobre una medida conocida.");
+        return;
+      }
+
+      const realCm = Number(realInput.value);
+
+      if(!realCm || realCm <= 0){
+        alert("Ingresá la medida real en cm.");
+        return;
+      }
+
+      cmPerPx = realCm / dist(p1,p2);
+
+      resultEl.textContent = "Escala OK. Ahora medí otra distancia.";
+
+      p1 = null;
+      p2 = null;
+
+      draw();
+    });
+
+    resetPointsBtn.addEventListener('click', () => {
+      p1 = null;
+      p2 = null;
+      resultEl.textContent = "Puntos reseteados.";
+      draw();
+    });
+
+    resetZoomBtn.addEventListener('click', () => {
+      zoom = 1;
+      panX = 0;
+      panY = 0;
+      draw();
+    });
+
+    let isPinching = false;
+    let lastDist = null;
+    let lastCenter = null;
+
+    function getDist(t1, t2) {
+      return Math.hypot(
+        t1.clientX - t2.clientX,
+        t1.clientY - t2.clientY
+      );
+    }
+
+    function getCenter(t1, t2) {
+      return {
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2
+      };
+    }
+
+    function clamp(v, min, max){
+      return Math.max(min, Math.min(max, v));
+    }
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        isPinching = true;
+        lastDist = getDist(e.touches[0], e.touches[1]);
+        lastCenter = getCenter(e.touches[0], e.touches[1]);
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+
+        const distNow = getDist(e.touches[0], e.touches[1]);
+        const centerNow = getCenter(e.touches[0], e.touches[1]);
+
+        if (lastCenter) {
+          panX += centerNow.x - lastCenter.x;
+          panY += centerNow.y - lastCenter.y;
+        }
+
+        if (lastDist) {
+          const factor = distNow / lastDist;
+
+          const rect = canvas.getBoundingClientRect();
+          const cx = centerNow.x - rect.left;
+          const cy = centerNow.y - rect.top;
+
+          const prevScale = currentScale();
+
+          zoom = clamp(zoom * factor, 1, 6);
+
+          const newScale = currentScale();
+
+          panX += (cx - (baseOffX + panX)) * (1 - newScale / prevScale);
+          panY += (cy - (baseOffY + panY)) * (1 - newScale / prevScale);
+        }
+
+        lastDist = distNow;
+        lastCenter = centerNow;
+
+        draw();
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        lastDist = null;
+        lastCenter = null;
+
+        setTimeout(() => {
+          isPinching = false;
+        }, 80);
+      }
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+  } catch(e){
+    showErr(e);
+  }
+})();
+</script>
+
+</body>
+</html>
