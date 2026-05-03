@@ -235,30 +235,49 @@ function calcularPrecio(){
     let panX = 0;
     let panY = 0;
 
-    let p1 = null, p2 = null;
+    let p1 = null;
+    let p2 = null;
     let cmPerPx = null;
+
+    let lastCanvasWidth = 0;
+    let lastCanvasHeight = 0;
 
     function resizeCanvas() {
       const r = canvas.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.round(r.width));
-      canvas.height = Math.max(1, Math.round(r.height));
-      if (imgLoaded) fitImage();
+      const newWidth = Math.max(1, Math.round(r.width));
+      const newHeight = Math.max(1, Math.round(r.height));
+
+      if(imgLoaded && Math.abs(newWidth - lastCanvasWidth) < 5){
+        return;
+      }
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      lastCanvasWidth = newWidth;
+      lastCanvasHeight = newHeight;
+
+      if(imgLoaded) fitImage(false);
       draw();
     }
 
-    function fitImage() {
+    function fitImage(resetView = false) {
       const sx = canvas.width / img.width;
       const sy = canvas.height / img.height;
+
       baseScale = Math.min(sx, sy);
 
       const w = img.width * baseScale;
       const h = img.height * baseScale;
+
       baseOffX = (canvas.width - w) / 2;
       baseOffY = (canvas.height - h) / 2;
 
-      zoom = 1;
-      panX = 0;
-      panY = 0;
+      if(resetView){
+        zoom = 1;
+        panX = 0;
+        panY = 0;
+      }
     }
 
     function currentScale(){
@@ -267,6 +286,7 @@ function calcularPrecio(){
 
     function imageRectOnCanvas(){
       const s = currentScale();
+
       return {
         x: baseOffX + panX,
         y: baseOffY + panY,
@@ -277,18 +297,29 @@ function calcularPrecio(){
 
     function insideImage(p){
       if(!imgLoaded) return false;
+
       const r = imageRectOnCanvas();
+
       return p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
     }
 
     function draw() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
+
       if(!imgLoaded) return;
 
       const s = currentScale();
-      ctx.drawImage(img, baseOffX + panX, baseOffY + panY, img.width*s, img.height*s);
+
+      ctx.drawImage(
+        img,
+        baseOffX + panX,
+        baseOffY + panY,
+        img.width * s,
+        img.height * s
+      );
 
       if(p1) drawPoint(p1);
+
       if(p1 && p2){
         drawPoint(p2);
         drawLine(p1,p2);
@@ -349,9 +380,11 @@ function calcularPrecio(){
 
     fileInput.addEventListener('change', () => {
       const f = fileInput.files && fileInput.files[0];
+
       if(!f) return;
 
       const reader = new FileReader();
+
       reader.onload = () => {
         const dataUrl = reader.result;
         const newImg = new Image();
@@ -360,12 +393,20 @@ function calcularPrecio(){
           img = newImg;
           imgLoaded = true;
 
-          p1=null;
-          p2=null;
-          cmPerPx=null;
+          p1 = null;
+          p2 = null;
+          cmPerPx = null;
 
           resultEl.textContent = "Imagen cargada. Tocá 2 puntos para calibrar.";
-          resizeCanvas();
+
+          const r = canvas.getBoundingClientRect();
+          canvas.width = Math.max(1, Math.round(r.width));
+          canvas.height = Math.max(1, Math.round(r.height));
+          lastCanvasWidth = canvas.width;
+          lastCanvasHeight = canvas.height;
+
+          fitImage(true);
+          draw();
         };
 
         newImg.onerror = () => showErr("No se pudo cargar la imagen.");
@@ -381,13 +422,22 @@ function calcularPrecio(){
       if(isPinching) return;
 
       const rect = canvas.getBoundingClientRect();
-      const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+      const p = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
 
       if(!insideImage(p)) return;
 
-      if(!p1) p1 = p;
-      else if(!p2) p2 = p;
-      else { p1 = p; p2 = null; }
+      if(!p1){
+        p1 = p;
+      } else if(!p2){
+        p2 = p;
+      } else {
+        p1 = p;
+        p2 = null;
+      }
 
       draw();
     });
@@ -406,15 +456,18 @@ function calcularPrecio(){
       }
 
       cmPerPx = realCm / dist(p1,p2);
+
       resultEl.textContent = "Escala guardada. Ahora medí tocando 2 puntos.";
+
       p1 = null;
       p2 = null;
+
       draw();
     });
 
     resetPointsBtn.addEventListener('click', () => {
-      p1=null;
-      p2=null;
+      p1 = null;
+      p2 = null;
       resultEl.textContent = "Puntos reseteados. Tocá 2 puntos.";
       draw();
     });
@@ -431,13 +484,16 @@ function calcularPrecio(){
     let lastCenter = null;
 
     function getDist(t1, t2) {
-      return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      return Math.hypot(
+        t1.clientX - t2.clientX,
+        t1.clientY - t2.clientY
+      );
     }
 
     function getCenter(t1, t2) {
       return {
-        x: (t1.clientX + t2.clientX)/2,
-        y: (t1.clientY + t2.clientY)/2
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2
       };
     }
 
@@ -473,7 +529,9 @@ function calcularPrecio(){
           const cy = centerNow.y - rect.top;
 
           const prevScale = currentScale();
+
           zoom = clamp(zoom * factor, 1, 6);
+
           const newScale = currentScale();
 
           panX += (cx - (baseOffX + panX)) * (1 - newScale / prevScale);
@@ -491,11 +549,15 @@ function calcularPrecio(){
       if (e.touches.length < 2) {
         lastDist = null;
         lastCenter = null;
-        setTimeout(()=>{ isPinching = false; }, 80);
+
+        setTimeout(() => {
+          isPinching = false;
+        }, 80);
       }
     });
 
     window.addEventListener('resize', resizeCanvas);
+
     resizeCanvas();
 
   } catch(e){
