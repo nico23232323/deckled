@@ -1,5 +1,78 @@
-function calcular(){
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DeckLed</title>
 
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:720px;margin:auto;padding:10px}
+.card{background:#1b1b1b;border-radius:14px;padding:10px;margin-bottom:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input,button,textarea{width:100%;border:none;border-radius:10px;font-size:15px;padding:10px}
+input{background:white;color:#111}
+input[type="file"]{background:#2b5cff;color:white}
+button{background:#00c853;color:white;font-weight:800;margin-top:8px}
+button.blue{background:#2b5cff}
+button.dark{background:#333}
+#canvas{width:100%;height:58vh;min-height:390px;max-height:72vh;background:#000;border-radius:14px;display:block;touch-action:none}
+.result{text-align:center;background:#000;border-radius:12px;padding:10px;margin-top:8px}
+.precio{font-size:32px;font-weight:900;color:#00ff99}
+.medida{font-size:34px;font-weight:900;color:#00ff99}
+.mini{font-size:12px;opacity:.75}
+textarea{height:220px;margin-top:8px;resize:none;background:white;color:#111}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div class="card">
+  <div class="row">
+    <input id="file" type="file" accept="image/*">
+    <input id="realValue" type="number" placeholder="Escala cm">
+  </div>
+  <div class="row">
+    <button class="blue" id="setScale">Escala</button>
+    <button class="dark" id="resetZoom">Reset zoom</button>
+  </div>
+  <div class="mini" style="text-align:center;margin-top:6px;">1 dedo: puntos · 2 dedos: zoom/mover</div>
+</div>
+
+<div class="card">
+  <canvas id="canvas"></canvas>
+  <div class="result" id="result">Subí foto</div>
+  <div class="row">
+    <button class="dark" id="resetPoints">Reset puntos</button>
+    <button class="dark" onclick="limpiar()">Limpiar</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <input id="ancho" type="number" placeholder="Ancho cm">
+    <input id="alto" type="number" placeholder="Alto cm">
+  </div>
+
+  <button onclick="calcular()">Calcular</button>
+
+  <div class="result" id="precioBox">Precio sugerido</div>
+
+  <button class="blue" onclick="copiar()">Copiar WhatsApp</button>
+
+  <textarea id="txt" placeholder="Texto listo para WhatsApp"></textarea>
+</div>
+
+</div>
+
+<script>
+let precioPixel = 0;
+let precioMono = 0;
+let ultimaMedidaCm = 0;
+
+function calcular(){
   let a = parseFloat(document.getElementById("ancho").value);
   let b = parseFloat(document.getElementById("alto").value);
 
@@ -8,101 +81,369 @@ function calcular(){
     return;
   }
 
-  // Área en m²
   let area = (a / 100) * (b / 100);
 
-  // =========================
-  // FORMULA PRINCIPAL PRO
-  // =========================
-  // Carteles chicos:
-  // más caros por m²
-  //
-  // Carteles grandes:
-  // más baratos proporcionalmente
-  //
-  // Sin saltos raros
-  // Nunca baja al crecer
-  // =========================
+  precioPixel = (area * 700000) + (900000 / Math.sqrt(area + 0.15));
 
-  precioPixel =
-    (area * 700000)
-    +
-    (900000 / Math.sqrt(area + 0.15));
-
-  // =========================
-  // REFERENCIA REAL
-  // =========================
-  // 200 x 40 aprox
-  // nunca menos de 1.300.000
-  // =========================
-
-  if(
-    area >= 0.75 &&
-    area <= 0.95 &&
-    precioPixel < 1300000
-  ){
+  if(area >= 0.75 && area <= 0.95 && precioPixel < 1300000){
     precioPixel = 1300000;
   }
 
-  // =========================
-  // REDONDEO
-  // =========================
-
-  precioPixel =
-    Math.round(precioPixel / 10000) * 10000;
-
-  // =========================
-  // MONOCROMATICO
-  // =========================
-
-  precioMono = precioPixel / 1.1;
-
-  precioMono =
-    Math.round(precioMono / 10000) * 10000;
-
-  // =========================
-  // TIPO VISUAL
-  // =========================
+  precioPixel = Math.round(precioPixel / 10000) * 10000;
+  precioMono = Math.round((precioPixel / 1.1) / 10000) * 10000;
 
   let tipo = "";
-
   if(area <= 0.7){
     tipo = "Cartel chico";
-  }
-  else if(area <= 2){
+  }else if(area <= 2){
     tipo = "Cartel mediano";
-  }
-  else{
+  }else{
     tipo = "Cartel grande";
   }
 
-  // =========================
-  // HTML RESULTADO
-  // =========================
-
   document.getElementById("precioBox").innerHTML = `
     <div class="mini">${tipo}</div>
-
-    <div class="mini">
-      Blanco frío / color fijo
-    </div>
-
-    <div class="precio">
-      $${precioMono.toLocaleString("es-AR")}
-    </div>
-
-    <div class="mini" style="margin-top:10px;">
-      Pixel LED app celular
-    </div>
-
-    <div class="precio">
-      $${precioPixel.toLocaleString("es-AR")}
-    </div>
-
-    <div class="mini">
-      ${a} x ${b} cm · ${area.toFixed(2)} m²
-    </div>
+    <div class="mini">Blanco frío / color fijo</div>
+    <div class="precio">$${precioMono.toLocaleString("es-AR")}</div>
+    <div class="mini">Pixel LED app celular</div>
+    <div class="precio">$${precioPixel.toLocaleString("es-AR")}</div>
+    <div class="mini">${a} x ${b} cm · ${area.toFixed(2)} m²</div>
   `;
 
   generarTexto();
 }
+
+function generarTexto(){
+  if(!precioPixel || !precioMono) return;
+
+  document.getElementById("txt").value =
+`❗️En blanco frío o color fijo el valor es $${precioMono.toLocaleString("es-AR")}
+
+✅ En pixel led con control app celular el valor es $${precioPixel.toLocaleString("es-AR")}
+
+💳 Con una seña del 30% ya tomamos el pedido
+
+🪧Los carteles se realizan en impresión 3d, frente de acrílico blanco, con luz interna led y estructura de hierro para facilitar montaje.
+
+▶️Visita nuestro Instagram de corpóreos exterior
+https://www.instagram.com/corporeos.deckled?igsh=MTdncHo2bm4xdG1naQ
+
+▶️Catálogo
+https://drive.google.com/file/d/1CTRkwK4GmFa_YNUKb2A2njCBEleL1TmC/view?usp=drive_link
+
+▶️Catálogo en video
+https://drive.google.com/file/d/1eZ4_fbKYT2Cc7dZFTWcpEr5VGElrxRdA/view?usp=drive_link`;
+}
+
+function copiar(){
+  generarTexto();
+  let campo = document.getElementById("txt");
+  if(!campo.value){
+    alert("Primero calculá");
+    return;
+  }
+  campo.select();
+  campo.setSelectionRange(0,99999);
+  document.execCommand("copy");
+  alert("Texto copiado");
+}
+
+function limpiar(){
+  document.getElementById("ancho").value = "";
+  document.getElementById("alto").value = "";
+  document.getElementById("precioBox").innerHTML = "Precio sugerido";
+  document.getElementById("txt").value = "";
+}
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const fileInput = document.getElementById("file");
+const realInput = document.getElementById("realValue");
+const resultBox = document.getElementById("result");
+
+let img = new Image();
+let imgLoaded = false;
+
+let baseScale = 1;
+let baseOffX = 0;
+let baseOffY = 0;
+
+let zoom = 1;
+let panX = 0;
+let panY = 0;
+
+let p1 = null;
+let p2 = null;
+let cmPerPx = null;
+let lastCanvasWidth = 0;
+
+function resizeCanvas(){
+  const r = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.round(r.width));
+  const h = Math.max(1, Math.round(r.height));
+
+  if(imgLoaded && Math.abs(w - lastCanvasWidth) < 5){
+    return;
+  }
+
+  canvas.width = w;
+  canvas.height = h;
+  lastCanvasWidth = w;
+
+  if(imgLoaded) fitImage(false);
+  draw();
+}
+
+function fitImage(resetView=false){
+  const sx = canvas.width / img.width;
+  const sy = canvas.height / img.height;
+
+  baseScale = Math.min(sx, sy);
+
+  const w = img.width * baseScale;
+  const h = img.height * baseScale;
+
+  baseOffX = (canvas.width - w) / 2;
+  baseOffY = (canvas.height - h) / 2;
+
+  if(resetView){
+    zoom = 1;
+    panX = 0;
+    panY = 0;
+  }
+}
+
+function currentScale(){
+  return baseScale * zoom;
+}
+
+function imageX(){
+  return baseOffX + panX;
+}
+
+function imageY(){
+  return baseOffY + panY;
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!imgLoaded) return;
+
+  const s = currentScale();
+
+  ctx.drawImage(img, imageX(), imageY(), img.width * s, img.height * s);
+
+  if(p1) drawPoint(p1);
+
+  if(p1 && p2){
+    drawPoint(p2);
+    drawLine(p1,p2);
+    showMeasure();
+  }
+}
+
+function drawPoint(p){
+  ctx.fillStyle = "#ffcc00";
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,7,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawLine(a,b){
+  ctx.strokeStyle = "#00ff99";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(a.x,a.y);
+  ctx.lineTo(b.x,b.y);
+  ctx.stroke();
+}
+
+function dist(a,b){
+  return Math.hypot(a.x-b.x, a.y-b.y);
+}
+
+function showMeasure(){
+  if(!cmPerPx){
+    resultBox.innerHTML = "Calibrá primero";
+    return;
+  }
+
+  let cm = dist(p1,p2) * cmPerPx;
+  ultimaMedidaCm = cm;
+
+  resultBox.innerHTML = `
+    <div class="medida">${cm.toFixed(1)} cm</div>
+    <div class="row">
+      <button onclick="usarAncho()">Ancho</button>
+      <button onclick="usarAlto()">Alto</button>
+    </div>
+  `;
+}
+
+function usarAncho(){
+  document.getElementById("ancho").value = ultimaMedidaCm.toFixed(1);
+}
+
+function usarAlto(){
+  document.getElementById("alto").value = ultimaMedidaCm.toFixed(1);
+}
+
+fileInput.addEventListener("change", () => {
+  const f = fileInput.files[0];
+  if(!f) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const newImg = new Image();
+
+    newImg.onload = () => {
+      img = newImg;
+      imgLoaded = true;
+      p1 = null;
+      p2 = null;
+      cmPerPx = null;
+
+      resultBox.innerHTML = "Imagen cargada. Marcá 2 puntos.";
+
+      resizeCanvas();
+      fitImage(true);
+      draw();
+    };
+
+    newImg.src = reader.result;
+  };
+
+  reader.readAsDataURL(f);
+});
+
+canvas.addEventListener("click", e => {
+  if(!imgLoaded || isPinching) return;
+
+  const r = canvas.getBoundingClientRect();
+  const p = {
+    x:e.clientX - r.left,
+    y:e.clientY - r.top
+  };
+
+  if(!p1) p1 = p;
+  else if(!p2) p2 = p;
+  else{
+    p1 = p;
+    p2 = null;
+  }
+
+  draw();
+});
+
+document.getElementById("setScale").addEventListener("click", () => {
+  if(!p1 || !p2){
+    alert("Marcá 2 puntos sobre una medida conocida");
+    return;
+  }
+
+  const real = parseFloat(realInput.value);
+
+  if(!real || real <= 0){
+    alert("Ingresá la medida real en cm");
+    return;
+  }
+
+  cmPerPx = real / dist(p1,p2);
+  p1 = null;
+  p2 = null;
+
+  resultBox.innerHTML = "Escala guardada. Ahora medí otra distancia.";
+  draw();
+});
+
+document.getElementById("resetPoints").addEventListener("click", () => {
+  p1 = null;
+  p2 = null;
+  resultBox.innerHTML = "Puntos reseteados";
+  draw();
+});
+
+document.getElementById("resetZoom").addEventListener("click", () => {
+  zoom = 1;
+  panX = 0;
+  panY = 0;
+  draw();
+});
+
+let isPinching = false;
+let lastDist = null;
+let lastCenter = null;
+
+function getDist(t1,t2){
+  return Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+}
+
+function getCenter(t1,t2){
+  return {
+    x:(t1.clientX+t2.clientX)/2,
+    y:(t1.clientY+t2.clientY)/2
+  };
+}
+
+function clamp(v,min,max){
+  return Math.max(min, Math.min(max,v));
+}
+
+canvas.addEventListener("touchstart", e => {
+  if(e.touches.length === 2){
+    isPinching = true;
+    lastDist = getDist(e.touches[0], e.touches[1]);
+    lastCenter = getCenter(e.touches[0], e.touches[1]);
+  }
+},{passive:true});
+
+canvas.addEventListener("touchmove", e => {
+  if(e.touches.length === 2){
+    e.preventDefault();
+
+    const distNow = getDist(e.touches[0], e.touches[1]);
+    const centerNow = getCenter(e.touches[0], e.touches[1]);
+
+    if(lastCenter){
+      panX += centerNow.x - lastCenter.x;
+      panY += centerNow.y - lastCenter.y;
+    }
+
+    if(lastDist){
+      const factor = distNow / lastDist;
+
+      const rect = canvas.getBoundingClientRect();
+      const cx = centerNow.x - rect.left;
+      const cy = centerNow.y - rect.top;
+
+      const prevScale = currentScale();
+
+      zoom = clamp(zoom * factor, 1, 6);
+
+      const newScale = currentScale();
+
+      panX += (cx - imageX()) * (1 - newScale / prevScale);
+      panY += (cy - imageY()) * (1 - newScale / prevScale);
+    }
+
+    lastDist = distNow;
+    lastCenter = centerNow;
+    draw();
+  }
+},{passive:false});
+
+canvas.addEventListener("touchend", e => {
+  if(e.touches.length < 2){
+    lastDist = null;
+    lastCenter = null;
+    setTimeout(() => { isPinching = false; },80);
+  }
+});
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+</script>
+
+</body>
+</html>
