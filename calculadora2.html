@@ -83,16 +83,30 @@ function calcular(){
 
   let area = (a / 100) * (b / 100);
 
-  precioPixel = (area * 700000) + (900000 / Math.sqrt(area + 0.15));
+  let tipo = "";
 
-  if(area >= 0.75 && area <= 0.95 && precioPixel < 1300000){
-    precioPixel = 1300000;
+  // =========================
+  // PARÁMETROS REALES
+  // =========================
+  // 150 x 45 aprox = $1.200.000
+  // 200 x 40 aprox = $1.300.000
+  // =========================
+
+  if(area <= 2){
+    // fórmula principal para chicos y medianos
+    precioPixel = 660000 + (area * 800000);
+  }else{
+    // para grandes baja el valor por m² para no dispararse
+    precioPixel = 2260000 + ((area - 2) * 450000);
   }
 
+  // redondeo
   precioPixel = Math.round(precioPixel / 10000) * 10000;
-  precioMono = Math.round((precioPixel / 1.1) / 10000) * 10000;
 
-  let tipo = "";
+  // monocromático 10% más barato
+  precioMono = precioPixel / 1.1;
+  precioMono = Math.round(precioMono / 10000) * 10000;
+
   if(area <= 0.7){
     tipo = "Cartel chico";
   }else if(area <= 2){
@@ -103,10 +117,13 @@ function calcular(){
 
   document.getElementById("precioBox").innerHTML = `
     <div class="mini">${tipo}</div>
+
     <div class="mini">Blanco frío / color fijo</div>
     <div class="precio">$${precioMono.toLocaleString("es-AR")}</div>
+
     <div class="mini">Pixel LED app celular</div>
     <div class="precio">$${precioPixel.toLocaleString("es-AR")}</div>
+
     <div class="mini">${a} x ${b} cm · ${area.toFixed(2)} m²</div>
   `;
 
