@@ -1,0 +1,93 @@
+function calcular(){
+
+  let a = parseFloat(document.getElementById("ancho").value);
+  let b = parseFloat(document.getElementById("alto").value);
+
+  if(!a || !b){
+    alert("Ingresá ancho y alto");
+    return;
+  }
+
+  let area = (a / 100) * (b / 100);
+
+  let tipo = "";
+
+  // =========================
+  // FORMULA PRINCIPAL
+  // =========================
+
+  if(area <= 2){
+
+    precioPixel =
+      560000 +
+      (area * 800000);
+
+  }else{
+
+    precioPixel =
+      2160000 +
+      ((area - 2) * 450000);
+
+  }
+
+  // =========================
+  // REDONDEO
+  // =========================
+
+  precioPixel =
+    Math.round(precioPixel / 10000) * 10000;
+
+  // =========================
+  // MONOCROMATICO
+  // =========================
+
+  precioMono =
+    precioPixel / 1.1;
+
+  precioMono =
+    Math.round(precioMono / 10000) * 10000;
+
+  // =========================
+  // TIPO
+  // =========================
+
+  if(area <= 0.7){
+    tipo = "Cartel chico";
+  }
+  else if(area <= 2){
+    tipo = "Cartel mediano";
+  }
+  else{
+    tipo = "Cartel grande";
+  }
+
+  // =========================
+  // HTML
+  // =========================
+
+  document.getElementById("precioBox").innerHTML = `
+    <div class="mini">${tipo}</div>
+
+    <div class="mini">
+      Blanco frío / color fijo
+    </div>
+
+    <div class="precio">
+      $${precioMono.toLocaleString("es-AR")}
+    </div>
+
+    <div class="mini" style="margin-top:10px;">
+      Pixel LED app celular
+    </div>
+
+    <div class="precio">
+      $${precioPixel.toLocaleString("es-AR")}
+    </div>
+
+    <div class="mini">
+      ${a} x ${b} cm · ${area.toFixed(2)} m²
+    </div>
+  `;
+
+  generarTexto();
+}
