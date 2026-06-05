@@ -314,11 +314,9 @@ function showMeasure(){
 
 function usarAncho(){
   document.getElementById("ancho").value=ultimaMedidaCm.toFixed(1);
-  switchTab('cotizador');
 }
 function usarAlto(){
   document.getElementById("alto").value=ultimaMedidaCm.toFixed(1);
-  switchTab('cotizador');
 }
 
 fileInput.addEventListener("change",()=>{
@@ -520,7 +518,7 @@ function generarRender(){
   c.fillStyle="#666"; c.font="15px Arial";
   ["💳  Seña 30% para confirmar pedido",
    "🪧  Impresión 3D · Acrílico 3mm UV",
-   "🔩  Estructura hierro · Montaje incluido"].forEach((t,i)=>{
+   "🔩  Estructura hierro · Fijación a pared"].forEach((t,i)=>{
     c.fillText(t, LX, CY+i*28);
   });
 
