@@ -411,10 +411,23 @@ window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
 
 /* ===================== RENDER / FICHA ===================== */
+
+/* Reemplazo manual de roundRect (evita depender del soporte nativo del navegador) */
+function roundRectPath(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r);
+  c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r);
+  c.arcTo(x,y,x+w,y,r);
+  c.closePath();
+}
+
 function rbox(c,x,y,w,h,fill,stroke,r){
   r=r||10;
   c.fillStyle=fill; c.strokeStyle=stroke; c.lineWidth=1.5;
-  c.beginPath(); c.roundRect(x,y,w,h,r); c.fill(); c.stroke();
+  roundRectPath(c,x,y,w,h,r);
+  c.fill(); c.stroke();
 }
 
 function generarRender(){
@@ -468,7 +481,7 @@ function generarRender(){
     drawCover(c, img, LX, imgY, LW, imgH);
     /* overlay sutil */
     c.fillStyle="rgba(0,0,0,.35)";
-    c.beginPath(); c.roundRect(LX,imgY,LW,imgH,10); c.fill();
+    roundRectPath(c,LX,imgY,LW,imgH,10); c.fill();
   } else {
     rbox(c, LX, imgY, LW, imgH, "#111", "#222");
     c.fillStyle="#333"; c.font="16px Arial"; c.textAlign="center";
@@ -589,18 +602,23 @@ function drawCover(c,image,x,y,w,h){
   if(ir>rr){ dh=h; dw=h*ir; dx=x-(dw-w)/2; dy=y; }
   else{ dw=w; dh=w/ir; dx=x; dy=y-(dh-h)/2; }
   c.save();
-  c.beginPath(); c.roundRect(x,y,w,h,10); c.clip();
+  roundRectPath(c,x,y,w,h,10); c.clip();
   c.drawImage(image,dx,dy,dw,dh);
   c.restore();
 }
 
 function descargarRender(){
-  generarRender();
-  const rc=document.getElementById("renderCanvas");
-  const link=document.createElement("a");
-  link.download="ficha-deckled.png";
-  link.href=rc.toDataURL("image/png");
-  link.click();
+  try{
+    generarRender();
+    const rc=document.getElementById("renderCanvas");
+    const link=document.createElement("a");
+    link.download="ficha-deckled.png";
+    link.href=rc.toDataURL("image/png");
+    link.click();
+  }catch(err){
+    alert("Error al generar el PNG: "+err.message);
+    console.error(err);
+  }
 }
 </script>
 </body>
