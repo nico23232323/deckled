@@ -607,17 +607,83 @@ function drawCover(c,image,x,y,w,h){
   c.restore();
 }
 
-function descargarRender(){
+async function descargarRender(){
   try{
     generarRender();
-    const rc=document.getElementById("renderCanvas");
-    const link=document.createElement("a");
-    link.download="ficha-deckled.png";
-    link.href=rc.toDataURL("image/png");
+
+    const rc = document.getElementById("renderCanvas");
+    const nombreArchivo = "ficha-deckled.png";
+
+    const blob = await new Promise((resolve, reject)=>{
+      rc.toBlob((resultado)=>{
+        if(resultado) resolve(resultado);
+        else reject(new Error("No se pudo crear el archivo PNG"));
+      }, "image/png", 1);
+    });
+
+    const archivo = new File([blob], nombreArchivo, { type: "image/png" });
+
+    /*
+      En iPhone/iPad, la forma más confiable es abrir el menú Compartir.
+      Desde ahí se puede elegir “Guardar imagen” o “Guardar en Archivos”.
+    */
+    if(navigator.share && navigator.canShare && navigator.canShare({ files:[archivo] })){
+      await navigator.share({
+        files: [archivo],
+        title: "Ficha DeckLed",
+        text: "Ficha técnica DeckLed"
+      });
+      return;
+    }
+
+    /*
+      Descarga normal para PC, Android y navegadores compatibles.
+    */
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nombreArchivo;
+    link.style.display = "none";
+    document.body.appendChild(link);
     link.click();
+    link.remove();
+
+    /*
+      Algunos Safari de iPhone ignoran download.
+      En ese caso abrimos el PNG para que el usuario mantenga pulsado
+      y seleccione “Guardar en Fotos” o “Guardar en Archivos”.
+    */
+    setTimeout(()=>{
+      URL.revokeObjectURL(url);
+    }, 60000);
+
   }catch(err){
-    alert("Error al generar el PNG: "+err.message);
-    console.error(err);
+    /*
+      Si el usuario cancela el menú Compartir, no mostramos un error.
+    */
+    if(err && err.name === "AbortError") return;
+
+    try{
+      const rc = document.getElementById("renderCanvas");
+      const dataUrl = rc.toDataURL("image/png");
+      const nuevaVentana = window.open();
+      if(nuevaVentana){
+        nuevaVentana.document.write(
+          '<html><head><title>Ficha DeckLed</title></head>' +
+          '<body style="margin:0;background:#111;text-align:center">' +
+          '<img src="' + dataUrl + '" style="max-width:100%;height:auto">' +
+          '<p style="color:white;font-family:Arial;padding:16px">' +
+          'Mantené presionada la imagen y elegí Guardar en Fotos.' +
+          '</p></body></html>'
+        );
+        nuevaVentana.document.close();
+      }else{
+        alert("Permití las ventanas emergentes para guardar el PNG.");
+      }
+    }catch(fallbackError){
+      alert("Error al generar el PNG: " + fallbackError.message);
+      console.error(fallbackError);
+    }
   }
 }
 </script>
