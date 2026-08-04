@@ -37,11 +37,153 @@ document.querySelectorAll('[data-open-contact]').forEach(b=>b.onclick=()=>docume
 document.querySelector('#sendGeneral').onclick=()=>whatsapp(document.querySelector('#contactText').value);
 document.querySelector('[data-rental-filter]').onclick=()=>setFilter('rental');
 
-// Partículas reactivas a mouse y dedo
-const canvas=document.querySelector('#particles'),ctx=canvas.getContext('2d');let W,H,dpr,particles=[],pointer={x:-9999,y:-9999,active:false};
-function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);const count=Math.min(120,Math.floor(W*H/12000));particles=Array.from({length:count},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.7+.5}));}
-addEventListener('resize',resize);addEventListener('pointermove',e=>{pointer.x=e.clientX;pointer.y=e.clientY;pointer.active=true});addEventListener('pointerleave',()=>pointer.active=false);addEventListener('pointerdown',e=>{pointer.x=e.clientX;pointer.y=e.clientY;pointer.active=true});
-function animateParticles(){ctx.clearRect(0,0,W,H);for(const p of particles){if(pointer.active){const dx=p.x-pointer.x,dy=p.y-pointer.y,d=Math.hypot(dx,dy);if(d<140&&d>1){const force=(140-d)/140;p.vx+=dx/d*force*.045;p.vy+=dy/d*force*.045}}p.vx*=.992;p.vy*=.992;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.fillStyle='rgba(150,190,255,.65)';ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}requestAnimationFrame(animateParticles)}resize();animateParticles();
+// Partículas LED reactivas a mouse y dedo
+const canvas = document.querySelector('#particles');
+const ctx = canvas.getContext('2d', { alpha: true });
+let W = 0, H = 0, dpr = 1, particles = [], animationFrame = 0;
+const pointer = { x: -9999, y: -9999, active: false, pressed: false };
+
+function particleCount() {
+  const area = innerWidth * innerHeight;
+  const mobile = innerWidth < 700;
+  // Más densidad, pero con límite para conservar fluidez en iPhone.
+  return Math.min(mobile ? 900 : 2200, Math.max(mobile ? 420 : 900, Math.floor(area / (mobile ? 1800 : 1150))));
+}
+
+function makeParticle() {
+  const depth = Math.random();
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - .5) * (.12 + depth * .25),
+    vy: (Math.random() - .5) * (.12 + depth * .25),
+    baseVx: (Math.random() - .5) * .035,
+    baseVy: (Math.random() - .5) * .035,
+    size: .45 + depth * 1.9,
+    depth,
+    hue: 190 + Math.random() * 105,
+    phase: Math.random() * Math.PI * 2,
+    square: Math.random() > .58
+  };
+}
+
+function resizeParticles() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth;
+  H = innerHeight;
+  canvas.width = Math.floor(W * dpr);
+  canvas.height = Math.floor(H * dpr);
+  canvas.style.width = `${W}px`;
+  canvas.style.height = `${H}px`;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  particles = Array.from({ length: particleCount() }, makeParticle);
+}
+
+function setPointer(e) {
+  pointer.x = e.clientX;
+  pointer.y = e.clientY;
+  pointer.active = true;
+}
+
+addEventListener('resize', resizeParticles, { passive: true });
+addEventListener('pointermove', setPointer, { passive: true });
+addEventListener('pointerdown', e => {
+  setPointer(e);
+  pointer.pressed = true;
+  // Explosión suave al tocar o hacer clic.
+  for (const p of particles) {
+    const dx = p.x - pointer.x;
+    const dy = p.y - pointer.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    if (dist < 250) {
+      const force = (1 - dist / 250) * 4.2;
+      p.vx += (dx / dist) * force;
+      p.vy += (dy / dist) * force;
+    }
+  }
+}, { passive: true });
+addEventListener('pointerup', () => pointer.pressed = false, { passive: true });
+addEventListener('pointercancel', () => { pointer.active = false; pointer.pressed = false; }, { passive: true });
+addEventListener('pointerleave', () => { pointer.active = false; pointer.pressed = false; }, { passive: true });
+
+function drawConnections() {
+  // Conexiones sutiles cerca del puntero solamente, para no bajar FPS.
+  if (!pointer.active || innerWidth < 700) return;
+  const nearby = particles.filter(p => Math.hypot(p.x - pointer.x, p.y - pointer.y) < 175).slice(0, 42);
+  ctx.lineWidth = .55;
+  for (let i = 0; i < nearby.length; i++) {
+    for (let j = i + 1; j < nearby.length; j++) {
+      const a = nearby[i], b = nearby[j];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 72) {
+        ctx.strokeStyle = `rgba(90,190,255,${(1 - d / 72) * .18})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animateParticles(time = 0) {
+  ctx.clearRect(0, 0, W, H);
+  const pulse = time * .001;
+
+  for (const p of particles) {
+    p.phase += .004 + p.depth * .004;
+    p.hue += .025;
+
+    if (pointer.active) {
+      const dx = p.x - pointer.x;
+      const dy = p.y - pointer.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const radius = 190;
+      if (dist < radius) {
+        const force = (1 - dist / radius);
+        // Repulsión + giro para generar remolino.
+        p.vx += (dx / dist) * force * .052;
+        p.vy += (dy / dist) * force * .052;
+        p.vx += (-dy / dist) * force * .018;
+        p.vy += ( dx / dist) * force * .018;
+      }
+    }
+
+    p.vx += p.baseVx * .012;
+    p.vy += p.baseVy * .012;
+    p.vx *= .985;
+    p.vy *= .985;
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (p.x < -8) p.x = W + 8;
+    if (p.x > W + 8) p.x = -8;
+    if (p.y < -8) p.y = H + 8;
+    if (p.y > H + 8) p.y = -8;
+
+    const glow = .28 + p.depth * .55 + Math.sin(p.phase + pulse) * .12;
+    const size = p.size * (1 + Math.sin(p.phase) * .16);
+    ctx.shadowBlur = 4 + p.depth * 10;
+    ctx.shadowColor = `hsla(${p.hue},100%,68%,.62)`;
+    ctx.fillStyle = `hsla(${p.hue},100%,${66 + p.depth * 12}%,${Math.max(.12, glow)})`;
+
+    if (p.square) {
+      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.shadowBlur = 0;
+  drawConnections();
+  animationFrame = requestAnimationFrame(animateParticles);
+}
+
+resizeParticles();
+cancelAnimationFrame(animationFrame);
+animateParticles();
 
 // Mini tubos del hero
 const hero=document.querySelector('#heroTubes');hero.innerHTML=Array.from({length:12},(_,i)=>`<i></i>`).join('');let heroTick=0;setInterval(()=>{heroTick+=.12;[...hero.children].forEach((el,i)=>{const h=45+Math.sin(heroTick+i*.55)*30;el.style.height=`${h+35}%`;el.style.background=`hsl(${(heroTick*35+i*18)%360} 95% 60%)`;el.style.color=`hsl(${(heroTick*35+i*18)%360} 95% 60%)`})},50);
