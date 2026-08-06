@@ -117,7 +117,8 @@ textarea{height:200px;resize:vertical;font-size:13px;line-height:1.6}
       <input id="ancho" type="number" placeholder="Ancho (cm)">
       <input id="alto" type="number" placeholder="Alto (cm)">
     </div>
-    <button class="btn-green" onclick="calcular()" style="margin-top:8px">Calcular precio</button>
+    <button class="btn-green" onclick="calcular('cliente')" style="margin-top:8px">Calcular precio cliente</button>
+    <button class="btn-blue" onclick="calcular('revendedor')" style="margin-top:6px">Calcular precio revendedor</button>
   </div>
 
   <div class="card">
@@ -144,8 +145,10 @@ textarea{height:200px;resize:vertical;font-size:13px;line-height:1.6}
       <input id="colorCartel" placeholder="Color ej: RGB app">
     </div>
     <div class="hint" style="margin-top:4px">Usá las medidas y precios del cotizador, o ingresalos en esa pestaña</div>
-    <button class="btn-red" onclick="generarRender()" style="margin-top:10px">Generar ficha técnica</button>
-    <button class="btn-blue" onclick="descargarRender()" style="margin-top:6px">Descargar PNG</button>
+    <button class="btn-red" onclick="generarRender('cliente')" style="margin-top:10px">Generar PNG cliente</button>
+    <button class="btn-blue" onclick="descargarRender('cliente')" style="margin-top:6px">Descargar PNG cliente</button>
+    <button class="btn-dark" onclick="generarRender('revendedor')" style="margin-top:10px">Generar PNG revendedor</button>
+    <button class="btn-blue" onclick="descargarRender('revendedor')" style="margin-top:6px">Descargar PNG revendedor</button>
   </div>
 
   <canvas id="renderCanvas" width="1200" height="900"></canvas>
@@ -169,9 +172,21 @@ function switchTab(name){
 /* ===================== COTIZADOR ===================== */
 let precioPixel = 0;
 let precioMono  = 0;
+let precioPixelCliente = 0;
+let precioMonoCliente = 0;
+let porcentajeDescuento = 0;
+let modoPrecioActual = "cliente";
 let ultimaMedidaCm = 0;
 
-function calcular(){
+function obtenerDescuentoRevendedor(precioReferencia){
+  if(precioReferencia < 1200000) return 5;
+  if(precioReferencia >= 1500000) return 10;
+
+  // Progresión lineal: 5% a $1.200.000 y 10% a $1.500.000
+  return 5 + ((precioReferencia-1200000)/(1500000-1200000))*5;
+}
+
+function calcular(modo="cliente"){
   const a = parseFloat(document.getElementById("ancho").value);
   const b = parseFloat(document.getElementById("alto").value);
   if(!a || !b){ alert("Ingresá ancho y alto"); return; }
@@ -179,17 +194,31 @@ function calcular(){
   const area = (a/100)*(b/100);
 
   if(area <= 2){
-    precioPixel = 660000 + area*800000;
+    precioPixelCliente = 660000 + area*800000;
   } else {
-    precioPixel = 2260000 + (area-2)*450000;
+    precioPixelCliente = 2260000 + (area-2)*450000;
   }
-  precioPixel = Math.round(precioPixel/10000)*10000;
-  precioMono  = Math.round((precioPixel/1.1)/10000)*10000;
+
+  precioPixelCliente = Math.round(precioPixelCliente/10000)*10000;
+  precioMonoCliente  = Math.round((precioPixelCliente/1.1)/10000)*10000;
+
+  modoPrecioActual = modo;
+  porcentajeDescuento = modo==="revendedor"
+    ? obtenerDescuentoRevendedor(precioPixelCliente)
+    : 0;
+
+  const factor = 1-(porcentajeDescuento/100);
+  precioPixel = Math.round((precioPixelCliente*factor)/10000)*10000;
+  precioMono  = Math.round((precioMonoCliente*factor)/10000)*10000;
 
   const tipo = area<=0.7 ? "Cartel chico" : area<=2 ? "Cartel mediano" : "Cartel grande";
+  const etiquetaModo = modo==="revendedor"
+    ? `REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% OFF`
+    : "CLIENTE FINAL";
 
   document.getElementById("precioBox").innerHTML = `
     <div class="tipo-badge">${tipo} · ${a}×${b} cm · ${area.toFixed(2)} m²</div>
+    <div class="tipo-badge" style="color:${modo==="revendedor"?"#4da3ff":"#00c853"}">${etiquetaModo}</div>
     <div class="precio-label">Blanco frío / color fijo</div>
     <div class="precio-mono">$${fmt(precioMono)}</div>
     <div class="precio-label" style="margin-top:8px">Pixel LED · control app celular</div>
@@ -202,8 +231,12 @@ function fmt(n){ return Number(n).toLocaleString("es-AR"); }
 
 function generarTexto(a,b){
   if(!precioPixel||!precioMono) return;
+  const encabezado = modoPrecioActual==="revendedor"
+    ? `PRECIO REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% de descuento\n\n`
+    : "";
+
   document.getElementById("txt").value =
-`❗️En blanco frío o color fijo el valor es $${fmt(precioMono)}
+`${encabezado}❗️En blanco frío o color fijo el valor es $${fmt(precioMono)}
 
 ✅ En pixel led con control app celular el valor es $${fmt(precioPixel)}
 
@@ -236,6 +269,8 @@ function limpiarCotizador(){
   document.getElementById("precioBox").innerHTML="Ingresá las medidas para cotizar";
   document.getElementById("txt").value="";
   precioPixel=0; precioMono=0;
+  precioPixelCliente=0; precioMonoCliente=0;
+  porcentajeDescuento=0; modoPrecioActual="cliente";
 }
 
 /* ===================== MEDIDOR ===================== */
@@ -348,9 +383,12 @@ document.getElementById("setScale").addEventListener("click",()=>{
   if(!p1||!p2){ alert("Marcá 2 puntos primero"); return; }
   const real=parseFloat(realInput.value);
   if(!real||real<=0){ alert("Ingresá la medida real en cm"); return; }
+
+  // Guardamos la escala, pero conservamos los dos puntos y la línea.
+  // Así la primera medida calibrada puede usarse directamente como ancho o alto.
   cmPerPx=real/dist(p1,p2);
-  p1=null; p2=null;
-  resultBox.innerHTML="✅ Escala guardada. Ahora medí lo que quieras.";
+  ultimaMedidaCm=real;
+
   draw();
 });
 
@@ -430,7 +468,13 @@ function rbox(c,x,y,w,h,fill,stroke,r){
   c.fill(); c.stroke();
 }
 
-function generarRender(){
+function generarRender(modo="cliente"){
+  const a = parseFloat(document.getElementById("ancho").value);
+  const b = parseFloat(document.getElementById("alto").value);
+  if(!a || !b){ alert("Ingresá ancho y alto en Cotizar"); return; }
+
+  calcular(modo);
+
   const rc=document.getElementById("renderCanvas");
   const c=rc.getContext("2d");
   const W=1200, H=900;
@@ -457,7 +501,10 @@ function generarRender(){
   c.fillStyle="#fff"; c.font="bold 24px Arial"; c.textAlign="left";
   c.fillText("DECK LED  ·  CARTEL LUMINOSO CORPÓREO", 24, 39);
   c.textAlign="right"; c.font="16px Arial"; c.fillStyle="#ffaaaa";
-  c.fillText("Ficha técnica", W-24, 39);
+  const tipoFicha = modo==="revendedor"
+    ? `Ficha revendedor · ${porcentajeDescuento.toFixed(1)}% OFF`
+    : "Ficha cliente";
+  c.fillText(tipoFicha, W-24, 39);
   c.textAlign="left";
 
   /* ---------- ZONA IZQUIERDA ---------- */
@@ -607,12 +654,14 @@ function drawCover(c,image,x,y,w,h){
   c.restore();
 }
 
-async function descargarRender(){
+async function descargarRender(modo="cliente"){
   try{
-    generarRender();
+    generarRender(modo);
 
     const rc = document.getElementById("renderCanvas");
-    const nombreArchivo = "ficha-deckled.png";
+    const nombreArchivo = modo==="revendedor"
+      ? "ficha-deckled-revendedor.png"
+      : "ficha-deckled-cliente.png";
 
     const blob = await new Promise((resolve, reject)=>{
       rc.toBlob((resultado)=>{
