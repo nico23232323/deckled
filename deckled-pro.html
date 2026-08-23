@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>DeckLed PRO</title>
 
@@ -17,7 +20,7 @@
 }
 
 body{
-  background:#0d0d0d;
+  background:#07080b;
   color:white;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
   min-height:100vh;
@@ -29,17 +32,19 @@ body{
   padding:10px 10px 30px;
 }
 
-/* HEADER */
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:14px 16px;
-  background:#161616;
+  background:#121316;
   border-radius:14px;
   margin-bottom:8px;
-  border:1px solid #2a2a2a;
+  border:1px solid #292b31;
 }
 
 .header-logo{
@@ -58,23 +63,25 @@ body{
   text-align:right;
 }
 
-/* CARDS */
+/* =====================================================
+   CARDS
+===================================================== */
 
 .card{
-  background:#161616;
+  background:#121316;
   border-radius:14px;
   padding:12px;
   margin-bottom:8px;
-  border:1px solid #222;
+  border:1px solid #24262b;
 }
 
 .card-title{
   font-size:11px;
   text-transform:uppercase;
-  letter-spacing:.08em;
-  color:#666;
+  letter-spacing:.11em;
+  color:#6b6d74;
   margin-bottom:10px;
-  font-weight:700;
+  font-weight:800;
 }
 
 .row{
@@ -83,17 +90,19 @@ body{
   gap:8px;
 }
 
-/* INPUTS */
+/* =====================================================
+   INPUTS
+===================================================== */
 
 input,
 textarea,
 select{
   width:100%;
-  border:1px solid #2a2a2a;
+  border:1px solid #2d3036;
   border-radius:10px;
   font-size:16px;
   padding:10px 12px;
-  background:#0d0d0d;
+  background:#090a0d;
   color:#fff;
   outline:none;
 }
@@ -101,7 +110,7 @@ select{
 input:focus,
 textarea:focus,
 select:focus{
-  border-color:#e02020;
+  border-color:#28dfff;
 }
 
 select{
@@ -110,11 +119,10 @@ select{
 }
 
 input[type="file"]{
-  background:#1a2a5e;
+  background:#172451;
   color:white;
   cursor:pointer;
   font-size:13px;
-  padding:9px 12px;
 }
 
 input[type="file"]::-webkit-file-upload-button{
@@ -123,19 +131,18 @@ input[type="file"]::-webkit-file-upload-button{
 
 input::placeholder,
 textarea::placeholder{
-  color:#444;
+  color:#42444b;
 }
-
-/* CAMPO TEXTO CARTEL */
 
 #textoCartel{
   height:72px;
-  min-height:72px;
   resize:none;
-  line-height:1.35;
+  line-height:1.3;
 }
 
-/* BOTONES */
+/* =====================================================
+   BOTONES
+===================================================== */
 
 button{
   width:100%;
@@ -143,7 +150,7 @@ button{
   border-radius:10px;
   font-size:15px;
   padding:11px;
-  font-weight:700;
+  font-weight:800;
   cursor:pointer;
   transition:opacity .15s,transform .1s;
 }
@@ -159,14 +166,19 @@ button:active{
 }
 
 .btn-blue{
-  background:#2b5cff;
+  background:#2d5cff;
+  color:#fff;
+}
+
+.btn-cyan{
+  background:#00b8d4;
   color:#fff;
 }
 
 .btn-dark{
-  background:#252525;
+  background:#242529;
   color:#ccc;
-  border:1px solid #333;
+  border:1px solid #34363c;
 }
 
 .btn-red{
@@ -176,7 +188,7 @@ button:active{
 
 .hint{
   font-size:11px;
-  color:#555;
+  color:#555861;
   text-align:center;
   margin-top:6px;
 }
@@ -190,18 +202,20 @@ button:active{
 }
 
 .status.ok{
-  color:#00c853;
+  color:#00df8b;
 }
 
 .status.error{
-  color:#e06060;
+  color:#ef6060;
 }
 
 .status.info{
   color:#5f8cff;
 }
 
-/* TABS */
+/* =====================================================
+   TABS
+===================================================== */
 
 .tabs{
   display:grid;
@@ -211,8 +225,8 @@ button:active{
 }
 
 .tab{
-  background:#161616;
-  border:1px solid #222;
+  background:#121316;
+  border:1px solid #24262b;
   border-radius:10px;
   padding:10px 3px;
   text-align:center;
@@ -236,16 +250,18 @@ button:active{
   display:block;
 }
 
-/* PREVIEW CARTEL */
+/* =====================================================
+   PREVIEW DISEÑO
+===================================================== */
 
 .preview-cartel{
   position:relative;
   width:100%;
-  min-height:270px;
+  min-height:280px;
   border-radius:14px;
   background:
-    radial-gradient(circle at center,#182735 0%,#101720 50%,#07090d 100%);
-  border:1px solid #2a2a2a;
+    radial-gradient(circle at 50% 45%,#122635 0%,#0b121a 48%,#06080c 100%);
+  border:1px solid #2a3038;
   overflow:hidden;
   display:flex;
   align-items:center;
@@ -258,64 +274,35 @@ button:active{
 .preview-grid{
   position:absolute;
   inset:0;
-  opacity:.12;
+  opacity:.11;
   background-image:
-    linear-gradient(#555 1px,transparent 1px),
-    linear-gradient(90deg,#555 1px,transparent 1px);
+    linear-gradient(#5b8496 1px,transparent 1px),
+    linear-gradient(90deg,#5b8496 1px,transparent 1px);
   background-size:25px 25px;
   pointer-events:none;
 }
 
-/* TEXTO PREVIEW */
-
 .preview-text{
   position:relative;
   z-index:2;
-
   width:max-content;
   max-width:none;
-
   text-align:center;
-
   font-size:58px;
   line-height:1.05;
-
   font-weight:900;
-
-  /*
-    Clave:
-    nunca hace salto automático.
-  */
   white-space:pre;
-
   word-break:normal;
   overflow-wrap:normal;
-
   color:#fff;
-
   pointer-events:none;
 }
-
-/*
-  Cuando el usuario mete ENTER,
-  respetamos exactamente esos saltos.
-*/
-
-.preview-text.multiline{
-  white-space:pre;
-}
-
-/* MONOCROMÁTICO */
 
 .preview-text.mono{
   text-shadow:
     0 0 1px currentColor,
     0 0 2px currentColor;
-
-  filter:none;
 }
-
-/* PIXEL */
 
 .preview-text.pixel{
   background:linear-gradient(
@@ -324,84 +311,42 @@ button:active{
     #ff9100,
     #ffea00,
     #00e676,
-    #00b0ff,
-    #651fff,
+    #00d8ff,
+    #575cff,
     #d500f9,
     #ff1744
   );
 
   background-size:300% 100%;
-
   -webkit-background-clip:text;
   background-clip:text;
-
   color:transparent;
 
   filter:
-    drop-shadow(0 0 2px rgba(255,255,255,.22));
+    drop-shadow(0 0 2px rgba(255,255,255,.25));
 
   animation:pixelMove 4s linear infinite;
 }
 
 @keyframes pixelMove{
-  0%{
-    background-position:0% 50%;
-  }
-
-  100%{
-    background-position:300% 50%;
-  }
+  0%{background-position:0% 50%}
+  100%{background-position:300% 50%}
 }
-
-/* GRAFFITI */
 
 .preview-text.deckled-drip{
   font-family:"Nosifer","Arial Black",sans-serif !important;
   font-weight:400;
   letter-spacing:-1px;
   line-height:1.1;
-  padding-bottom:8px;
-
-  text-shadow:
-    0 0 1px currentColor,
-    0 0 2px currentColor;
 }
-
-.preview-text.deckled-drip.pixel{
-  font-family:"Nosifer","Arial Black",sans-serif !important;
-
-  background:linear-gradient(
-    90deg,
-    #ff1744,
-    #ff9100,
-    #ffea00,
-    #00e676,
-    #00b0ff,
-    #651fff,
-    #d500f9,
-    #ff1744
-  );
-
-  background-size:300% 100%;
-
-  -webkit-background-clip:text;
-  background-clip:text;
-
-  color:transparent;
-
-  filter:
-    drop-shadow(0 0 2px rgba(255,255,255,.2));
-}
-
-/* LABELS */
 
 .preview-label{
   position:absolute;
   left:10px;
   bottom:8px;
   z-index:7;
-  background:rgba(0,0,0,.75);
-  border:1px solid #333;
+  background:rgba(0,0,0,.78);
+  border:1px solid #363940;
   color:#aaa;
   border-radius:20px;
   padding:4px 9px;
@@ -415,19 +360,17 @@ button:active{
   left:50%;
   transform:translateX(-50%);
   z-index:7;
-  background:rgba(5,10,25,.82);
-  border:1px solid #315eae;
-  color:#dce8ff;
+  background:rgba(4,10,25,.86);
+  border:1px solid #3478e5;
+  color:#e3edff;
   border-radius:24px;
   padding:8px 15px;
   font-size:11px;
-  font-weight:800;
+  font-weight:900;
   letter-spacing:.04em;
   white-space:nowrap;
   pointer-events:none;
 }
-
-/* CANVAS DISEÑO */
 
 #designMeasureCanvas{
   position:absolute;
@@ -439,7 +382,9 @@ button:active{
   touch-action:manipulation;
 }
 
-/* COLORES */
+/* =====================================================
+   COLORES
+===================================================== */
 
 .color-selector{
   display:grid;
@@ -454,7 +399,7 @@ button:active{
   min-height:35px;
   padding:0;
   border-radius:50%;
-  border:3px solid #333;
+  border:3px solid #303238;
   position:relative;
 }
 
@@ -473,10 +418,39 @@ button:active{
   color:#111;
   font-size:15px;
   font-weight:900;
-  text-shadow:0 0 3px #fff;
 }
 
-/* MEDIDOR */
+/* =====================================================
+   DIMENSIONES DISEÑO
+===================================================== */
+
+.auto-dim-box{
+  background:#0a0d11;
+  border:1px solid #26323c;
+  border-radius:12px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.auto-dim-title{
+  font-size:11px;
+  color:#63e8ff;
+  font-weight:800;
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.dim-label{
+  font-size:10px;
+  color:#686b74;
+  margin-bottom:5px;
+  font-weight:700;
+}
+
+/* =====================================================
+   MEDIDOR ORIGINAL
+===================================================== */
 
 #canvas{
   width:100%;
@@ -490,27 +464,29 @@ button:active{
   border:1px solid #222;
 }
 
-/* RESULTADOS */
+/* =====================================================
+   RESULTADOS
+===================================================== */
 
 .result-box{
   text-align:center;
-  background:#0d0d0d;
+  background:#090a0d;
   border-radius:12px;
   padding:10px;
   margin-top:8px;
-  border:1px solid #222;
+  border:1px solid #25272c;
 }
 
 .medida{
   font-size:36px;
   font-weight:900;
-  color:#00ff99;
+  color:#00efaa;
 }
 
 .medida-diseno{
   font-size:30px;
   font-weight:900;
-  color:#00ff99;
+  color:#00efaa;
 }
 
 .precio-label{
@@ -522,7 +498,7 @@ button:active{
 .precio-val{
   font-size:30px;
   font-weight:900;
-  color:#00ff99;
+  color:#00efaa;
 }
 
 .precio-mono{
@@ -533,8 +509,8 @@ button:active{
 
 .tipo-badge{
   display:inline-block;
-  background:#1a1a1a;
-  border:1px solid #333;
+  background:#18191d;
+  border:1px solid #33363d;
   border-radius:20px;
   font-size:11px;
   color:#888;
@@ -549,14 +525,16 @@ button:active{
   line-height:1.6;
 }
 
-/* FICHA */
+/* =====================================================
+   FICHA
+===================================================== */
 
 #renderCanvas{
   width:100%;
-  border-radius:12px;
+  border-radius:14px;
   margin-top:8px;
   display:block;
-  border:1px solid #222;
+  border:1px solid #242833;
 }
 
 @media(max-width:480px){
@@ -586,7 +564,9 @@ button:active{
 
 <div class="app">
 
-<!-- HEADER -->
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <div class="header">
 
@@ -596,12 +576,14 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v2.6
+    v2.7
   </div>
 
 </div>
 
-<!-- TABS -->
+<!-- =====================================================
+     TABS
+===================================================== -->
 
 <div class="tabs">
 
@@ -632,7 +614,7 @@ button:active{
 </div>
 
 <!-- =====================================================
-     MEDIDOR
+     MEDIDOR ORIGINAL
 ===================================================== -->
 
 <div
@@ -723,12 +705,6 @@ button:active{
       Diseño del cartel
     </div>
 
-    <!--
-      TEXTAREA:
-      ENTER genera salto manual.
-      Sin ENTER el cartel permanece en 1 línea.
-    -->
-
     <textarea
       id="textoCartel"
       maxlength="100"
@@ -739,61 +715,20 @@ button:active{
 
       <select id="tipografia">
 
-        <option value="Bebas Neue">
-          Bebas Neue
-        </option>
-
-        <option value="Anton">
-          Anton
-        </option>
-
-        <option value="League Spartan">
-          League Spartan
-        </option>
-
-        <option value="Archivo Black">
-          Archivo Black
-        </option>
-
-        <option value="Bungee">
-          Bungee
-        </option>
-
-        <option value="Orbitron">
-          Orbitron
-        </option>
-
-        <option value="Audiowide">
-          Audiowide
-        </option>
-
-        <option value="Oxanium">
-          Oxanium
-        </option>
-
-        <option value="Michroma">
-          Michroma
-        </option>
-
-        <option value="Yellowtail">
-          Yellowtail
-        </option>
-
-        <option value="Pacifico">
-          Pacífico
-        </option>
-
-        <option value="Lobster">
-          Lobster
-        </option>
-
-        <option value="Milkshake">
-          Milkshake
-        </option>
-
-        <option value="Nickainley">
-          Nickainley
-        </option>
+        <option value="Bebas Neue">Bebas Neue</option>
+        <option value="Anton">Anton</option>
+        <option value="League Spartan">League Spartan</option>
+        <option value="Archivo Black">Archivo Black</option>
+        <option value="Bungee">Bungee</option>
+        <option value="Orbitron">Orbitron</option>
+        <option value="Audiowide">Audiowide</option>
+        <option value="Oxanium">Oxanium</option>
+        <option value="Michroma">Michroma</option>
+        <option value="Yellowtail">Yellowtail</option>
+        <option value="Pacifico">Pacífico</option>
+        <option value="Lobster">Lobster</option>
+        <option value="Milkshake">Milkshake</option>
+        <option value="Nickainley">Nickainley</option>
 
         <option value="Deck Led Graffiti Drip">
           Deck Led Graffiti Drip
@@ -803,25 +738,11 @@ button:active{
           Bubbleboddy Neue
         </option>
 
-        <option value="Grobold">
-          Grobold
-        </option>
-
-        <option value="Luckiest Guy">
-          Luckiest Guy
-        </option>
-
-        <option value="Baloo 2">
-          Baloo 2
-        </option>
-
-        <option value="Pixelify Sans">
-          Pixelify Sans
-        </option>
-
-        <option value="Cursiva">
-          Cursiva
-        </option>
+        <option value="Grobold">Grobold</option>
+        <option value="Luckiest Guy">Luckiest Guy</option>
+        <option value="Baloo 2">Baloo 2</option>
+        <option value="Pixelify Sans">Pixelify Sans</option>
+        <option value="Cursiva">Cursiva</option>
 
       </select>
 
@@ -842,6 +763,8 @@ button:active{
       </select>
 
     </div>
+
+    <!-- COLORES -->
 
     <div
       id="colorMonoBox"
@@ -921,6 +844,8 @@ button:active{
 
     </div>
 
+    <!-- PREVIEW -->
+
     <div
       class="preview-cartel"
       id="designPreview">
@@ -949,16 +874,18 @@ button:active{
 
   </div>
 
-  <!-- ESCALA DISEÑO -->
+  <!-- =================================================
+       ESCALA DISEÑO
+  ================================================== -->
 
   <div class="card">
 
     <div class="card-title">
-      Escala y medidas
+      Escala y medidas automáticas
     </div>
 
     <div class="hint" style="margin-bottom:8px">
-      Tocá dos puntos sobre el cartel.
+      Marcá dos puntos correspondientes a una medida conocida.
     </div>
 
     <div class="row">
@@ -977,17 +904,75 @@ button:active{
 
     </div>
 
-    <button
-      class="btn-dark"
-      id="designResetScale"
-      style="margin-top:8px">
-      Restablecer escala
-    </button>
-
     <div
       class="result-box"
       id="designMeasureResult">
       Marcá 2 puntos y luego guardá la escala
+    </div>
+
+    <!--
+      ESTOS DOS BOTONES SON LOS QUE
+      CALCULAN AUTOMÁTICAMENTE LA OTRA MEDIDA.
+    -->
+
+    <div class="row" style="margin-top:8px">
+
+      <button
+        class="btn-green"
+        id="designUseWidth">
+        Guardar como ancho
+      </button>
+
+      <button
+        class="btn-cyan"
+        id="designUseHeight">
+        Guardar como alto
+      </button>
+
+    </div>
+
+    <div class="auto-dim-box">
+
+      <div class="auto-dim-title">
+        Dimensiones calculadas
+      </div>
+
+      <div class="row">
+
+        <div>
+
+          <div class="dim-label">
+            ANCHO
+          </div>
+
+          <input
+            id="designAncho"
+            type="number"
+            inputmode="decimal"
+            placeholder="Ancho (cm)">
+
+        </div>
+
+        <div>
+
+          <div class="dim-label">
+            ALTO
+          </div>
+
+          <input
+            id="designAlto"
+            type="number"
+            inputmode="decimal"
+            placeholder="Alto (cm)">
+
+        </div>
+
+      </div>
+
+      <div class="hint">
+        Se calculan automáticamente, pero podés corregir cualquiera manualmente.
+      </div>
+
     </div>
 
     <div class="row" style="margin-top:8px">
@@ -1000,26 +985,15 @@ button:active{
 
       <button
         class="btn-dark"
-        id="designClearMeasure">
-        Limpiar puntos
+        id="designResetScale">
+        Restablecer escala
       </button>
 
     </div>
 
-    <div class="row" style="margin-top:8px">
-
-      <button
-        class="btn-green"
-        id="designUseWidth">
-        Usar como ancho
-      </button>
-
-      <button
-        class="btn-blue"
-        id="designUseHeight">
-        Usar como alto
-      </button>
-
+    <div
+      class="status"
+      id="designStatus">
     </div>
 
   </div>
@@ -1119,7 +1093,7 @@ button:active{
 </div>
 
 <!-- =====================================================
-     FICHA
+     FICHA PREMIUM
 ===================================================== -->
 
 <div
@@ -1129,39 +1103,39 @@ button:active{
   <div class="card">
 
     <div class="card-title">
-      Ficha del cartel
+      Ficha premium Deck Led
     </div>
 
     <div class="hint">
-      Utiliza automáticamente texto, tipografía, iluminación y medidas.
+      Genera automáticamente una presentación visual lista para compartir.
     </div>
 
     <button
       class="btn-red"
       onclick="generarRender('cliente')"
       style="margin-top:10px">
-      Generar PNG cliente
+      Generar ficha cliente
     </button>
 
     <button
       class="btn-blue"
       onclick="descargarRender('cliente')"
       style="margin-top:6px">
-      Descargar PNG cliente
+      Descargar ficha cliente
     </button>
 
     <button
       class="btn-dark"
       onclick="generarRender('revendedor')"
       style="margin-top:10px">
-      Generar PNG revendedor
+      Generar ficha revendedor
     </button>
 
     <button
       class="btn-blue"
       onclick="descargarRender('revendedor')"
       style="margin-top:6px">
-      Descargar PNG revendedor
+      Descargar ficha revendedor
     </button>
 
     <div
@@ -1171,10 +1145,14 @@ button:active{
 
   </div>
 
+  <!--
+    Ahora es vertical y más premium.
+  -->
+
   <canvas
     id="renderCanvas"
     width="1200"
-    height="900">
+    height="1500">
   </canvas>
 
 </div>
@@ -1196,7 +1174,8 @@ function status(id,text="",tipo=""){
     return;
   }
 
-  el.textContent = text;
+  el.textContent =
+    text;
 
   el.className =
     "status" +
@@ -1216,7 +1195,8 @@ function switchTab(name){
     "ficha"
   ];
 
-  document.querySelectorAll(".tab")
+  document
+    .querySelectorAll(".tab")
     .forEach((t,i)=>{
 
       t.classList.toggle(
@@ -1226,7 +1206,8 @@ function switchTab(name){
 
     });
 
-  document.querySelectorAll(".tab-panel")
+  document
+    .querySelectorAll(".tab-panel")
     .forEach(p=>{
 
       p.classList.toggle(
@@ -1251,7 +1232,6 @@ function switchTab(name){
       ()=>{
 
         resizeDesignCanvas();
-
         ajustarTextoPreview();
 
       },
@@ -1289,6 +1269,13 @@ const previewLabel =
 const colorMonoBox =
   document.getElementById("colorMonoBox");
 
+const designPreview =
+  document.getElementById("designPreview");
+
+/* =====================================================
+   FUENTE
+===================================================== */
+
 function obtenerFuentePreview(){
 
   const f =
@@ -1297,70 +1284,50 @@ function obtenerFuentePreview(){
   if(f==="Deck Led Graffiti Drip"){
 
     return '"Nosifer","Arial Black",sans-serif';
-
   }
 
   if(f==="Cursiva"){
 
     return '"Pacifico","Yellowtail",cursive';
-
   }
 
   if(f==="Milkshake"){
 
     return '"Lobster","Pacifico",cursive';
-
   }
 
   if(f==="Nickainley"){
 
     return '"Yellowtail","Pacifico",cursive';
-
   }
 
   if(f==="Bubbleboddy Neue"){
 
     return '"Baloo 2",sans-serif';
-
   }
 
   if(f==="Grobold"){
 
     return '"Luckiest Guy","Arial Black",sans-serif';
-
   }
 
   return `"${f}",Arial,sans-serif`;
 }
 
 /* =====================================================
-   AJUSTAR TEXTO A 1 LÍNEA
+   TEXTO 1 LÍNEA SALVO ENTER
 ===================================================== */
 
 function ajustarTextoPreview(){
-
-  const texto =
-    previewTexto.textContent;
-
-  const lineas =
-    texto.split("\n");
 
   const maxWidth =
     designPreview.clientWidth *
     0.86;
 
-  /*
-    Tamaño máximo.
-  */
-
   let size =
     window.innerWidth<=480
       ? 48
       : 62;
-
-  /*
-    Graffiti necesita un poco menos.
-  */
 
   if(
     tipografia.value===
@@ -1369,62 +1336,28 @@ function ajustarTextoPreview(){
 
     size =
       window.innerWidth<=480
-        ? 40
+        ? 39
         : 52;
-
   }
 
   const minSize =
-    14;
+    13;
 
   previewTexto.style.fontSize =
     size+"px";
 
-  /*
-    Como white-space:pre impide cualquier
-    salto automático, medimos el ancho
-    real de cada renglón manual.
-  */
-
   while(
+    previewTexto.scrollWidth >
+      maxWidth &&
     size>minSize
   ){
 
-    let entra =
-      true;
-
-    /*
-      El scrollWidth refleja la línea
-      más ancha del bloque.
-    */
-
-    if(
-      previewTexto.scrollWidth >
-      maxWidth
-    ){
-
-      entra =
-        false;
-
-    }
-
-    if(entra){
-
-      break;
-
-    }
-
-    size -=
-      1;
+    size--;
 
     previewTexto.style.fontSize =
       size+"px";
   }
 }
-
-/* =====================================================
-   ACTUALIZAR PREVIEW
-===================================================== */
 
 function actualizarPreview(){
 
@@ -1435,15 +1368,13 @@ function actualizarPreview(){
 
     texto =
       "TU MARCA";
-
   }
 
   previewTexto.textContent =
     texto;
 
   previewTexto.classList.remove(
-    "deckled-drip",
-    "multiline"
+    "deckled-drip"
   );
 
   previewTexto.style.fontFamily =
@@ -1457,28 +1388,9 @@ function actualizarPreview(){
     previewTexto.classList.add(
       "deckled-drip"
     );
-
   }
 
-  /*
-    Solo agregamos multiline
-    cuando existe ENTER.
-  */
-
-  if(
-    texto.includes("\n")
-  ){
-
-    previewTexto.classList.add(
-      "multiline"
-    );
-
-  }
-
-  if(
-    tipoLed.value===
-    "pixel"
-  ){
+  if(tipoLed.value==="pixel"){
 
     previewTexto.classList.remove(
       "mono"
@@ -1516,7 +1428,6 @@ function actualizarPreview(){
     previewLabel.textContent =
       "Monocromático · " +
       nombreColorSeleccionado;
-
   }
 
   requestAnimationFrame(
@@ -1539,14 +1450,16 @@ tipoLed.addEventListener(
   actualizarPreview
 );
 
-document.querySelectorAll(".color-btn")
+document
+  .querySelectorAll(".color-btn")
   .forEach(btn=>{
 
     btn.addEventListener(
       "click",
       ()=>{
 
-        document.querySelectorAll(".color-btn")
+        document
+          .querySelectorAll(".color-btn")
           .forEach(
             b=>b.classList.remove("active")
           );
@@ -1573,9 +1486,6 @@ actualizarPreview();
    MEDIDOR DISEÑO
 ===================================================== */
 
-const designPreview =
-  document.getElementById("designPreview");
-
 const designCanvas =
   document.getElementById("designMeasureCanvas");
 
@@ -1584,6 +1494,12 @@ const designCtx =
 
 const designResult =
   document.getElementById("designMeasureResult");
+
+const designAncho =
+  document.getElementById("designAncho");
+
+const designAlto =
+  document.getElementById("designAlto");
 
 let designP1 =
   null;
@@ -1627,10 +1543,10 @@ function designDist(a,b){
 
 function designPoint(p){
 
-  designCtx.beginPath();
-
   designCtx.fillStyle =
-    "#ffcc00";
+    "#ffc400";
+
+  designCtx.beginPath();
 
   designCtx.arc(
     p.x,
@@ -1665,7 +1581,6 @@ function drawDesignMeasure(){
     designPoint(
       designP1
     );
-
   }
 
   if(
@@ -1678,7 +1593,7 @@ function drawDesignMeasure(){
     );
 
     designCtx.strokeStyle =
-      "#00ff99";
+      "#00efaa";
 
     designCtx.lineWidth =
       3;
@@ -1719,7 +1634,7 @@ function drawDesignMeasure(){
         </div>
 
         <div class="hint">
-          Escala calibrada
+          Medida obtenida
         </div>
 
       `;
@@ -1728,7 +1643,6 @@ function drawDesignMeasure(){
 
       designResult.innerHTML =
         `Ingresá la medida real correspondiente a esta línea y tocá <b>Establecer escala</b>`;
-
     }
   }
 }
@@ -1777,14 +1691,14 @@ designCanvas.addEventListener(
 
       designP2 =
         null;
-
     }
 
     drawDesignMeasure();
   }
 );
 
-document.getElementById("designSetScale")
+document
+  .getElementById("designSetScale")
   .addEventListener(
     "click",
     ()=>{
@@ -1793,7 +1707,6 @@ document.getElementById("designSetScale")
         !designP1 ||
         !designP2
       ){
-
         return;
       }
 
@@ -1808,24 +1721,22 @@ document.getElementById("designSetScale")
         !Number.isFinite(real) ||
         real<=0
       ){
-
         return;
       }
 
-      const distancia =
+      const d =
         designDist(
           designP1,
           designP2
         );
 
-      if(distancia<=0){
-
+      if(d<=0){
         return;
       }
 
       designCmPerPx =
         real /
-        distancia;
+        d;
 
       designUltimaMedida =
         real;
@@ -1834,7 +1745,184 @@ document.getElementById("designSetScale")
     }
   );
 
-document.getElementById("designNewMeasure")
+/* =====================================================
+   RELACIÓN VISUAL DEL CARTEL
+===================================================== */
+
+function obtenerRelacionCartel(){
+
+  const rect =
+    previewTexto.getBoundingClientRect();
+
+  if(
+    rect.width<=0 ||
+    rect.height<=0
+  ){
+    return null;
+  }
+
+  return rect.width /
+    rect.height;
+}
+
+/* =====================================================
+   SINCRONIZAR DISEÑO ↔ COTIZAR
+===================================================== */
+
+function setDimensiones(
+  ancho,
+  alto
+){
+
+  if(
+    Number.isFinite(ancho) &&
+    ancho>0
+  ){
+
+    designAncho.value =
+      ancho.toFixed(1);
+
+    document
+      .getElementById("ancho")
+      .value =
+      ancho.toFixed(1);
+  }
+
+  if(
+    Number.isFinite(alto) &&
+    alto>0
+  ){
+
+    designAlto.value =
+      alto.toFixed(1);
+
+    document
+      .getElementById("alto")
+      .value =
+      alto.toFixed(1);
+  }
+}
+
+/* =====================================================
+   GUARDAR MEDIDA COMO ANCHO
+   AUTO CALCULA ALTO
+===================================================== */
+
+document
+  .getElementById("designUseWidth")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        designUltimaMedida<=0
+      ){
+        return;
+      }
+
+      const ratio =
+        obtenerRelacionCartel();
+
+      if(!ratio){
+        return;
+      }
+
+      const ancho =
+        designUltimaMedida;
+
+      const alto =
+        ancho /
+        ratio;
+
+      setDimensiones(
+        ancho,
+        alto
+      );
+
+      status(
+        "designStatus",
+        "Ancho guardado y alto calculado automáticamente.",
+        "ok"
+      );
+    }
+  );
+
+/* =====================================================
+   GUARDAR MEDIDA COMO ALTO
+   AUTO CALCULA ANCHO
+===================================================== */
+
+document
+  .getElementById("designUseHeight")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        designUltimaMedida<=0
+      ){
+        return;
+      }
+
+      const ratio =
+        obtenerRelacionCartel();
+
+      if(!ratio){
+        return;
+      }
+
+      const alto =
+        designUltimaMedida;
+
+      const ancho =
+        alto *
+        ratio;
+
+      setDimensiones(
+        ancho,
+        alto
+      );
+
+      status(
+        "designStatus",
+        "Alto guardado y ancho calculado automáticamente.",
+        "ok"
+      );
+    }
+  );
+
+/* =====================================================
+   EDICIÓN MANUAL
+===================================================== */
+
+designAncho.addEventListener(
+  "input",
+  ()=>{
+
+    document
+      .getElementById("ancho")
+      .value =
+      designAncho.value;
+  }
+);
+
+designAlto.addEventListener(
+  "input",
+  ()=>{
+
+    document
+      .getElementById("alto")
+      .value =
+      designAlto.value;
+  }
+);
+
+/* =====================================================
+   NUEVA MEDICIÓN
+===================================================== */
+
+document
+  .getElementById("designNewMeasure")
   .addEventListener(
     "click",
     ()=>{
@@ -1857,30 +1945,8 @@ document.getElementById("designNewMeasure")
     }
   );
 
-document.getElementById("designClearMeasure")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      designP1 =
-        null;
-
-      designP2 =
-        null;
-
-      designUltimaMedida =
-        0;
-
-      designResult.innerHTML =
-        designCmPerPx
-          ? "Escala guardada. Tocá dos puntos para medir."
-          : "Marcá 2 puntos y luego guardá la escala";
-
-      drawDesignMeasure();
-    }
-  );
-
-document.getElementById("designResetScale")
+document
+  .getElementById("designResetScale")
   .addEventListener(
     "click",
     ()=>{
@@ -1899,50 +1965,19 @@ document.getElementById("designResetScale")
 
       document
         .getElementById("designRealValue")
-        .value = "";
+        .value =
+        "";
 
       designResult.innerHTML =
         "Marcá 2 puntos y luego guardá la escala";
 
+      status(
+        "designStatus",
+        "",
+        ""
+      );
+
       drawDesignMeasure();
-    }
-  );
-
-document.getElementById("designUseWidth")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      if(
-        designUltimaMedida<=0
-      ){
-
-        return;
-      }
-
-      document
-        .getElementById("ancho")
-        .value =
-        designUltimaMedida.toFixed(1);
-    }
-  );
-
-document.getElementById("designUseHeight")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      if(
-        designUltimaMedida<=0
-      ){
-
-        return;
-      }
-
-      document
-        .getElementById("alto")
-        .value =
-        designUltimaMedida.toFixed(1);
     }
   );
 
@@ -1958,21 +1993,27 @@ let precioMonoCliente = 0;
 
 let porcentajeDescuento = 0;
 
-let modoPrecioActual = "cliente";
+let modoPrecioActual =
+  "cliente";
 
-let ultimaMedidaCm = 0;
+let ultimaMedidaCm =
+  0;
 
 function obtenerDescuentoRevendedor(
   precioReferencia
 ){
 
-  if(precioReferencia < 1200000){
-
+  if(
+    precioReferencia <
+    1200000
+  ){
     return 5;
   }
 
-  if(precioReferencia >= 1500000){
-
+  if(
+    precioReferencia >=
+    1500000
+  ){
     return 10;
   }
 
@@ -2014,7 +2055,6 @@ function calcular(
     a<=0 ||
     b<=0
   ){
-
     return false;
   }
 
@@ -2062,8 +2102,7 @@ function calcular(
 
   const factor =
     1 -
-    porcentajeDescuento /
-    100;
+    porcentajeDescuento/100;
 
   precioPixel =
     Math.round(
@@ -2107,9 +2146,11 @@ function calcular(
     .innerHTML = `
 
       <div class="tipo-badge">
-        ${tipo} ·
-        ${a}×${b} cm ·
-        ${area.toFixed(2)} m²
+
+        ${tipo}
+        · ${a}×${b} cm
+        · ${area.toFixed(2)} m²
+
       </div>
 
       <br>
@@ -2120,42 +2161,45 @@ function calcular(
           color:${
             modo==="revendedor"
               ? "#4da3ff"
-              : "#00c853"
+              : "#00efaa"
           }
         ">
+
         ${etiquetaModo}
-      </div>
 
-      <div
-        class="precio-label"
-        style="margin-top:10px">
-
-        Monocromático · Blanco frío / color fijo
-
-      </div>
-
-      <div class="precio-mono">
-        $${fmt(precioMono)}
       </div>
 
       <div
         class="precio-label"
         style="margin-top:12px">
 
+        Monocromático · blanco frío / color fijo
+
+      </div>
+
+      <div class="precio-mono">
+
+        $${fmt(precioMono)}
+
+      </div>
+
+      <div
+        class="precio-label"
+        style="margin-top:14px">
+
         Pixel LED RGB · control app celular
 
       </div>
 
       <div class="precio-val">
+
         $${fmt(precioPixel)}
+
       </div>
 
     `;
 
-  generarTexto(
-    a,
-    b
-  );
+  generarTexto();
 
   return true;
 }
@@ -2172,13 +2216,12 @@ function fmt(n){
    WHATSAPP
 ===================================================== */
 
-function generarTexto(a,b){
+function generarTexto(){
 
   if(
     !precioPixel ||
     !precioMono
   ){
-
     return;
   }
 
@@ -2212,7 +2255,6 @@ async function copiar(){
     document.getElementById("txt");
 
   if(!campo.value){
-
     return;
   }
 
@@ -2223,11 +2265,9 @@ async function copiar(){
       window.isSecureContext
     ){
 
-      await navigator
-        .clipboard
-        .writeText(
-          campo.value
-        );
+      await navigator.clipboard.writeText(
+        campo.value
+      );
 
     }else{
 
@@ -2244,29 +2284,26 @@ async function copiar(){
       "ok"
     );
 
-  }catch(e){
-
-    try{
-
-      campo.select();
-
-      document.execCommand(
-        "copy"
-      );
-
-    }catch(e2){}
-  }
+  }catch(e){}
 }
 
 function limpiarCotizador(){
 
   document
     .getElementById("ancho")
-    .value = "";
+    .value =
+    "";
 
   document
     .getElementById("alto")
-    .value = "";
+    .value =
+    "";
+
+  designAncho.value =
+    "";
+
+  designAlto.value =
+    "";
 
   document
     .getElementById("precioBox")
@@ -2275,22 +2312,19 @@ function limpiarCotizador(){
 
   document
     .getElementById("txt")
-    .value = "";
+    .value =
+    "";
 
-  precioPixel = 0;
-  precioMono = 0;
+  precioPixel =
+    0;
 
-  precioPixelCliente = 0;
-  precioMonoCliente = 0;
-
-  porcentajeDescuento = 0;
-
-  modoPrecioActual =
-    "cliente";
+  precioMono =
+    0;
 }
 
 /* =====================================================
-   MEDIDOR PRINCIPAL
+   MEDIDOR ORIGINAL
+   NO AUTO CALCULA OTRA DIMENSIÓN
 ===================================================== */
 
 const canvas =
@@ -2409,9 +2443,14 @@ function fitImage(
 
   if(resetView){
 
-    zoom = 1;
-    panX = 0;
-    panY = 0;
+    zoom =
+      1;
+
+    panX =
+      0;
+
+    panY =
+      0;
   }
 }
 
@@ -2443,7 +2482,6 @@ function draw(){
   );
 
   if(!imgLoaded){
-
     return;
   }
 
@@ -2456,10 +2494,7 @@ function draw(){
   );
 
   if(p1){
-
-    drawPoint(
-      p1
-    );
+    drawPoint(p1);
   }
 
   if(
@@ -2467,9 +2502,7 @@ function draw(){
     p2
   ){
 
-    drawPoint(
-      p2
-    );
+    drawPoint(p2);
 
     drawLine(
       p1,
@@ -2509,7 +2542,7 @@ function drawPoint(p){
 function drawLine(a,b){
 
   ctx.strokeStyle =
-    "#00ff99";
+    "#00efaa";
 
   ctx.lineWidth =
     2.5;
@@ -2594,18 +2627,25 @@ function showMeasure(){
   `;
 }
 
+/*
+  MEDIDOR ORIGINAL:
+  SOLO CARGA LA MEDIDA ELEGIDA.
+*/
+
 function usarAncho(){
 
   if(
     ultimaMedidaCm<=0
   ){
-
     return;
   }
 
   document
     .getElementById("ancho")
     .value =
+    ultimaMedidaCm.toFixed(1);
+
+  designAncho.value =
     ultimaMedidaCm.toFixed(1);
 }
 
@@ -2614,13 +2654,15 @@ function usarAlto(){
   if(
     ultimaMedidaCm<=0
   ){
-
     return;
   }
 
   document
     .getElementById("alto")
     .value =
+    ultimaMedidaCm.toFixed(1);
+
+  designAlto.value =
     ultimaMedidaCm.toFixed(1);
 }
 
@@ -2632,7 +2674,6 @@ fileInput.addEventListener(
       fileInput.files[0];
 
     if(!f){
-
       return;
     }
 
@@ -2677,9 +2718,7 @@ fileInput.addEventListener(
           reader.result;
       };
 
-    reader.readAsDataURL(
-      f
-    );
+    reader.readAsDataURL(f);
   }
 );
 
@@ -2691,7 +2730,6 @@ canvas.addEventListener(
       !imgLoaded ||
       isPinching
     ){
-
       return;
     }
 
@@ -2751,7 +2789,6 @@ document
         !p1 ||
         !p2
       ){
-
         return;
       }
 
@@ -2764,7 +2801,6 @@ document
         !Number.isFinite(real) ||
         real<=0
       ){
-
         return;
       }
 
@@ -2775,7 +2811,6 @@ document
         );
 
       if(d<=0){
-
         return;
       }
 
@@ -2871,7 +2906,7 @@ function limpiarMedidor(){
 }
 
 /* =====================================================
-   PINCH ZOOM
+   PINCH ZOOM ORIGINAL
 ===================================================== */
 
 function getDist(t1,t2){
@@ -2884,7 +2919,7 @@ function getDist(t1,t2){
 
 function getCenter(t1,t2){
 
-  return{
+  return {
 
     x:
       (t1.clientX+t2.clientX)/2,
@@ -2974,37 +3009,12 @@ canvas.addEventListener(
           distNow /
           lastDist;
 
-        const rect =
-          canvas.getBoundingClientRect();
-
-        const cx =
-          centerNow.x -
-          rect.left;
-
-        const cy =
-          centerNow.y -
-          rect.top;
-
-        const prev =
-          currentScale();
-
         zoom =
           clamp(
             zoom * factor,
             1,
             8
           );
-
-        const nw =
-          currentScale();
-
-        panX +=
-          (cx-imageX()) *
-          (1-nw/prev);
-
-        panY +=
-          (cy-imageY()) *
-          (1-nw/prev);
       }
 
       lastDist =
@@ -3054,9 +3064,7 @@ window.addEventListener(
   ()=>{
 
     resizeCanvas();
-
     resizeDesignCanvas();
-
     ajustarTextoPreview();
   }
 );
@@ -3064,7 +3072,7 @@ window.addEventListener(
 resizeCanvas();
 
 /* =====================================================
-   FICHA
+   FICHA PREMIUM
 ===================================================== */
 
 function roundRectPath(
@@ -3126,7 +3134,7 @@ function rbox(
   h,
   fill,
   stroke,
-  r=10
+  r=18
 ){
 
   c.fillStyle =
@@ -3152,49 +3160,112 @@ function rbox(
   c.stroke();
 }
 
+/* =====================================================
+   PARTÍCULAS
+===================================================== */
+
+function dibujarParticulasFicha(
+  c,
+  W,
+  H
+){
+
+  const seed = [
+    [60,170,2],
+    [125,290,1],
+    [200,120,1.5],
+    [285,250,2],
+    [360,160,1],
+    [430,390,1.5],
+    [520,100,2],
+    [620,250,1],
+    [690,170,2],
+    [770,340,1.5],
+    [860,130,1],
+    [940,260,2],
+    [1050,180,1.5],
+    [1130,390,1],
+    [90,610,1.5],
+    [180,800,2],
+    [310,690,1],
+    [430,920,1.5],
+    [560,770,1],
+    [670,1030,2],
+    [810,880,1.5],
+    [920,1120,1],
+    [1050,830,2],
+    [1130,1220,1.5]
+  ];
+
+  seed.forEach(
+    ([x,y,r],i)=>{
+
+      c.beginPath();
+
+      c.fillStyle =
+        i%4===0
+          ? "rgba(25,225,255,.78)"
+          : i%4===1
+            ? "rgba(95,105,255,.58)"
+            : "rgba(255,255,255,.38)";
+
+      c.shadowColor =
+        c.fillStyle;
+
+      c.shadowBlur =
+        10;
+
+      c.arc(
+        x,
+        y,
+        r,
+        0,
+        Math.PI*2
+      );
+
+      c.fill();
+    }
+  );
+
+  c.shadowBlur =
+    0;
+}
+
+/* =====================================================
+   FUENTE FICHA
+===================================================== */
+
 function fuenteCanvas(){
 
   const f =
     tipografia.value;
 
-  if(
-    f==="Deck Led Graffiti Drip"
-  ){
-
+  if(f==="Deck Led Graffiti Drip"){
     return '"Nosifer"';
   }
 
   if(f==="Cursiva"){
-
     return '"Pacifico"';
   }
 
   if(f==="Milkshake"){
-
     return '"Lobster"';
   }
 
   if(f==="Nickainley"){
-
     return '"Yellowtail"';
   }
 
   if(f==="Bubbleboddy Neue"){
-
     return '"Baloo 2"';
   }
 
   if(f==="Grobold"){
-
     return '"Luckiest Guy"';
   }
 
   return `"${f}"`;
 }
-
-/* =====================================================
-   AJUSTAR CADA LÍNEA EN PNG
-===================================================== */
 
 function calcularTamanoLineasCanvas(
   c,
@@ -3208,14 +3279,12 @@ function calcularTamanoLineasCanvas(
   let size =
     maxSize;
 
-  while(
-    size>minSize
-  ){
+  while(size>minSize){
 
     c.font =
       `${size}px ${fuente}, Arial`;
 
-    let cabe =
+    let entra =
       true;
 
     for(
@@ -3227,87 +3296,21 @@ function calcularTamanoLineasCanvas(
         maxWidth
       ){
 
-        cabe =
+        entra =
           false;
 
         break;
       }
     }
 
-    if(cabe){
-
+    if(entra){
       break;
     }
 
-    size -=
-      1;
+    size--;
   }
 
   return size;
-}
-
-function dibujarTextoMultilineCanvas(
-  c,
-  texto,
-  x,
-  centerY,
-  maxWidth,
-  fuente,
-  maxSize,
-  color
-){
-
-  const lineas =
-    String(texto)
-      .split("\n");
-
-  const size =
-    calcularTamanoLineasCanvas(
-      c,
-      lineas,
-      fuente,
-      maxWidth,
-      maxSize,
-      18
-    );
-
-  const lineHeight =
-    size * 1.12;
-
-  const totalHeight =
-    lineas.length *
-    lineHeight;
-
-  let y =
-    centerY -
-    totalHeight/2 +
-    lineHeight*0.78;
-
-  c.font =
-    `${size}px ${fuente}, Arial`;
-
-  c.textAlign =
-    "center";
-
-  c.fillStyle =
-    color;
-
-  lineas.forEach(
-    linea=>{
-
-      c.fillText(
-        linea,
-        x,
-        y
-      );
-
-      y +=
-        lineHeight;
-    }
-  );
-
-  c.textAlign =
-    "left";
 }
 
 /* =====================================================
@@ -3318,14 +3321,14 @@ async function generarRender(
   modo="cliente"
 ){
 
-  const a =
+  const ancho =
     parseFloat(
       document
         .getElementById("ancho")
         .value
     );
 
-  const b =
+  const alto =
     parseFloat(
       document
         .getElementById("alto")
@@ -3333,25 +3336,23 @@ async function generarRender(
     );
 
   if(
-    !Number.isFinite(a) ||
-    !Number.isFinite(b) ||
-    a<=0 ||
-    b<=0
+    !Number.isFinite(ancho) ||
+    !Number.isFinite(alto) ||
+    ancho<=0 ||
+    alto<=0
   ){
-
     return false;
   }
 
   if(
     !calcular(modo)
   ){
-
     return false;
   }
 
   const nombre =
     textoCartel.value.trim() ||
-    "CARTEL";
+    "TU MARCA";
 
   const fuente =
     fuenteCanvas();
@@ -3361,20 +3362,16 @@ async function generarRender(
     if(document.fonts){
 
       await document.fonts.load(
-        `60px ${fuente}`
+        `70px ${fuente}`
       );
     }
 
   }catch(e){}
 
-  const tipoIluminacion =
-    tipoLed.value==="pixel"
-      ? "Pixel LED RGB · Control app"
-      : "Monocromático · " +
-        nombreColorSeleccionado;
-
   const rc =
-    document.getElementById("renderCanvas");
+    document.getElementById(
+      "renderCanvas"
+    );
 
   const c =
     rc.getContext("2d");
@@ -3383,19 +3380,37 @@ async function generarRender(
     1200;
 
   const H =
-    900;
+    1500;
 
-  c.clearRect(
+  /* =================================================
+     FONDO
+  ================================================= */
+
+  const bg =
+    c.createLinearGradient(
+      0,
+      0,
+      0,
+      H
+    );
+
+  bg.addColorStop(
     0,
-    0,
-    W,
-    H
+    "#05070c"
   );
 
-  /* FONDO */
+  bg.addColorStop(
+    .48,
+    "#09121c"
+  );
+
+  bg.addColorStop(
+    1,
+    "#040509"
+  );
 
   c.fillStyle =
-    "#080808";
+    bg;
 
   c.fillRect(
     0,
@@ -3404,12 +3419,213 @@ async function generarRender(
     H
   );
 
+  /*
+    Glow superior
+  */
+
+  const radial =
+    c.createRadialGradient(
+      W/2,
+      280,
+      10,
+      W/2,
+      280,
+      550
+    );
+
+  radial.addColorStop(
+    0,
+    "rgba(0,180,255,.16)"
+  );
+
+  radial.addColorStop(
+    .55,
+    "rgba(45,55,180,.07)"
+  );
+
+  radial.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  c.fillStyle =
+    radial;
+
+  c.fillRect(
+    0,
+    0,
+    W,
+    800
+  );
+
+  dibujarParticulasFicha(
+    c,
+    W,
+    H
+  );
+
+  /* =================================================
+     HEADER
+  ================================================= */
+
+  c.fillStyle =
+    "#fff";
+
+  c.font =
+    "900 46px Arial";
+
+  c.fillText(
+    "DECK",
+    68,
+    90
+  );
+
+  c.fillStyle =
+    "#e02020";
+
+  c.fillText(
+    "LED",
+    205,
+    90
+  );
+
+  c.fillStyle =
+    "#9b9ca4";
+
+  c.font =
+    "18px Arial";
+
+  c.fillText(
+    "CORPÓREOS · EXPERIENCIAS LED",
+    70,
+    120
+  );
+
+  c.textAlign =
+    "right";
+
+  c.fillStyle =
+    modo==="revendedor"
+      ? "#5f8cff"
+      : "#29e2ff";
+
+  c.font =
+    "bold 18px Arial";
+
+  c.fillText(
+    modo==="revendedor"
+      ? "PROPUESTA REVENDEDOR"
+      : "PROPUESTA COMERCIAL",
+    W-70,
+    84
+  );
+
+  c.fillStyle =
+    "#6d7079";
+
+  c.font =
+    "15px Arial";
+
+  c.fillText(
+    "deckled.com.ar/corporeos",
+    W-70,
+    112
+  );
+
+  c.textAlign =
+    "left";
+
+  /*
+    Línea cyan
+  */
+
+  const lineGrad =
+    c.createLinearGradient(
+      70,
+      0,
+      W-70,
+      0
+    );
+
+  lineGrad.addColorStop(
+    0,
+    "#22e4ff"
+  );
+
+  lineGrad.addColorStop(
+    .5,
+    "#535cff"
+  );
+
+  lineGrad.addColorStop(
+    1,
+    "rgba(83,92,255,0)"
+  );
+
+  c.fillStyle =
+    lineGrad;
+
+  c.fillRect(
+    70,
+    145,
+    W-140,
+    2
+  );
+
+  /* =================================================
+     TITULAR
+  ================================================= */
+
+  c.fillStyle =
+    "#79808d";
+
+  c.font =
+    "bold 15px Arial";
+
+  c.fillText(
+    "PREVISUALIZACIÓN DEL CARTEL",
+    70,
+    205
+  );
+
+  /* =================================================
+     AREA CENTRAL
+  ================================================= */
+
+  rbox(
+    c,
+    70,
+    235,
+    W-140,
+    400,
+    "rgba(9,18,28,.72)",
+    "rgba(45,210,255,.32)",
+    28
+  );
+
+  /*
+    Grid
+  */
+
+  c.save();
+
+  roundRectPath(
+    c,
+    70,
+    235,
+    W-140,
+    400,
+    28
+  );
+
+  c.clip();
+
   c.strokeStyle =
-    "#151515";
+    "rgba(75,115,140,.08)";
 
   for(
-    let x=0;
-    x<W;
+    let x=70;
+    x<W-70;
     x+=40
   ){
 
@@ -3417,588 +3633,618 @@ async function generarRender(
 
     c.moveTo(
       x,
-      0
+      235
     );
 
     c.lineTo(
       x,
-      H
+      635
     );
 
     c.stroke();
   }
 
-  /* HEADER */
+  for(
+    let y=235;
+    y<635;
+    y+=40
+  ){
 
-  c.fillStyle =
-    "#c41010";
+    c.beginPath();
 
-  c.fillRect(
-    0,
-    0,
-    W,
-    60
-  );
+    c.moveTo(
+      70,
+      y
+    );
 
-  c.fillStyle =
-    "#fff";
+    c.lineTo(
+      W-70,
+      y
+    );
 
-  c.font =
-    "bold 24px Arial";
+    c.stroke();
+  }
 
-  c.fillText(
-    "DECK LED · CARTEL LUMINOSO CORPÓREO",
-    24,
-    39
-  );
+  c.restore();
 
-  c.textAlign =
-    "right";
-
-  c.font =
-    "16px Arial";
-
-  c.fillStyle =
-    "#ffaaaa";
-
-  c.fillText(
-    modo==="revendedor"
-      ? `Ficha revendedor · ${porcentajeDescuento.toFixed(1)}% OFF`
-      : "Ficha cliente",
-    W-24,
-    39
-  );
-
-  c.textAlign =
-    "left";
-
-  const LX =
-    24;
-
-  const LY =
-    80;
-
-  const LW =
-    500;
+  /* =================================================
+     TEXTO CARTEL
+  ================================================= */
 
   const colorTexto =
     tipoLed.value==="mono"
       ? colorSeleccionado
       : "#ffffff";
 
-  /* TITULO */
+  const lineas =
+    nombre.split("\n");
 
-  const lineasTitulo =
-    nombre
-      .toUpperCase()
-      .split("\n");
-
-  const tituloSize =
+  const size =
     calcularTamanoLineasCanvas(
       c,
-      lineasTitulo,
+      lineas,
       fuente,
-      LW,
-      58,
-      20
+      900,
+      110,
+      30
     );
 
+  const lineHeight =
+    size * 1.08;
+
+  const totalHeight =
+    lineas.length *
+    lineHeight;
+
+  let ty =
+    435 -
+    totalHeight/2 +
+    lineHeight*.75;
+
+  c.textAlign =
+    "center";
+
   c.font =
-    `${tituloSize}px ${fuente}, Arial`;
+    `${size}px ${fuente},Arial`;
 
-  c.fillStyle =
-    colorTexto;
+  /*
+    RGB en ficha
+  */
 
-  c.shadowColor =
-    colorTexto;
+  if(tipoLed.value==="pixel"){
+
+    const grad =
+      c.createLinearGradient(
+        180,
+        0,
+        1020,
+        0
+      );
+
+    grad.addColorStop(
+      0,
+      "#ff304e"
+    );
+
+    grad.addColorStop(
+      .2,
+      "#ff9b1a"
+    );
+
+    grad.addColorStop(
+      .4,
+      "#ffe500"
+    );
+
+    grad.addColorStop(
+      .6,
+      "#00e896"
+    );
+
+    grad.addColorStop(
+      .78,
+      "#00cfff"
+    );
+
+    grad.addColorStop(
+      1,
+      "#9a4cff"
+    );
+
+    c.fillStyle =
+      grad;
+
+    c.shadowColor =
+      "rgba(0,200,255,.45)";
+
+  }else{
+
+    c.fillStyle =
+      colorTexto;
+
+    c.shadowColor =
+      colorTexto;
+  }
 
   c.shadowBlur =
-    2;
+    5;
 
-  let titleY =
-    LY+56;
-
-  lineasTitulo.forEach(
+  lineas.forEach(
     linea=>{
 
       c.fillText(
         linea,
-        LX,
-        titleY
+        W/2,
+        ty
       );
 
-      titleY +=
-        tituloSize*1.06;
+      ty +=
+        lineHeight;
     }
   );
 
   c.shadowBlur =
     0;
 
-  const tituloAlto =
-    lineasTitulo.length *
-    tituloSize*1.06;
+  c.textAlign =
+    "left";
 
-  const separatorY =
-    LY +
-    Math.max(
-      70,
-      tituloAlto+20
-    );
+  /* =================================================
+     MEDIDAS
+  ================================================= */
 
-  c.fillStyle =
-    "#c41010";
-
-  c.fillRect(
-    LX,
-    separatorY,
-    220,
-    5
-  );
-
-  c.fillStyle =
-    "#888";
-
-  c.font =
-    "20px Arial";
-
-  c.fillText(
-    tipoIluminacion,
-    LX,
-    separatorY+32
-  );
-
-  /* PREVIEW */
-
-  const imgY =
-    separatorY+52;
-
-  const imgH =
-    195;
-
-  if(imgLoaded){
-
-    rbox(
-      c,
-      LX,
-      imgY,
-      LW,
-      imgH,
-      "#000",
-      "#222"
-    );
-
-    drawCover(
-      c,
-      img,
-      LX,
-      imgY,
-      LW,
-      imgH
-    );
-
-  }else{
-
-    rbox(
-      c,
-      LX,
-      imgY,
-      LW,
-      imgH,
-      "#111",
-      "#222"
-    );
-
-    c.shadowColor =
-      colorTexto;
-
-    c.shadowBlur =
-      2;
-
-    dibujarTextoMultilineCanvas(
-      c,
-      nombre,
-      LX+LW/2,
-      imgY+imgH/2,
-      LW-50,
-      fuente,
-      50,
-      colorTexto
-    );
-
-    c.shadowBlur =
-      0;
-  }
-
-  /* DIMENSIONES */
-
-  const DY =
-    imgY +
-    imgH +
-    16;
+  const area =
+    ancho *
+    alto /
+    10000;
 
   rbox(
     c,
-    LX,
-    DY,
-    238,
-    96,
-    "#0f0f0f",
-    "#2a2a2a"
+    70,
+    665,
+    330,
+    118,
+    "rgba(12,15,21,.86)",
+    "#252c36",
+    20
   );
 
   c.fillStyle =
-    "#666";
+    "#6d717a";
 
   c.font =
-    "12px Arial";
+    "bold 13px Arial";
 
   c.fillText(
     "DIMENSIONES",
-    LX+16,
-    DY+22
+    95,
+    695
   );
 
   c.fillStyle =
     "#fff";
 
   c.font =
-    "bold 38px Arial";
+    "900 41px Arial";
 
   c.fillText(
-    `${a} × ${b}`,
-    LX+16,
-    DY+68
+    `${ancho} × ${alto}`,
+    95,
+    748
   );
 
   c.fillStyle =
-    "#888";
+    "#71757d";
 
   c.font =
-    "16px Arial";
+    "15px Arial";
 
   c.fillText(
-    "cm",
-    LX+16,
-    DY+88
+    "centímetros",
+    95,
+    770
   );
-
-  const area =
-    (a*b)/10000;
 
   rbox(
     c,
-    LX+254,
-    DY,
-    238,
-    96,
-    "#0f0f0f",
-    "#2a2a2a"
+    420,
+    665,
+    250,
+    118,
+    "rgba(12,15,21,.86)",
+    "#252c36",
+    20
   );
 
   c.fillStyle =
-    "#666";
+    "#6d717a";
 
   c.font =
-    "12px Arial";
+    "bold 13px Arial";
 
   c.fillText(
     "SUPERFICIE",
-    LX+270,
-    DY+22
+    445,
+    695
   );
 
   c.fillStyle =
     "#fff";
 
   c.font =
-    "bold 38px Arial";
+    "900 41px Arial";
 
   c.fillText(
     area.toFixed(2),
-    LX+270,
-    DY+68
+    445,
+    748
   );
 
   c.fillStyle =
-    "#888";
+    "#71757d";
 
   c.font =
-    "16px Arial";
+    "15px Arial";
 
   c.fillText(
     "m²",
-    LX+270,
-    DY+88
+    445,
+    770
   );
-
-  /* PRECIOS */
-
-  const PY =
-    DY+112;
 
   rbox(
     c,
-    LX,
-    PY,
-    LW,
-    104,
-    "#001a08",
-    "#00c853"
+    690,
+    665,
+    440,
+    118,
+    "rgba(12,15,21,.86)",
+    "#252c36",
+    20
   );
 
   c.fillStyle =
-    "#00c853";
+    "#6d717a";
 
   c.font =
     "bold 13px Arial";
 
   c.fillText(
-    "PIXEL LED RGB · CONTROL APP CELULAR",
-    LX+16,
-    PY+24
+    "CONFIGURACIÓN VISUAL",
+    715,
+    695
   );
 
   c.fillStyle =
     "#fff";
 
   c.font =
-    "bold 48px Arial";
+    "bold 22px Arial";
 
   c.fillText(
-    "$"+fmt(precioPixel),
-    LX+16,
-    PY+80
+    tipografia.value,
+    715,
+    732
   );
+
+  c.fillStyle =
+    "#29dfff";
+
+  c.font =
+    "17px Arial";
+
+  c.fillText(
+    tipoLed.value==="pixel"
+      ? "Pixel LED RGB · Control por app"
+      : `Monocromático · ${nombreColorSeleccionado}`,
+    715,
+    762
+  );
+
+  /* =================================================
+     PRECIOS
+  ================================================= */
+
+  c.fillStyle =
+    "#737783";
+
+  c.font =
+    "bold 15px Arial";
+
+  c.fillText(
+    "INVERSIÓN",
+    70,
+    845
+  );
+
+  /*
+    MONO
+  */
 
   rbox(
     c,
-    LX,
-    PY+120,
-    LW,
-    84,
-    "#0f0f0f",
-    "#2a2a2a"
+    70,
+    875,
+    510,
+    175,
+    "rgba(12,15,21,.9)",
+    "#30333b",
+    24
   );
 
   c.fillStyle =
-    "#888";
-
-  c.font =
-    "bold 13px Arial";
-
-  c.fillText(
-    "MONOCROMÁTICO · BLANCO FRÍO / COLOR FIJO",
-    LX+16,
-    PY+142
-  );
-
-  c.fillStyle =
-    "#ccc";
-
-  c.font =
-    "bold 38px Arial";
-
-  c.fillText(
-    "$"+fmt(precioMono),
-    LX+16,
-    PY+184
-  );
-
-  /* DERECHA */
-
-  const RX =
-    548;
-
-  const RY =
-    80;
-
-  const RW =
-    W-RX-24;
-
-  rbox(
-    c,
-    RX,
-    RY,
-    RW,
-    H-RY-80,
-    "#0f0f0f",
-    "#1e1e1e"
-  );
-
-  c.fillStyle =
-    "#c41010";
+    "#979aa2";
 
   c.font =
     "bold 14px Arial";
 
   c.fillText(
-    "ESPECIFICACIONES TÉCNICAS",
-    RX+20,
-    RY+30
+    "MONOCROMÁTICO",
+    100,
+    915
+  );
+
+  c.fillStyle =
+    "#666b74";
+
+  c.font =
+    "15px Arial";
+
+  c.fillText(
+    "Blanco frío / color fijo",
+    100,
+    945
+  );
+
+  c.fillStyle =
+    "#fff";
+
+  c.font =
+    "900 49px Arial";
+
+  c.fillText(
+    "$"+fmt(precioMono),
+    100,
+    1015
+  );
+
+  /*
+    PIXEL
+  */
+
+  const priceGrad =
+    c.createLinearGradient(
+      610,
+      0,
+      1130,
+      0
+    );
+
+  priceGrad.addColorStop(
+    0,
+    "rgba(0,97,125,.26)"
+  );
+
+  priceGrad.addColorStop(
+    1,
+    "rgba(31,41,115,.36)"
+  );
+
+  rbox(
+    c,
+    610,
+    875,
+    520,
+    175,
+    priceGrad,
+    "#21cdea",
+    24
+  );
+
+  c.fillStyle =
+    "#22dcff";
+
+  c.font =
+    "bold 14px Arial";
+
+  c.fillText(
+    "PIXEL LED RGB",
+    640,
+    915
+  );
+
+  c.fillStyle =
+    "#7e8490";
+
+  c.font =
+    "15px Arial";
+
+  c.fillText(
+    "Control por app celular",
+    640,
+    945
+  );
+
+  c.fillStyle =
+    "#fff";
+
+  c.font =
+    "900 49px Arial";
+
+  c.fillText(
+    "$"+fmt(precioPixel),
+    640,
+    1015
+  );
+
+  /* =================================================
+     SPECS
+  ================================================= */
+
+  rbox(
+    c,
+    70,
+    1090,
+    W-140,
+    250,
+    "rgba(8,11,16,.82)",
+    "#222932",
+    24
+  );
+
+  c.fillStyle =
+    "#29dcff";
+
+  c.font =
+    "bold 14px Arial";
+
+  c.fillText(
+    "DETALLES DE FABRICACIÓN",
+    100,
+    1125
   );
 
   const specs = [
 
     [
-      "TEXTO",
-      nombre.replace(/\n/g," / ")
+      "FRENTE",
+      "Acrílico blanco UV · Corte láser"
     ],
 
     [
-      "TIPOGRAFÍA",
-      tipografia.value
-    ],
-
-    [
-      "VISTA SELECCIONADA",
-      tipoIluminacion
+      "CUERPO",
+      "Impresión 3D de alta precisión"
     ],
 
     [
       "ESTRUCTURA",
-      "Hierro · Pintura negro mate"
+      "Hierro negro · Montaje simplificado"
     ],
 
     [
-      "FRENTE",
-      "Acrílico 3mm UV · Corte láser"
+      "ILUMINACIÓN",
+      "LED interno de bajo consumo"
     ],
 
     [
-      "ESPESOR",
-      "4 cm aprox."
-    ],
-
-    [
-      "INSTALACIÓN",
-      "Fijación directa · Cableado oculto"
+      "RESERVA",
+      "30% para confirmar el pedido"
     ],
 
     [
       "GARANTÍA",
-      "1 año LED · soporte técnico"
+      "1 año sobre iluminación LED"
     ]
 
   ];
 
+  let sx =
+    100;
+
   let sy =
-    RY+64;
+    1170;
 
   specs.forEach(
-    ([k,v])=>{
+    ([k,v],i)=>{
+
+      const col =
+        i%2;
+
+      const row =
+        Math.floor(i/2);
+
+      const x =
+        col===0
+          ? 100
+          : 615;
+
+      const y =
+        sy +
+        row*62;
 
       c.fillStyle =
-        "#555";
+        "#666b74";
 
       c.font =
-        "11px Arial";
+        "bold 11px Arial";
 
       c.fillText(
         k,
-        RX+20,
-        sy
+        x,
+        y
       );
 
       c.fillStyle =
-        "#fff";
+        "#e4e7ec";
 
       c.font =
         "16px Arial";
 
       c.fillText(
-        String(v).slice(0,43),
-        RX+20,
-        sy+22
+        v,
+        x,
+        y+23
       );
-
-      c.strokeStyle =
-        "#1a1a1a";
-
-      c.beginPath();
-
-      c.moveTo(
-        RX+20,
-        sy+36
-      );
-
-      c.lineTo(
-        RX+RW-20,
-        sy+36
-      );
-
-      c.stroke();
-
-      sy +=
-        58;
     }
   );
 
-  sy +=
-    5;
+  /* =================================================
+     FOOTER
+  ================================================= */
 
   c.fillStyle =
-    "#c41010";
+    "#1fdfff";
 
-  c.font =
-    "bold 13px Arial";
-
-  c.fillText(
-    "MÁS INFORMACIÓN",
-    RX+20,
-    sy
+  c.fillRect(
+    70,
+    1385,
+    70,
+    3
   );
 
-  sy +=
-    23;
+  c.fillStyle =
+    "#fff";
+
+  c.font =
+    "bold 18px Arial";
+
+  c.fillText(
+    "DECK LED",
+    70,
+    1425
+  );
 
   c.fillStyle =
-    "#4488ff";
+    "#777b85";
 
   c.font =
     "14px Arial";
 
   c.fillText(
-    "instagram.com/corporeos.deckled",
-    RX+20,
-    sy
+    "Fabricación y experiencias LED personalizadas.",
+    70,
+    1453
   );
 
-  sy +=
-    22;
+  c.textAlign =
+    "right";
+
+  c.fillStyle =
+    "#c7cbd3";
+
+  c.font =
+    "15px Arial";
+
+  c.fillText(
+    "instagram.com/corporeos.deckled",
+    W-70,
+    1420
+  );
 
   c.fillText(
     "www.deckled.com.ar/corporeos",
-    RX+20,
-    sy
-  );
-
-  const LOGOY =
-    H-72;
-
-  rbox(
-    c,
-    RX,
-    LOGOY,
-    RW,
-    52,
-    "#0f0f0f",
-    "#222"
-  );
-
-  c.fillStyle =
-    "#c41010";
-
-  c.font =
-    "italic bold 32px Arial";
-
-  c.textAlign =
-    "center";
-
-  c.fillText(
-    "Deck Led",
-    RX+RW/2,
-    LOGOY+36
+    W-70,
+    1450
   );
 
   c.textAlign =
@@ -4006,90 +4252,16 @@ async function generarRender(
 
   status(
     "fichaStatus",
-    "Ficha generada.",
+    "Ficha premium generada.",
     "ok"
   );
 
   return true;
 }
 
-/* COVER */
-
-function drawCover(
-  c,
-  image,
-  x,
-  y,
-  w,
-  h
-){
-
-  const ir =
-    image.width /
-    image.height;
-
-  const rr =
-    w/h;
-
-  let dw;
-  let dh;
-  let dx;
-  let dy;
-
-  if(ir>rr){
-
-    dh =
-      h;
-
-    dw =
-      h*ir;
-
-    dx =
-      x-(dw-w)/2;
-
-    dy =
-      y;
-
-  }else{
-
-    dw =
-      w;
-
-    dh =
-      w/ir;
-
-    dx =
-      x;
-
-    dy =
-      y-(dh-h)/2;
-  }
-
-  c.save();
-
-  roundRectPath(
-    c,
-    x,
-    y,
-    w,
-    h,
-    10
-  );
-
-  c.clip();
-
-  c.drawImage(
-    image,
-    dx,
-    dy,
-    dw,
-    dh
-  );
-
-  c.restore();
-}
-
-/* DESCARGAR */
+/* =====================================================
+   DESCARGA
+===================================================== */
 
 async function descargarRender(
   modo="cliente"
@@ -4103,7 +4275,6 @@ async function descargarRender(
       );
 
     if(!generado){
-
       return;
     }
 
@@ -4114,8 +4285,8 @@ async function descargarRender(
 
     const nombreArchivo =
       modo==="revendedor"
-        ? "ficha-deckled-revendedor.png"
-        : "ficha-deckled-cliente.png";
+        ? "deckled-propuesta-revendedor.png"
+        : "deckled-propuesta-cliente.png";
 
     const blob =
       await new Promise(
@@ -4132,7 +4303,6 @@ async function descargarRender(
       );
 
     if(!blob){
-
       return;
     }
 
@@ -4157,7 +4327,7 @@ async function descargarRender(
 
         await navigator.share({
           files:[archivo],
-          title:"Ficha DeckLed"
+          title:"Propuesta Deck Led"
         });
 
       }catch(e){}
