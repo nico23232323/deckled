@@ -1,12 +1,8 @@
 <!doctype html>
 <html lang="es">
 <head>
-
 <meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>DeckLed PRO</title>
 
@@ -33,9 +29,7 @@ body{
   padding:10px 10px 30px;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
+/* HEADER */
 
 .header{
   display:flex;
@@ -64,9 +58,7 @@ body{
   text-align:right;
 }
 
-/* =====================================================
-   CARDS
-===================================================== */
+/* CARDS */
 
 .card{
   background:#161616;
@@ -91,9 +83,7 @@ body{
   gap:8px;
 }
 
-/* =====================================================
-   INPUTS
-===================================================== */
+/* INPUTS */
 
 input,
 textarea,
@@ -136,9 +126,16 @@ textarea::placeholder{
   color:#444;
 }
 
-/* =====================================================
-   BOTONES
-===================================================== */
+/* CAMPO TEXTO CARTEL */
+
+#textoCartel{
+  height:72px;
+  min-height:72px;
+  resize:none;
+  line-height:1.35;
+}
+
+/* BOTONES */
 
 button{
   width:100%;
@@ -184,10 +181,6 @@ button:active{
   margin-top:6px;
 }
 
-/* =====================================================
-   STATUS SIN ALERT
-===================================================== */
-
 .status{
   min-height:16px;
   font-size:11px;
@@ -208,9 +201,7 @@ button:active{
   color:#5f8cff;
 }
 
-/* =====================================================
-   TABS
-===================================================== */
+/* TABS */
 
 .tabs{
   display:grid;
@@ -245,9 +236,7 @@ button:active{
   display:block;
 }
 
-/* =====================================================
-   DISEÑO - PREVIEW
-===================================================== */
+/* PREVIEW CARTEL */
 
 .preview-cartel{
   position:relative;
@@ -277,27 +266,46 @@ button:active{
   pointer-events:none;
 }
 
-/* =====================================================
-   TEXTO
-===================================================== */
+/* TEXTO PREVIEW */
 
 .preview-text{
   position:relative;
   z-index:2;
-  max-width:92%;
+
+  width:max-content;
+  max-width:none;
+
   text-align:center;
+
   font-size:58px;
   line-height:1.05;
+
   font-weight:900;
-  word-break:break-word;
+
+  /*
+    Clave:
+    nunca hace salto automático.
+  */
+  white-space:pre;
+
+  word-break:normal;
+  overflow-wrap:normal;
+
   color:#fff;
+
   pointer-events:none;
 }
 
 /*
-  MONOCROMÁTICO:
-  ahora tiene muchísimo menos blur.
+  Cuando el usuario mete ENTER,
+  respetamos exactamente esos saltos.
 */
+
+.preview-text.multiline{
+  white-space:pre;
+}
+
+/* MONOCROMÁTICO */
 
 .preview-text.mono{
   text-shadow:
@@ -307,9 +315,7 @@ button:active{
   filter:none;
 }
 
-/* =====================================================
-   PIXEL RGB
-===================================================== */
+/* PIXEL */
 
 .preview-text.pixel{
   background:linear-gradient(
@@ -347,12 +353,7 @@ button:active{
   }
 }
 
-/* =====================================================
-   DECK LED GRAFFITI DRIP
-
-   Nosifer ya incorpora la forma chorreada.
-   No generamos gotas manuales.
-===================================================== */
+/* GRAFFITI */
 
 .preview-text.deckled-drip{
   font-family:"Nosifer","Arial Black",sans-serif !important;
@@ -360,8 +361,6 @@ button:active{
   letter-spacing:-1px;
   line-height:1.1;
   padding-bottom:8px;
-
-  -webkit-text-stroke:0;
 
   text-shadow:
     0 0 1px currentColor,
@@ -394,9 +393,7 @@ button:active{
     drop-shadow(0 0 2px rgba(255,255,255,.2));
 }
 
-/* =====================================================
-   LABELS
-===================================================== */
+/* LABELS */
 
 .preview-label{
   position:absolute;
@@ -430,9 +427,7 @@ button:active{
   pointer-events:none;
 }
 
-/* =====================================================
-   CANVAS MEDICIÓN DISEÑO
-===================================================== */
+/* CANVAS DISEÑO */
 
 #designMeasureCanvas{
   position:absolute;
@@ -444,9 +439,7 @@ button:active{
   touch-action:manipulation;
 }
 
-/* =====================================================
-   COLORES
-===================================================== */
+/* COLORES */
 
 .color-selector{
   display:grid;
@@ -483,9 +476,7 @@ button:active{
   text-shadow:0 0 3px #fff;
 }
 
-/* =====================================================
-   MEDIDOR PRINCIPAL
-===================================================== */
+/* MEDIDOR */
 
 #canvas{
   width:100%;
@@ -499,9 +490,7 @@ button:active{
   border:1px solid #222;
 }
 
-/* =====================================================
-   RESULTADOS
-===================================================== */
+/* RESULTADOS */
 
 .result-box{
   text-align:center;
@@ -553,16 +542,14 @@ button:active{
   margin-bottom:6px;
 }
 
-textarea{
+#txt{
   height:200px;
   resize:vertical;
   font-size:13px;
   line-height:1.6;
 }
 
-/* =====================================================
-   FICHA
-===================================================== */
+/* FICHA */
 
 #renderCanvas{
   width:100%;
@@ -572,18 +559,14 @@ textarea{
   border:1px solid #222;
 }
 
-/* =====================================================
-   MOBILE
-===================================================== */
-
 @media(max-width:480px){
 
   .preview-text{
-    font-size:43px;
+    font-size:48px;
   }
 
   .preview-text.deckled-drip{
-    font-size:38px;
+    font-size:40px;
   }
 
   .color-selector{
@@ -594,20 +577,16 @@ textarea{
     font-size:10px;
     padding:9px 2px;
   }
-
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="app">
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+<!-- HEADER -->
 
 <div class="header">
 
@@ -617,14 +596,12 @@ textarea{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v2.5
+    v2.6
   </div>
 
 </div>
 
-<!-- =====================================================
-     TABS
-===================================================== -->
+<!-- TABS -->
 
 <div class="tabs">
 
@@ -673,9 +650,7 @@ textarea{
       type="file"
       accept="image/*">
 
-    <div
-      class="row"
-      style="margin-top:8px">
+    <div class="row" style="margin-top:8px">
 
       <input
         id="realValue"
@@ -691,9 +666,7 @@ textarea{
 
     </div>
 
-    <div
-      class="row"
-      style="margin-top:8px">
+    <div class="row" style="margin-top:8px">
 
       <button
         class="btn-dark"
@@ -711,11 +684,6 @@ textarea{
 
     <div class="hint">
       1 dedo: marcar puntos · 2 dedos: zoom / mover
-    </div>
-
-    <div
-      class="status"
-      id="medidorStatus">
     </div>
 
   </div>
@@ -755,14 +723,17 @@ textarea{
       Diseño del cartel
     </div>
 
-    <input
-      id="textoCartel"
-      type="text"
-      maxlength="50"
-      placeholder="Escribí el texto del cartel"
-      value="TU MARCA">
+    <!--
+      TEXTAREA:
+      ENTER genera salto manual.
+      Sin ENTER el cartel permanece en 1 línea.
+    -->
 
-    <!-- FUENTE -->
+    <textarea
+      id="textoCartel"
+      maxlength="100"
+      rows="2"
+      placeholder="Escribí el texto del cartel">TU MARCA</textarea>
 
     <div style="margin-top:8px">
 
@@ -856,8 +827,6 @@ textarea{
 
     </div>
 
-    <!-- LED -->
-
     <div style="margin-top:8px">
 
       <select id="tipoLed">
@@ -873,8 +842,6 @@ textarea{
       </select>
 
     </div>
-
-    <!-- COLORES -->
 
     <div
       id="colorMonoBox"
@@ -954,8 +921,6 @@ textarea{
 
     </div>
 
-    <!-- PREVIEW -->
-
     <div
       class="preview-cartel"
       id="designPreview">
@@ -984,7 +949,7 @@ textarea{
 
   </div>
 
-  <!-- ESCALA -->
+  <!-- ESCALA DISEÑO -->
 
   <div class="card">
 
@@ -992,9 +957,7 @@ textarea{
       Escala y medidas
     </div>
 
-    <div
-      class="hint"
-      style="margin-bottom:8px">
+    <div class="hint" style="margin-bottom:8px">
       Tocá dos puntos sobre el cartel.
     </div>
 
@@ -1027,9 +990,7 @@ textarea{
       Marcá 2 puntos y luego guardá la escala
     </div>
 
-    <div
-      class="row"
-      style="margin-top:8px">
+    <div class="row" style="margin-top:8px">
 
       <button
         class="btn-dark"
@@ -1045,9 +1006,7 @@ textarea{
 
     </div>
 
-    <div
-      class="row"
-      style="margin-top:8px">
+    <div class="row" style="margin-top:8px">
 
       <button
         class="btn-green"
@@ -1063,17 +1022,12 @@ textarea{
 
     </div>
 
-    <div
-      class="status"
-      id="designStatus">
-    </div>
-
   </div>
 
 </div>
 
 <!-- =====================================================
-     COTIZADOR
+     COTIZAR
 ===================================================== -->
 
 <div
@@ -1115,11 +1069,6 @@ textarea{
       style="margin-top:6px">
       Calcular precio revendedor
     </button>
-
-    <div
-      class="status"
-      id="cotizadorStatus">
-    </div>
 
   </div>
 
@@ -1267,8 +1216,7 @@ function switchTab(name){
     "ficha"
   ];
 
-  document
-    .querySelectorAll(".tab")
+  document.querySelectorAll(".tab")
     .forEach((t,i)=>{
 
       t.classList.toggle(
@@ -1278,8 +1226,7 @@ function switchTab(name){
 
     });
 
-  document
-    .querySelectorAll(".tab-panel")
+  document.querySelectorAll(".tab-panel")
     .forEach(p=>{
 
       p.classList.toggle(
@@ -1301,7 +1248,13 @@ function switchTab(name){
   if(name==="diseno"){
 
     setTimeout(
-      resizeDesignCanvas,
+      ()=>{
+
+        resizeDesignCanvas();
+
+        ajustarTextoPreview();
+
+      },
       20
     );
 
@@ -1335,10 +1288,6 @@ const previewLabel =
 
 const colorMonoBox =
   document.getElementById("colorMonoBox");
-
-/* =====================================================
-   FUENTES
-===================================================== */
 
 function obtenerFuentePreview(){
 
@@ -1385,15 +1334,104 @@ function obtenerFuentePreview(){
 }
 
 /* =====================================================
-   PREVIEW
+   AJUSTAR TEXTO A 1 LÍNEA
+===================================================== */
+
+function ajustarTextoPreview(){
+
+  const texto =
+    previewTexto.textContent;
+
+  const lineas =
+    texto.split("\n");
+
+  const maxWidth =
+    designPreview.clientWidth *
+    0.86;
+
+  /*
+    Tamaño máximo.
+  */
+
+  let size =
+    window.innerWidth<=480
+      ? 48
+      : 62;
+
+  /*
+    Graffiti necesita un poco menos.
+  */
+
+  if(
+    tipografia.value===
+    "Deck Led Graffiti Drip"
+  ){
+
+    size =
+      window.innerWidth<=480
+        ? 40
+        : 52;
+
+  }
+
+  const minSize =
+    14;
+
+  previewTexto.style.fontSize =
+    size+"px";
+
+  /*
+    Como white-space:pre impide cualquier
+    salto automático, medimos el ancho
+    real de cada renglón manual.
+  */
+
+  while(
+    size>minSize
+  ){
+
+    let entra =
+      true;
+
+    /*
+      El scrollWidth refleja la línea
+      más ancha del bloque.
+    */
+
+    if(
+      previewTexto.scrollWidth >
+      maxWidth
+    ){
+
+      entra =
+        false;
+
+    }
+
+    if(entra){
+
+      break;
+
+    }
+
+    size -=
+      1;
+
+    previewTexto.style.fontSize =
+      size+"px";
+  }
+}
+
+/* =====================================================
+   ACTUALIZAR PREVIEW
 ===================================================== */
 
 function actualizarPreview(){
 
   let texto =
-    textoCartel.value.trim();
+    textoCartel.value;
 
-  if(!texto){
+  if(!texto.trim()){
 
     texto =
       "TU MARCA";
@@ -1404,14 +1442,15 @@ function actualizarPreview(){
     texto;
 
   previewTexto.classList.remove(
-    "deckled-drip"
+    "deckled-drip",
+    "multiline"
   );
 
   previewTexto.style.fontFamily =
     obtenerFuentePreview();
 
   if(
-    tipografia.value ===
+    tipografia.value===
     "Deck Led Graffiti Drip"
   ){
 
@@ -1421,7 +1460,25 @@ function actualizarPreview(){
 
   }
 
-  if(tipoLed.value==="pixel"){
+  /*
+    Solo agregamos multiline
+    cuando existe ENTER.
+  */
+
+  if(
+    texto.includes("\n")
+  ){
+
+    previewTexto.classList.add(
+      "multiline"
+    );
+
+  }
+
+  if(
+    tipoLed.value===
+    "pixel"
+  ){
 
     previewTexto.classList.remove(
       "mono"
@@ -1461,6 +1518,10 @@ function actualizarPreview(){
       nombreColorSeleccionado;
 
   }
+
+  requestAnimationFrame(
+    ajustarTextoPreview
+  );
 }
 
 textoCartel.addEventListener(
@@ -1478,16 +1539,14 @@ tipoLed.addEventListener(
   actualizarPreview
 );
 
-document
-  .querySelectorAll(".color-btn")
+document.querySelectorAll(".color-btn")
   .forEach(btn=>{
 
     btn.addEventListener(
       "click",
       ()=>{
 
-        document
-          .querySelectorAll(".color-btn")
+        document.querySelectorAll(".color-btn")
           .forEach(
             b=>b.classList.remove("active")
           );
@@ -1511,7 +1570,7 @@ document
 actualizarPreview();
 
 /* =====================================================
-   MEDIDOR EN DISEÑO
+   MEDIDOR DISEÑO
 ===================================================== */
 
 const designPreview =
@@ -1725,8 +1784,7 @@ designCanvas.addEventListener(
   }
 );
 
-document
-  .getElementById("designSetScale")
+document.getElementById("designSetScale")
   .addEventListener(
     "click",
     ()=>{
@@ -1763,7 +1821,6 @@ document
       if(distancia<=0){
 
         return;
-
       }
 
       designCmPerPx =
@@ -1777,8 +1834,7 @@ document
     }
   );
 
-document
-  .getElementById("designNewMeasure")
+document.getElementById("designNewMeasure")
   .addEventListener(
     "click",
     ()=>{
@@ -1801,8 +1857,7 @@ document
     }
   );
 
-document
-  .getElementById("designClearMeasure")
+document.getElementById("designClearMeasure")
   .addEventListener(
     "click",
     ()=>{
@@ -1825,8 +1880,7 @@ document
     }
   );
 
-document
-  .getElementById("designResetScale")
+document.getElementById("designResetScale")
   .addEventListener(
     "click",
     ()=>{
@@ -1854,8 +1908,7 @@ document
     }
   );
 
-document
-  .getElementById("designUseWidth")
+document.getElementById("designUseWidth")
   .addEventListener(
     "click",
     ()=>{
@@ -1865,7 +1918,6 @@ document
       ){
 
         return;
-
       }
 
       document
@@ -1875,8 +1927,7 @@ document
     }
   );
 
-document
-  .getElementById("designUseHeight")
+document.getElementById("designUseHeight")
   .addEventListener(
     "click",
     ()=>{
@@ -1886,7 +1937,6 @@ document
       ){
 
         return;
-
       }
 
       document
@@ -1900,47 +1950,30 @@ document
    COTIZADOR
 ===================================================== */
 
-let precioPixel =
-  0;
+let precioPixel = 0;
+let precioMono = 0;
 
-let precioMono =
-  0;
+let precioPixelCliente = 0;
+let precioMonoCliente = 0;
 
-let precioPixelCliente =
-  0;
+let porcentajeDescuento = 0;
 
-let precioMonoCliente =
-  0;
+let modoPrecioActual = "cliente";
 
-let porcentajeDescuento =
-  0;
-
-let modoPrecioActual =
-  "cliente";
-
-let ultimaMedidaCm =
-  0;
+let ultimaMedidaCm = 0;
 
 function obtenerDescuentoRevendedor(
   precioReferencia
 ){
 
-  if(
-    precioReferencia <
-    1200000
-  ){
+  if(precioReferencia < 1200000){
 
     return 5;
-
   }
 
-  if(
-    precioReferencia >=
-    1500000
-  ){
+  if(precioReferencia >= 1500000){
 
     return 10;
-
   }
 
   return 5 +
@@ -1983,7 +2016,6 @@ function calcular(
   ){
 
     return false;
-
   }
 
   const area =
@@ -2001,7 +2033,6 @@ function calcular(
     precioPixelCliente =
       2260000 +
       (area-2) * 450000;
-
   }
 
   precioPixelCliente =
@@ -2064,7 +2095,6 @@ function calcular(
 
     tipo =
       "Cartel grande";
-
   }
 
   const etiquetaModo =
@@ -2077,11 +2107,9 @@ function calcular(
     .innerHTML = `
 
       <div class="tipo-badge">
-
         ${tipo} ·
         ${a}×${b} cm ·
         ${area.toFixed(2)} m²
-
       </div>
 
       <br>
@@ -2095,9 +2123,7 @@ function calcular(
               : "#00c853"
           }
         ">
-
         ${etiquetaModo}
-
       </div>
 
       <div
@@ -2109,9 +2135,7 @@ function calcular(
       </div>
 
       <div class="precio-mono">
-
         $${fmt(precioMono)}
-
       </div>
 
       <div
@@ -2123,9 +2147,7 @@ function calcular(
       </div>
 
       <div class="precio-val">
-
         $${fmt(precioPixel)}
-
       </div>
 
     `;
@@ -2158,7 +2180,6 @@ function generarTexto(a,b){
   ){
 
     return;
-
   }
 
   const encabezado =
@@ -2193,7 +2214,6 @@ async function copiar(){
   if(!campo.value){
 
     return;
-
   }
 
   try{
@@ -2216,7 +2236,6 @@ async function copiar(){
       document.execCommand(
         "copy"
       );
-
     }
 
     status(
@@ -2236,7 +2255,6 @@ async function copiar(){
       );
 
     }catch(e2){}
-
   }
 }
 
@@ -2259,29 +2277,16 @@ function limpiarCotizador(){
     .getElementById("txt")
     .value = "";
 
-  precioPixel =
-    0;
+  precioPixel = 0;
+  precioMono = 0;
 
-  precioMono =
-    0;
+  precioPixelCliente = 0;
+  precioMonoCliente = 0;
 
-  precioPixelCliente =
-    0;
-
-  precioMonoCliente =
-    0;
-
-  porcentajeDescuento =
-    0;
+  porcentajeDescuento = 0;
 
   modoPrecioActual =
     "cliente";
-
-  status(
-    "copyStatus",
-    "",
-    ""
-  );
 }
 
 /* =====================================================
@@ -2336,9 +2341,6 @@ let p2 =
 let cmPerPx =
   null;
 
-let lastCanvasWidth =
-  0;
-
 let isPinching =
   false;
 
@@ -2353,31 +2355,21 @@ function resizeCanvas(){
   const r =
     canvas.getBoundingClientRect();
 
-  const w =
+  canvas.width =
     Math.max(
       1,
       Math.round(r.width)
     );
 
-  const h =
+  canvas.height =
     Math.max(
       1,
       Math.round(r.height)
     );
 
-  canvas.width =
-    w;
-
-  canvas.height =
-    h;
-
-  lastCanvasWidth =
-    w;
-
   if(imgLoaded){
 
     fitImage(false);
-
   }
 
   draw();
@@ -2417,15 +2409,9 @@ function fitImage(
 
   if(resetView){
 
-    zoom =
-      1;
-
-    panX =
-      0;
-
-    panY =
-      0;
-
+    zoom = 1;
+    panX = 0;
+    panY = 0;
   }
 }
 
@@ -2459,7 +2445,6 @@ function draw(){
   if(!imgLoaded){
 
     return;
-
   }
 
   ctx.drawImage(
@@ -2475,7 +2460,6 @@ function draw(){
     drawPoint(
       p1
     );
-
   }
 
   if(
@@ -2582,9 +2566,7 @@ function showMeasure(){
   resultBox.innerHTML = `
 
     <div class="medida">
-
       ${cm.toFixed(1)} cm
-
     </div>
 
     <div
@@ -2619,7 +2601,6 @@ function usarAncho(){
   ){
 
     return;
-
   }
 
   document
@@ -2635,7 +2616,6 @@ function usarAlto(){
   ){
 
     return;
-
   }
 
   document
@@ -2654,7 +2634,6 @@ fileInput.addEventListener(
     if(!f){
 
       return;
-
     }
 
     const reader =
@@ -2714,7 +2693,6 @@ canvas.addEventListener(
     ){
 
       return;
-
     }
 
     const r =
@@ -2757,7 +2735,6 @@ canvas.addEventListener(
 
       p2 =
         null;
-
     }
 
     draw();
@@ -2776,7 +2753,6 @@ document
       ){
 
         return;
-
       }
 
       const real =
@@ -2790,7 +2766,6 @@ document
       ){
 
         return;
-
       }
 
       const d =
@@ -2802,7 +2777,6 @@ document
       if(d<=0){
 
         return;
-
       }
 
       cmPerPx =
@@ -2954,7 +2928,6 @@ canvas.addEventListener(
           e.touches[0],
           e.touches[1]
         );
-
     }
   },
   {
@@ -2993,7 +2966,6 @@ canvas.addEventListener(
         panY +=
           centerNow.y -
           lastCenter.y;
-
       }
 
       if(lastDist){
@@ -3033,7 +3005,6 @@ canvas.addEventListener(
         panY +=
           (cy-imageY()) *
           (1-nw/prev);
-
       }
 
       lastDist =
@@ -3074,6 +3045,10 @@ canvas.addEventListener(
   }
 );
 
+/* =====================================================
+   RESIZE
+===================================================== */
+
 window.addEventListener(
   "resize",
   ()=>{
@@ -3081,6 +3056,8 @@ window.addEventListener(
     resizeCanvas();
 
     resizeDesignCanvas();
+
+    ajustarTextoPreview();
   }
 );
 
@@ -3175,68 +3152,57 @@ function rbox(
   c.stroke();
 }
 
-/* =====================================================
-   FUENTE CANVAS
-===================================================== */
-
 function fuenteCanvas(){
 
   const f =
     tipografia.value;
 
   if(
-    f===
-    "Deck Led Graffiti Drip"
+    f==="Deck Led Graffiti Drip"
   ){
 
     return '"Nosifer"';
-
   }
 
   if(f==="Cursiva"){
 
     return '"Pacifico"';
-
   }
 
   if(f==="Milkshake"){
 
     return '"Lobster"';
-
   }
 
   if(f==="Nickainley"){
 
     return '"Yellowtail"';
-
   }
 
   if(f==="Bubbleboddy Neue"){
 
     return '"Baloo 2"';
-
   }
 
   if(f==="Grobold"){
 
     return '"Luckiest Guy"';
-
   }
 
   return `"${f}"`;
 }
 
 /* =====================================================
-   AJUSTAR TEXTO AL ANCHO DEL CANVAS
+   AJUSTAR CADA LÍNEA EN PNG
 ===================================================== */
 
-function ajustarFuenteCanvas(
+function calcularTamanoLineasCanvas(
   c,
-  texto,
+  lineas,
   fuente,
   maxWidth,
   maxSize,
-  minSize=20
+  minSize=18
 ){
 
   let size =
@@ -3249,24 +3215,103 @@ function ajustarFuenteCanvas(
     c.font =
       `${size}px ${fuente}, Arial`;
 
-    if(
-      c.measureText(texto).width <=
-      maxWidth
+    let cabe =
+      true;
+
+    for(
+      const linea of lineas
     ){
 
-      break;
+      if(
+        c.measureText(linea).width >
+        maxWidth
+      ){
 
+        cabe =
+          false;
+
+        break;
+      }
+    }
+
+    if(cabe){
+
+      break;
     }
 
     size -=
-      2;
+      1;
   }
 
   return size;
 }
 
+function dibujarTextoMultilineCanvas(
+  c,
+  texto,
+  x,
+  centerY,
+  maxWidth,
+  fuente,
+  maxSize,
+  color
+){
+
+  const lineas =
+    String(texto)
+      .split("\n");
+
+  const size =
+    calcularTamanoLineasCanvas(
+      c,
+      lineas,
+      fuente,
+      maxWidth,
+      maxSize,
+      18
+    );
+
+  const lineHeight =
+    size * 1.12;
+
+  const totalHeight =
+    lineas.length *
+    lineHeight;
+
+  let y =
+    centerY -
+    totalHeight/2 +
+    lineHeight*0.78;
+
+  c.font =
+    `${size}px ${fuente}, Arial`;
+
+  c.textAlign =
+    "center";
+
+  c.fillStyle =
+    color;
+
+  lineas.forEach(
+    linea=>{
+
+      c.fillText(
+        linea,
+        x,
+        y
+      );
+
+      y +=
+        lineHeight;
+    }
+  );
+
+  c.textAlign =
+    "left";
+}
+
 /* =====================================================
-   GENERAR RENDER
+   GENERAR FICHA
 ===================================================== */
 
 async function generarRender(
@@ -3295,7 +3340,6 @@ async function generarRender(
   ){
 
     return false;
-
   }
 
   if(
@@ -3303,7 +3347,6 @@ async function generarRender(
   ){
 
     return false;
-
   }
 
   const nombre =
@@ -3320,7 +3363,6 @@ async function generarRender(
       await document.fonts.load(
         `60px ${fuente}`
       );
-
     }
 
   }catch(e){}
@@ -3365,9 +3407,6 @@ async function generarRender(
   c.strokeStyle =
     "#151515";
 
-  c.lineWidth =
-    1;
-
   for(
     let x=0;
     x<W;
@@ -3407,9 +3446,6 @@ async function generarRender(
   c.font =
     "bold 24px Arial";
 
-  c.textAlign =
-    "left";
-
   c.fillText(
     "DECK LED · CARTEL LUMINOSO CORPÓREO",
     24,
@@ -3445,30 +3481,30 @@ async function generarRender(
   const LW =
     500;
 
-  /* TEXTO PRINCIPAL */
-
   const colorTexto =
     tipoLed.value==="mono"
       ? colorSeleccionado
       : "#ffffff";
 
-  const textoRender =
+  /* TITULO */
+
+  const lineasTitulo =
     nombre
       .toUpperCase()
-      .slice(0,24);
+      .split("\n");
 
-  let tamanoTitulo =
-    ajustarFuenteCanvas(
+  const tituloSize =
+    calcularTamanoLineasCanvas(
       c,
-      textoRender,
+      lineasTitulo,
       fuente,
       LW,
-      60,
-      24
+      58,
+      20
     );
 
   c.font =
-    `${tamanoTitulo}px ${fuente}, Arial`;
+    `${tituloSize}px ${fuente}, Arial`;
 
   c.fillStyle =
     colorTexto;
@@ -3476,28 +3512,46 @@ async function generarRender(
   c.shadowColor =
     colorTexto;
 
-  /*
-    Glow mínimo.
-  */
-
   c.shadowBlur =
     2;
 
-  c.fillText(
-    textoRender,
-    LX,
-    LY+62
+  let titleY =
+    LY+56;
+
+  lineasTitulo.forEach(
+    linea=>{
+
+      c.fillText(
+        linea,
+        LX,
+        titleY
+      );
+
+      titleY +=
+        tituloSize*1.06;
+    }
   );
 
   c.shadowBlur =
     0;
+
+  const tituloAlto =
+    lineasTitulo.length *
+    tituloSize*1.06;
+
+  const separatorY =
+    LY +
+    Math.max(
+      70,
+      tituloAlto+20
+    );
 
   c.fillStyle =
     "#c41010";
 
   c.fillRect(
     LX,
-    LY+88,
+    separatorY,
     220,
     5
   );
@@ -3511,13 +3565,13 @@ async function generarRender(
   c.fillText(
     tipoIluminacion,
     LX,
-    LY+120
+    separatorY+32
   );
 
-  /* FOTO / PREVIEW */
+  /* PREVIEW */
 
   const imgY =
-    LY+140;
+    separatorY+52;
 
   const imgH =
     195;
@@ -3555,45 +3609,25 @@ async function generarRender(
       "#222"
     );
 
-    const textoInterior =
-      nombre.slice(0,24);
-
-    const interiorSize =
-      ajustarFuenteCanvas(
-        c,
-        textoInterior,
-        fuente,
-        LW-50,
-        52,
-        20
-      );
-
-    c.textAlign =
-      "center";
-
-    c.font =
-      `${interiorSize}px ${fuente}, Arial`;
-
-    c.fillStyle =
-      colorTexto;
-
     c.shadowColor =
       colorTexto;
 
     c.shadowBlur =
       2;
 
-    c.fillText(
-      textoInterior,
+    dibujarTextoMultilineCanvas(
+      c,
+      nombre,
       LX+LW/2,
-      imgY+112
+      imgY+imgH/2,
+      LW-50,
+      fuente,
+      50,
+      colorTexto
     );
 
     c.shadowBlur =
       0;
-
-    c.textAlign =
-      "left";
   }
 
   /* DIMENSIONES */
@@ -3650,8 +3684,7 @@ async function generarRender(
   );
 
   const area =
-    (a*b) /
-    10000;
+    (a*b)/10000;
 
   rbox(
     c,
@@ -3772,7 +3805,7 @@ async function generarRender(
     PY+184
   );
 
-  /* COLUMNA DERECHA */
+  /* DERECHA */
 
   const RX =
     548;
@@ -3809,7 +3842,7 @@ async function generarRender(
 
     [
       "TEXTO",
-      nombre
+      nombre.replace(/\n/g," / ")
     ],
 
     [
@@ -3898,7 +3931,6 @@ async function generarRender(
 
       sy +=
         58;
-
     }
   );
 
@@ -3981,9 +4013,7 @@ async function generarRender(
   return true;
 }
 
-/* =====================================================
-   IMAGEN COVER
-===================================================== */
+/* COVER */
 
 function drawCover(
   c,
@@ -4059,9 +4089,7 @@ function drawCover(
   c.restore();
 }
 
-/* =====================================================
-   DESCARGAR
-===================================================== */
+/* DESCARGAR */
 
 async function descargarRender(
   modo="cliente"
@@ -4077,7 +4105,6 @@ async function descargarRender(
     if(!generado){
 
       return;
-
     }
 
     const rc =
@@ -4101,14 +4128,12 @@ async function descargarRender(
             "image/png",
             1
           );
-
         }
       );
 
     if(!blob){
 
       return;
-
     }
 
     const archivo =
@@ -4119,11 +4144,6 @@ async function descargarRender(
           type:"image/png"
         }
       );
-
-    /*
-      iPhone / iPad:
-      abre compartir directamente.
-    */
 
     if(
       navigator.share &&
@@ -4144,10 +4164,6 @@ async function descargarRender(
 
       return;
     }
-
-    /*
-      PC / Android
-    */
 
     const url =
       URL.createObjectURL(
@@ -4185,14 +4201,7 @@ async function descargarRender(
       60000
     );
 
-  }catch(e){
-
-    /*
-      Error silencioso.
-      No mostramos alert().
-    */
-
-  }
+  }catch(e){}
 }
 
 </script>
