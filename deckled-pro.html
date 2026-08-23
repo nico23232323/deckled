@@ -449,7 +449,7 @@ button:active{
 }
 
 /* =====================================================
-   ORIGEN VISUAL / COTIZADOR
+   ORIGEN VISUAL
 ===================================================== */
 
 .origen-box{
@@ -484,7 +484,7 @@ button:active{
 #cotizadorImagenPreview{
   display:none;
   width:100%;
-  height:115px;
+  height:150px;
   object-fit:contain;
   padding:8px;
 }
@@ -495,6 +495,7 @@ button:active{
   text-align:center;
   padding:20px;
   max-width:100%;
+  white-space:pre;
 }
 
 /* =====================================================
@@ -625,7 +626,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v2.8
+    v2.9
   </div>
 
 </div>
@@ -663,7 +664,7 @@ button:active{
 </div>
 
 <!-- =====================================================
-     MEDIDOR ORIGINAL
+     MEDIDOR
 ===================================================== -->
 
 <div
@@ -919,7 +920,7 @@ button:active{
 
   </div>
 
-  <!-- ESCALA DISEÑO -->
+  <!-- MEDIDOR DISEÑO -->
 
   <div class="card">
 
@@ -1045,8 +1046,6 @@ button:active{
 <div
   class="tab-panel"
   id="tab-cotizador">
-
-  <!-- ORIGEN VISUAL -->
 
   <div class="card">
 
@@ -1229,6 +1228,15 @@ button:active{
 <script>
 
 /* =====================================================
+   ESTADO GLOBAL
+   IMPORTANTE: VA ANTES DE actualizarPreview()
+===================================================== */
+
+let img = new Image();
+let imgLoaded = false;
+let imgDataUrl = "";
+
+/* =====================================================
    STATUS
 ===================================================== */
 
@@ -1241,8 +1249,7 @@ function status(id,text="",tipo=""){
     return;
   }
 
-  el.textContent =
-    text;
+  el.textContent = text;
 
   el.className =
     "status" +
@@ -1290,7 +1297,6 @@ function switchTab(name){
       resizeCanvas,
       20
     );
-
   }
 
   if(name==="diseno"){
@@ -1304,13 +1310,11 @@ function switchTab(name){
       },
       20
     );
-
   }
 
   if(name==="cotizador"){
 
     actualizarOrigenVisual();
-
   }
 }
 
@@ -1346,7 +1350,7 @@ const designPreview =
   document.getElementById("designPreview");
 
 /* =====================================================
-   FUENTE
+   FUENTES
 ===================================================== */
 
 function obtenerFuentePreview(){
@@ -1382,10 +1386,14 @@ function obtenerFuentePreview(){
 }
 
 /* =====================================================
-   TEXTO 1 LÍNEA SALVO ENTER
+   AJUSTE 1 LÍNEA SALVO ENTER
 ===================================================== */
 
 function ajustarTextoPreview(){
+
+  if(!designPreview || !previewTexto){
+    return;
+  }
 
   const maxWidth =
     designPreview.clientWidth *
@@ -1504,23 +1512,141 @@ function actualizarPreview(){
   requestAnimationFrame(
     ajustarTextoPreview
   );
-
-  actualizarOrigenVisual();
 }
+
+/* =====================================================
+   PRIORIDAD IMAGEN MEDIDOR
+===================================================== */
+
+function usarImagenMedidor(){
+
+  return (
+    imgLoaded === true &&
+    img &&
+    img.complete &&
+    img.naturalWidth > 0 &&
+    img.naturalHeight > 0
+  );
+}
+
+/* =====================================================
+   ORIGEN VISUAL
+===================================================== */
+
+function actualizarOrigenVisual(){
+
+  const titulo =
+    document.getElementById(
+      "origenVisualTitulo"
+    );
+
+  const imagenPreview =
+    document.getElementById(
+      "cotizadorImagenPreview"
+    );
+
+  const textoPreview =
+    document.getElementById(
+      "cotizadorTextoPreview"
+    );
+
+  if(
+    !titulo ||
+    !imagenPreview ||
+    !textoPreview
+  ){
+    return;
+  }
+
+  if(
+    usarImagenMedidor()
+  ){
+
+    titulo.textContent =
+      "Imagen / logo cargado en Medidor";
+
+    imagenPreview.style.display =
+      "block";
+
+    imagenPreview.src =
+      imgDataUrl;
+
+    textoPreview.style.display =
+      "none";
+
+  }else{
+
+    titulo.textContent =
+      "Diseño generado en DeckLed PRO";
+
+    imagenPreview.style.display =
+      "none";
+
+    imagenPreview.removeAttribute(
+      "src"
+    );
+
+    textoPreview.style.display =
+      "block";
+
+    textoPreview.textContent =
+      textoCartel.value.trim() ||
+      "TU MARCA";
+
+    textoPreview.style.fontFamily =
+      obtenerFuentePreview();
+
+    if(tipoLed.value==="mono"){
+
+      textoPreview.style.color =
+        colorSeleccionado;
+
+      textoPreview.style.background =
+        "none";
+
+      textoPreview.style.webkitBackgroundClip =
+        "initial";
+
+    }else{
+
+      textoPreview.style.color =
+        "#fff";
+    }
+  }
+}
+
+/* =====================================================
+   EVENTOS DISEÑO
+===================================================== */
 
 textoCartel.addEventListener(
   "input",
-  actualizarPreview
+  ()=>{
+
+    actualizarPreview();
+
+    actualizarOrigenVisual();
+  }
 );
 
 tipografia.addEventListener(
   "change",
-  actualizarPreview
+  ()=>{
+
+    actualizarPreview();
+
+    actualizarOrigenVisual();
+  }
 );
 
 tipoLed.addEventListener(
   "change",
-  actualizarPreview
+  ()=>{
+
+    actualizarPreview();
+
+    actualizarOrigenVisual();
+  }
 );
 
 document
@@ -1548,31 +1674,39 @@ document
           btn.dataset.name;
 
         actualizarPreview();
+
+        actualizarOrigenVisual();
       }
     );
 
   });
-
-actualizarPreview();
 
 /* =====================================================
    MEDIDOR DISEÑO
 ===================================================== */
 
 const designCanvas =
-  document.getElementById("designMeasureCanvas");
+  document.getElementById(
+    "designMeasureCanvas"
+  );
 
 const designCtx =
   designCanvas.getContext("2d");
 
 const designResult =
-  document.getElementById("designMeasureResult");
+  document.getElementById(
+    "designMeasureResult"
+  );
 
 const designAncho =
-  document.getElementById("designAncho");
+  document.getElementById(
+    "designAncho"
+  );
 
 const designAlto =
-  document.getElementById("designAlto");
+  document.getElementById(
+    "designAlto"
+  );
 
 let designP1 =
   null;
@@ -1819,7 +1953,7 @@ document
   );
 
 /* =====================================================
-   RELACIÓN CARTEL
+   RATIO DISEÑO
 ===================================================== */
 
 function obtenerRelacionCartel(){
@@ -1839,7 +1973,7 @@ function obtenerRelacionCartel(){
 }
 
 /* =====================================================
-   DIMENSIONES
+   SINCRONIZACIÓN DIMENSIONES
 ===================================================== */
 
 function setDimensiones(
@@ -2212,9 +2346,11 @@ function calcular(
       <br>
 
       <div class="tipo-badge">
+
         ${tipo}
         · ${a}×${b} cm
         · ${area.toFixed(2)} m²
+
       </div>
 
       <br>
@@ -2344,7 +2480,18 @@ async function copiar(){
       "ok"
     );
 
-  }catch(e){}
+  }catch(e){
+
+    try{
+
+      campo.select();
+
+      document.execCommand(
+        "copy"
+      );
+
+    }catch(e2){}
+  }
 }
 
 function limpiarCotizador(){
@@ -2380,6 +2527,18 @@ function limpiarCotizador(){
 
   precioMono =
     0;
+
+  precioPixelCliente =
+    0;
+
+  precioMonoCliente =
+    0;
+
+  porcentajeDescuento =
+    0;
+
+  modoPrecioActual =
+    "cliente";
 }
 
 /* =====================================================
@@ -2400,20 +2559,6 @@ const realInput =
 
 const resultBox =
   document.getElementById("result");
-
-let img =
-  new Image();
-
-let imgLoaded =
-  false;
-
-/*
-  Guardamos también la URL original
-  para usarla directamente en previews.
-*/
-
-let imgDataUrl =
-  "";
 
 let baseScale =
   1;
@@ -2452,87 +2597,7 @@ let lastCenter =
   null;
 
 /* =====================================================
-   PRIORIDAD IMAGEN MEDIDOR
-===================================================== */
-
-function usarImagenMedidor(){
-
-  return (
-    imgLoaded === true &&
-    img &&
-    img.width > 0 &&
-    img.height > 0
-  );
-}
-
-/* =====================================================
-   ORIGEN VISUAL COTIZADOR
-===================================================== */
-
-function actualizarOrigenVisual(){
-
-  const titulo =
-    document.getElementById(
-      "origenVisualTitulo"
-    );
-
-  const imagenPreview =
-    document.getElementById(
-      "cotizadorImagenPreview"
-    );
-
-  const textoPreview =
-    document.getElementById(
-      "cotizadorTextoPreview"
-    );
-
-  if(
-    usarImagenMedidor()
-  ){
-
-    titulo.textContent =
-      "Imagen / logo cargado en Medidor";
-
-    imagenPreview.style.display =
-      "block";
-
-    imagenPreview.src =
-      imgDataUrl;
-
-    textoPreview.style.display =
-      "none";
-
-  }else{
-
-    titulo.textContent =
-      "Diseño generado en DeckLed PRO";
-
-    imagenPreview.style.display =
-      "none";
-
-    imagenPreview.removeAttribute(
-      "src"
-    );
-
-    textoPreview.style.display =
-      "block";
-
-    textoPreview.textContent =
-      textoCartel.value.trim() ||
-      "TU MARCA";
-
-    textoPreview.style.fontFamily =
-      obtenerFuentePreview();
-
-    textoPreview.style.color =
-      tipoLed.value==="mono"
-        ? colorSeleccionado
-        : "#ffffff";
-  }
-}
-
-/* =====================================================
-   RESIZE MEDIDOR
+   RESIZE
 ===================================================== */
 
 function resizeCanvas(){
@@ -2564,13 +2629,21 @@ function fitImage(
   resetView=false
 ){
 
+  if(
+    !img ||
+    !img.naturalWidth ||
+    !img.naturalHeight
+  ){
+    return;
+  }
+
   const sx =
     canvas.width /
-    img.width;
+    img.naturalWidth;
 
   const sy =
     canvas.height /
-    img.height;
+    img.naturalHeight;
 
   baseScale =
     Math.min(
@@ -2579,11 +2652,11 @@ function fitImage(
     );
 
   const w =
-    img.width *
+    img.naturalWidth *
     baseScale;
 
   const h =
-    img.height *
+    img.naturalHeight *
     baseScale;
 
   baseOffX =
@@ -2632,7 +2705,11 @@ function draw(){
     canvas.height
   );
 
-  if(!imgLoaded){
+  if(
+    !imgLoaded ||
+    !img ||
+    !img.naturalWidth
+  ){
     return;
   }
 
@@ -2640,12 +2717,15 @@ function draw(){
     img,
     imageX(),
     imageY(),
-    img.width * currentScale(),
-    img.height * currentScale()
+    img.naturalWidth * currentScale(),
+    img.naturalHeight * currentScale()
   );
 
   if(p1){
-    drawPoint(p1);
+
+    drawPoint(
+      p1
+    );
   }
 
   if(
@@ -2653,7 +2733,9 @@ function draw(){
     p2
   ){
 
-    drawPoint(p2);
+    drawPoint(
+      p2
+    );
 
     drawLine(
       p1,
@@ -2780,7 +2862,7 @@ function showMeasure(){
 
 /*
   MEDIDOR ORIGINAL:
-  SOLO CARGA LA MEDIDA ELEGIDA.
+  NO CALCULA AUTOMÁTICAMENTE LA OTRA MEDIDA
 */
 
 function usarAncho(){
@@ -2818,15 +2900,16 @@ function usarAlto(){
 }
 
 /* =====================================================
-   CARGAR IMAGEN
+   CARGA DE FOTO - CORREGIDA V2.9
 ===================================================== */
 
 fileInput.addEventListener(
   "change",
-  ()=>{
+  e=>{
 
     const f =
-      fileInput.files[0];
+      e.target.files &&
+      e.target.files[0];
 
     if(!f){
       return;
@@ -2836,10 +2919,14 @@ fileInput.addEventListener(
       new FileReader();
 
     reader.onload =
-      ()=>{
+      event=>{
 
-        imgDataUrl =
-          reader.result;
+        const data =
+          event.target.result;
+
+        if(!data){
+          return;
+        }
 
         const newImg =
           new Image();
@@ -2847,11 +2934,22 @@ fileInput.addEventListener(
         newImg.onload =
           ()=>{
 
+            /*
+              Primero asignamos la imagen ya cargada.
+            */
+
             img =
               newImg;
 
+            imgDataUrl =
+              data;
+
             imgLoaded =
               true;
+
+            /*
+              Reiniciamos sólo calibración / vista.
+            */
 
             p1 =
               null;
@@ -2862,28 +2960,60 @@ fileInput.addEventListener(
             cmPerPx =
               null;
 
+            ultimaMedidaCm =
+              0;
+
+            zoom =
+              1;
+
+            panX =
+              0;
+
+            panY =
+              0;
+
             resultBox.innerHTML =
               "Imagen cargada. Marcá 2 puntos para calibrar.";
 
-            resizeCanvas();
-
-            fitImage(true);
-
-            draw();
-
             /*
-              Apenas cargamos imagen,
-              pasa a tener prioridad.
+              Ajustamos el canvas después de tener
+              la imagen disponible.
             */
 
-            actualizarOrigenVisual();
+            requestAnimationFrame(
+              ()=>{
+
+                resizeCanvas();
+
+                fitImage(true);
+
+                draw();
+
+                actualizarOrigenVisual();
+              }
+            );
+          };
+
+        newImg.onerror =
+          ()=>{
+
+            imgLoaded =
+              false;
+
+            imgDataUrl =
+              "";
+
+            resultBox.innerHTML =
+              "No se pudo abrir esta imagen.";
           };
 
         newImg.src =
-          reader.result;
+          data;
       };
 
-    reader.readAsDataURL(f);
+    reader.readAsDataURL(
+      f
+    );
   }
 );
 
@@ -3030,6 +3160,11 @@ document
       panY =
         0;
 
+      if(imgLoaded){
+
+        fitImage(true);
+      }
+
       draw();
     }
   );
@@ -3040,14 +3175,14 @@ document
 
 function limpiarMedidor(){
 
+  img =
+    new Image();
+
   imgLoaded =
     false;
 
   imgDataUrl =
     "";
-
-  img =
-    new Image();
 
   p1 =
     null;
@@ -3057,6 +3192,9 @@ function limpiarMedidor(){
 
   cmPerPx =
     null;
+
+  ultimaMedidaCm =
+    0;
 
   zoom =
     1;
@@ -3083,16 +3221,11 @@ function limpiarMedidor(){
   realInput.value =
     "";
 
-  /*
-    Al limpiar, vuelve a tomar
-    automáticamente Diseño.
-  */
-
   actualizarOrigenVisual();
 }
 
 /* =====================================================
-   PINCH ZOOM ORIGINAL
+   PINCH ZOOM
 ===================================================== */
 
 function getDist(t1,t2){
@@ -3242,22 +3375,6 @@ canvas.addEventListener(
 );
 
 /* =====================================================
-   RESIZE
-===================================================== */
-
-window.addEventListener(
-  "resize",
-  ()=>{
-
-    resizeCanvas();
-    resizeDesignCanvas();
-    ajustarTextoPreview();
-  }
-);
-
-resizeCanvas();
-
-/* =====================================================
    FICHA PREMIUM
 ===================================================== */
 
@@ -3357,6 +3474,7 @@ function dibujarParticulasFicha(
 ){
 
   const seed = [
+
     [60,170,2],
     [125,290,1],
     [200,120,1.5],
@@ -3381,6 +3499,7 @@ function dibujarParticulasFicha(
     [920,1120,1],
     [1050,830,2],
     [1130,1220,1.5]
+
   ];
 
   seed.forEach(
@@ -3418,7 +3537,7 @@ function dibujarParticulasFicha(
 }
 
 /* =====================================================
-   FUENTE FICHA
+   FUENTE CANVAS
 ===================================================== */
 
 function fuenteCanvas(){
@@ -3500,7 +3619,7 @@ function calcularTamanoLineasCanvas(
 }
 
 /* =====================================================
-   DIBUJAR IMAGEN COMPLETA EN ZONA
+   IMAGEN CONTAIN
 ===================================================== */
 
 function dibujarImagenContain(
@@ -3512,9 +3631,24 @@ function dibujarImagenContain(
   h
 ){
 
-  const imgRatio =
-    image.width /
+  const iw =
+    image.naturalWidth ||
+    image.width;
+
+  const ih =
+    image.naturalHeight ||
     image.height;
+
+  if(
+    !iw ||
+    !ih
+  ){
+    return;
+  }
+
+  const imgRatio =
+    iw /
+    ih;
 
   const boxRatio =
     w /
@@ -3604,10 +3738,6 @@ async function generarRender(
     return false;
   }
 
-  /*
-    LA IMAGEN DEL MEDIDOR TIENE PRIORIDAD.
-  */
-
   const hayImagenMedidor =
     usarImagenMedidor();
 
@@ -3649,6 +3779,13 @@ async function generarRender(
 
   const H =
     1500;
+
+  c.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
 
   /* =================================================
      FONDO
@@ -3927,8 +4064,6 @@ async function generarRender(
 
   /* =================================================
      VISUAL PRINCIPAL
-
-     IMAGEN DEL MEDIDOR GANA SI EXISTE
   ================================================= */
 
   if(hayImagenMedidor){
@@ -3936,10 +4071,10 @@ async function generarRender(
     c.save();
 
     c.shadowColor =
-      "rgba(30,220,255,.28)";
+      "rgba(30,220,255,.18)";
 
     c.shadowBlur =
-      18;
+      10;
 
     dibujarImagenContain(
       c,
@@ -4000,41 +4135,18 @@ async function generarRender(
           0
         );
 
-      grad.addColorStop(
-        0,
-        "#ff304e"
-      );
-
-      grad.addColorStop(
-        .2,
-        "#ff9b1a"
-      );
-
-      grad.addColorStop(
-        .4,
-        "#ffe500"
-      );
-
-      grad.addColorStop(
-        .6,
-        "#00e896"
-      );
-
-      grad.addColorStop(
-        .78,
-        "#00cfff"
-      );
-
-      grad.addColorStop(
-        1,
-        "#9a4cff"
-      );
+      grad.addColorStop(0,"#ff304e");
+      grad.addColorStop(.2,"#ff9b1a");
+      grad.addColorStop(.4,"#ffe500");
+      grad.addColorStop(.6,"#00e896");
+      grad.addColorStop(.78,"#00cfff");
+      grad.addColorStop(1,"#9a4cff");
 
       c.fillStyle =
         grad;
 
       c.shadowColor =
-        "rgba(0,200,255,.45)";
+        "rgba(0,200,255,.35)";
 
     }else{
 
@@ -4046,7 +4158,7 @@ async function generarRender(
     }
 
     c.shadowBlur =
-      4;
+      3;
 
     lineas.forEach(
       linea=>{
@@ -4172,9 +4284,7 @@ async function generarRender(
     770
   );
 
-  /* =================================================
-     CONFIG VISUAL
-  ================================================= */
+  /* CONFIG */
 
   rbox(
     c,
@@ -4223,7 +4333,7 @@ async function generarRender(
 
   c.fillText(
     hayImagenMedidor
-      ? "Diseño proporcionado por cliente"
+      ? "Diseño proporcionado"
       : (
           tipoLed.value==="pixel"
             ? "Pixel LED RGB · Control por app"
@@ -4248,6 +4358,8 @@ async function generarRender(
     70,
     845
   );
+
+  /* MONO */
 
   rbox(
     c,
@@ -4662,10 +4774,36 @@ async function descargarRender(
 }
 
 /* =====================================================
-   ESTADO INICIAL
+   RESIZE
 ===================================================== */
 
-actualizarOrigenVisual();
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    resizeCanvas();
+
+    resizeDesignCanvas();
+
+    ajustarTextoPreview();
+  }
+);
+
+/* =====================================================
+   INICIALIZACIÓN
+   AHORA OCURRE AL FINAL
+===================================================== */
+
+requestAnimationFrame(
+  ()=>{
+
+    actualizarPreview();
+
+    actualizarOrigenVisual();
+
+    resizeCanvas();
+  }
+);
 
 </script>
 
