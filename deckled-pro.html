@@ -5,8 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DeckLed PRO</title>
 
+<!-- TIPOGRAFÍAS DISPONIBLES EN GOOGLE FONTS -->
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Audiowide&family=Baloo+2:wght@400;700;800&family=Bebas+Neue&family=Bungee&family=League+Spartan:wght@400;700;900&family=Lobster&family=Luckiest+Guy&family=Michroma&family=Orbitron:wght@400;700;900&family=Oxanium:wght@400;700;800&family=Pacifico&family=Pixelify+Sans:wght@400;700&family=Yellowtail&display=swap');
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0
+}
 
 body{
   background:#0d0d0d;
@@ -21,7 +28,10 @@ body{
   padding:10px 10px 30px
 }
 
-/* HEADER */
+/* ============================
+   HEADER
+============================ */
+
 .header{
   display:flex;
   align-items:center;
@@ -39,13 +49,19 @@ body{
   letter-spacing:-1px
 }
 
-.header-logo span{color:#e02020}
+.header-logo span{
+  color:#e02020
+}
 
 .header-sub{
   font-size:12px;
   color:#666;
   text-align:right
 }
+
+/* ============================
+   CARDS
+============================ */
 
 .card{
   background:#161616;
@@ -76,7 +92,7 @@ select{
   width:100%;
   border:1px solid #2a2a2a;
   border-radius:10px;
-  font-size:15px;
+  font-size:16px;
   padding:10px 12px;
   background:#0d0d0d;
   color:#fff;
@@ -111,6 +127,10 @@ input::placeholder,
 textarea::placeholder{
   color:#444
 }
+
+/* ============================
+   BOTONES
+============================ */
 
 button{
   width:100%;
@@ -157,7 +177,35 @@ button:active{
   margin-top:6px
 }
 
-/* TABS */
+/* ============================
+   MENSAJES INTERNOS
+   NO HAY ALERTS
+============================ */
+
+.status{
+  min-height:18px;
+  font-size:11px;
+  text-align:center;
+  margin-top:7px;
+  color:#666
+}
+
+.status.ok{
+  color:#00c853
+}
+
+.status.error{
+  color:#e06060
+}
+
+.status.info{
+  color:#5f8cff
+}
+
+/* ============================
+   TABS
+============================ */
+
 .tabs{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -192,27 +240,31 @@ button:active{
   display:block
 }
 
-/* PREVIEW CARTEL */
+/* ============================
+   PREVIEW DISEÑO
+============================ */
+
 .preview-cartel{
   position:relative;
   width:100%;
-  min-height:200px;
+  min-height:260px;
   border-radius:14px;
   background:
-    radial-gradient(circle at center,#292929 0%,#111 55%,#080808 100%);
+    radial-gradient(circle at center,#182735 0%,#101720 50%,#07090d 100%);
   border:1px solid #2a2a2a;
   overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:25px 15px;
-  margin-top:10px
+  padding:40px 15px;
+  margin-top:10px;
+  user-select:none
 }
 
 .preview-grid{
   position:absolute;
   inset:0;
-  opacity:.15;
+  opacity:.12;
   background-image:
     linear-gradient(#555 1px,transparent 1px),
     linear-gradient(90deg,#555 1px,transparent 1px);
@@ -223,22 +275,23 @@ button:active{
 .preview-text{
   position:relative;
   z-index:2;
-  max-width:100%;
+  max-width:92%;
   text-align:center;
-  font-size:52px;
+  font-size:58px;
   line-height:1;
   font-weight:900;
   word-break:break-word;
   color:#fff;
+  pointer-events:none;
   transition:.2s
 }
 
 .preview-text.mono{
   text-shadow:
     0 0 3px currentColor,
-    0 0 8px currentColor,
-    0 0 18px currentColor,
-    0 0 32px currentColor
+    0 0 7px currentColor,
+    0 0 14px currentColor,
+    0 0 26px currentColor
 }
 
 .preview-text.pixel{
@@ -253,13 +306,16 @@ button:active{
     #d500f9,
     #ff1744
   );
+
   background-size:300% 100%;
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
+
   filter:
     drop-shadow(0 0 4px rgba(255,255,255,.3))
     drop-shadow(0 0 10px rgba(0,180,255,.5));
+
   animation:pixelMove 4s linear infinite
 }
 
@@ -272,16 +328,50 @@ button:active{
   position:absolute;
   left:10px;
   bottom:8px;
-  z-index:3;
-  background:rgba(0,0,0,.65);
+  z-index:7;
+  background:rgba(0,0,0,.75);
   border:1px solid #333;
   color:#aaa;
   border-radius:20px;
   padding:4px 9px;
-  font-size:10px
+  font-size:10px;
+  pointer-events:none
 }
 
-/* COLORES */
+.measure-instruction{
+  position:absolute;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:7;
+  background:rgba(5,10,25,.8);
+  border:1px solid #315eae;
+  color:#dce8ff;
+  border-radius:24px;
+  padding:8px 15px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  pointer-events:none
+}
+
+/* CANVAS TRANSPARENTE SOBRE EL DISEÑO */
+
+#designMeasureCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:6;
+  cursor:crosshair;
+  touch-action:manipulation
+}
+
+/* ============================
+   COLORES
+============================ */
+
 .color-selector{
   display:grid;
   grid-template-columns:repeat(8,1fr);
@@ -317,7 +407,10 @@ button:active{
   text-shadow:0 0 3px #fff
 }
 
-/* CANVAS MEDIDOR */
+/* ============================
+   MEDIDOR PRINCIPAL
+============================ */
+
 #canvas{
   width:100%;
   height:55vw;
@@ -330,7 +423,6 @@ button:active{
   border:1px solid #222
 }
 
-/* RESULTADOS */
 .result-box{
   text-align:center;
   background:#0d0d0d;
@@ -345,6 +437,12 @@ button:active{
   font-weight:900;
   color:#00ff99;
   letter-spacing:-1px
+}
+
+.medida-diseno{
+  font-size:30px;
+  font-weight:900;
+  color:#00ff99
 }
 
 .precio-label{
@@ -377,10 +475,6 @@ button:active{
   margin-bottom:6px
 }
 
-#precioBox{
-  min-height:50px
-}
-
 textarea{
   height:200px;
   resize:vertical;
@@ -388,7 +482,10 @@ textarea{
   line-height:1.6
 }
 
-/* FICHA */
+/* ============================
+   FICHA
+============================ */
+
 #renderCanvas{
   width:100%;
   border-radius:12px;
@@ -398,8 +495,9 @@ textarea{
 }
 
 @media(max-width:480px){
+
   .preview-text{
-    font-size:40px
+    font-size:43px
   }
 
   .color-selector{
@@ -418,50 +516,128 @@ textarea{
 
 <div class="app">
 
-<!-- HEADER -->
+<!-- ============================
+     HEADER
+============================= -->
+
 <div class="header">
-  <div class="header-logo">Deck<span>Led</span> PRO</div>
-  <div class="header-sub">Cotizador &amp; Medidor<br>v2.2</div>
+
+  <div class="header-logo">
+    Deck<span>Led</span> PRO
+  </div>
+
+  <div class="header-sub">
+    Cotizador &amp; Medidor<br>
+    v2.3
+  </div>
+
 </div>
 
-<!-- 4 TABS -->
+<!-- ============================
+     4 PESTAÑAS
+============================= -->
+
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('medidor')">📐 Medidor</div>
-  <div class="tab" onclick="switchTab('diseno')">✍️ Diseño</div>
-  <div class="tab" onclick="switchTab('cotizador')">💰 Cotizar</div>
-  <div class="tab" onclick="switchTab('ficha')">🪧 Ficha</div>
+
+  <div
+    class="tab active"
+    onclick="switchTab('medidor')">
+    📐 Medidor
+  </div>
+
+  <div
+    class="tab"
+    onclick="switchTab('diseno')">
+    ✍️ Diseño
+  </div>
+
+  <div
+    class="tab"
+    onclick="switchTab('cotizador')">
+    💰 Cotizar
+  </div>
+
+  <div
+    class="tab"
+    onclick="switchTab('ficha')">
+    🪧 Ficha
+  </div>
+
 </div>
 
 <!-- =====================================================
-TAB MEDIDOR
+     MEDIDOR
 ===================================================== -->
 
-<div class="tab-panel active" id="tab-medidor">
+<div
+  class="tab-panel active"
+  id="tab-medidor">
 
   <div class="card">
-    <div class="card-title">Imagen y escala</div>
 
-    <input id="file" type="file" accept="image/*">
-
-    <div class="row" style="margin-top:8px">
-      <input id="realValue" type="number" placeholder="Medida real (cm)">
-      <button class="btn-blue" id="setScale">Guardar escala</button>
+    <div class="card-title">
+      Imagen y escala
     </div>
 
-    <div class="row" style="margin-top:8px">
-      <button class="btn-dark" id="resetPoints">Reset puntos</button>
-      <button class="btn-dark" id="resetZoom">Reset zoom</button>
+    <input
+      id="file"
+      type="file"
+      accept="image/*">
+
+    <div
+      class="row"
+      style="margin-top:8px">
+
+      <input
+        id="realValue"
+        type="number"
+        inputmode="decimal"
+        placeholder="Medida real (cm)">
+
+      <button
+        class="btn-blue"
+        id="setScale">
+        Guardar escala
+      </button>
+
+    </div>
+
+    <div
+      class="row"
+      style="margin-top:8px">
+
+      <button
+        class="btn-dark"
+        id="resetPoints">
+        Reset puntos
+      </button>
+
+      <button
+        class="btn-dark"
+        id="resetZoom">
+        Reset zoom
+      </button>
+
     </div>
 
     <div class="hint">
       1 dedo: marcar puntos · 2 dedos: zoom / mover
     </div>
+
+    <div
+      class="status"
+      id="medidorStatus">
+    </div>
+
   </div>
 
   <div class="card">
+
     <canvas id="canvas"></canvas>
 
-    <div class="result-box" id="result">
+    <div
+      class="result-box"
+      id="result">
       Subí una foto para comenzar
     </div>
 
@@ -471,15 +647,20 @@ TAB MEDIDOR
       style="margin-top:8px">
       Limpiar medidor
     </button>
+
   </div>
 
 </div>
 
 <!-- =====================================================
-TAB DISEÑO
+     DISEÑO
 ===================================================== -->
 
-<div class="tab-panel" id="tab-diseno">
+<div
+  class="tab-panel"
+  id="tab-diseno">
+
+  <!-- PERSONALIZACIÓN -->
 
   <div class="card">
 
@@ -492,33 +673,125 @@ TAB DISEÑO
       type="text"
       maxlength="50"
       placeholder="Escribí el texto del cartel"
-      value="Deck Led">
+      value="TU MARCA">
+
+    <!-- FUENTE -->
 
     <div style="margin-top:8px">
 
       <select id="tipografia">
-        <option value="Arial Black">Arial Black</option>
-        <option value="Arial">Arial</option>
-        <option value="Impact">Impact</option>
-        <option value="Verdana">Verdana</option>
-        <option value="Trebuchet MS">Trebuchet</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Times New Roman">Times New Roman</option>
-        <option value="Courier New">Courier New</option>
+
+        <option value="Bebas Neue">
+          Bebas Neue
+        </option>
+
+        <option value="Anton">
+          Anton
+        </option>
+
+        <option value="League Spartan">
+          League Spartan
+        </option>
+
+        <option value="Archivo Black">
+          Archivo Black
+        </option>
+
+        <option value="Bungee">
+          Bungee
+        </option>
+
+        <option value="Orbitron">
+          Orbitron
+        </option>
+
+        <option value="Audiowide">
+          Audiowide
+        </option>
+
+        <option value="Oxanium">
+          Oxanium
+        </option>
+
+        <option value="Michroma">
+          Michroma
+        </option>
+
+        <option value="Yellowtail">
+          Yellowtail
+        </option>
+
+        <option value="Pacifico">
+          Pacífico
+        </option>
+
+        <option value="Lobster">
+          Lobster
+        </option>
+
+        <option value="Milkshake">
+          Milkshake
+        </option>
+
+        <option value="Nickainley">
+          Nickainley
+        </option>
+
+        <option value="Deck Led Graffiti Drip">
+          Deck Led Graffiti Drip
+        </option>
+
+        <option value="Bubbleboddy Neue">
+          Bubbleboddy Neue
+        </option>
+
+        <option value="Grobold">
+          Grobold
+        </option>
+
+        <option value="Luckiest Guy">
+          Luckiest Guy
+        </option>
+
+        <option value="Baloo 2">
+          Baloo 2
+        </option>
+
+        <option value="Pixelify Sans">
+          Pixelify Sans
+        </option>
+
+        <option value="Cursiva">
+          Cursiva
+        </option>
+
       </select>
 
     </div>
+
+    <!-- TIPO LED -->
 
     <div style="margin-top:8px">
 
       <select id="tipoLed">
-        <option value="mono">Monocromático</option>
-        <option value="pixel">Pixel LED RGB</option>
+
+        <option value="mono">
+          Monocromático
+        </option>
+
+        <option value="pixel">
+          Pixel LED RGB
+        </option>
+
       </select>
 
     </div>
 
-    <div id="colorMonoBox" style="margin-top:10px">
+    <!-- COLORES -->
+
+    <div
+      id="colorMonoBox"
+      style="margin-top:10px">
 
       <div class="card-title">
         Color de iluminación
@@ -594,15 +867,27 @@ TAB DISEÑO
 
     </div>
 
-    <div class="preview-cartel">
+    <!-- CARTEL -->
+
+    <div
+      class="preview-cartel"
+      id="designPreview">
 
       <div class="preview-grid"></div>
+
+      <div class="measure-instruction">
+        TOCÁ DOS PUNTOS SOBRE EL CARTEL
+      </div>
 
       <div
         id="previewTexto"
         class="preview-text mono">
-        Deck Led
+        TU MARCA
       </div>
+
+      <canvas
+        id="designMeasureCanvas">
+      </canvas>
 
       <div
         id="previewLabel"
@@ -612,8 +897,90 @@ TAB DISEÑO
 
     </div>
 
-    <div class="hint">
-      Vista previa aproximada del cartel
+  </div>
+
+  <!-- MEDICIÓN DEL DISEÑO -->
+
+  <div class="card">
+
+    <div class="card-title">
+      Escala y medidas
+    </div>
+
+    <div class="hint" style="margin-bottom:8px">
+      Tocá dos puntos sobre el cartel.
+    </div>
+
+    <div class="row">
+
+      <input
+        id="designRealValue"
+        type="number"
+        inputmode="decimal"
+        placeholder="Medida real (cm)">
+
+      <button
+        class="btn-blue"
+        id="designSetScale">
+        Establecer escala
+      </button>
+
+    </div>
+
+    <button
+      class="btn-dark"
+      id="designResetScale"
+      style="margin-top:8px">
+      Restablecer escala
+    </button>
+
+    <div
+      class="result-box"
+      id="designMeasureResult">
+
+      Marcá 2 puntos y luego guardá la escala
+
+    </div>
+
+    <div
+      class="row"
+      style="margin-top:8px">
+
+      <button
+        class="btn-dark"
+        id="designNewMeasure">
+        Nueva medición
+      </button>
+
+      <button
+        class="btn-dark"
+        id="designClearMeasure">
+        Limpiar puntos
+      </button>
+
+    </div>
+
+    <div
+      class="row"
+      style="margin-top:8px">
+
+      <button
+        class="btn-green"
+        id="designUseWidth">
+        Usar como ancho
+      </button>
+
+      <button
+        class="btn-blue"
+        id="designUseHeight">
+        Usar como alto
+      </button>
+
+    </div>
+
+    <div
+      class="status"
+      id="designStatus">
     </div>
 
   </div>
@@ -621,10 +988,12 @@ TAB DISEÑO
 </div>
 
 <!-- =====================================================
-TAB COTIZADOR
+     COTIZADOR
 ===================================================== -->
 
-<div class="tab-panel" id="tab-cotizador">
+<div
+  class="tab-panel"
+  id="tab-cotizador">
 
   <div class="card">
 
@@ -637,11 +1006,13 @@ TAB COTIZADOR
       <input
         id="ancho"
         type="number"
+        inputmode="decimal"
         placeholder="Ancho (cm)">
 
       <input
         id="alto"
         type="number"
+        inputmode="decimal"
         placeholder="Alto (cm)">
 
     </div>
@@ -660,6 +1031,11 @@ TAB COTIZADOR
       Calcular precio revendedor
     </button>
 
+    <div
+      class="status"
+      id="cotizadorStatus">
+    </div>
+
   </div>
 
   <div class="card">
@@ -668,7 +1044,9 @@ TAB COTIZADOR
       Resultado
     </div>
 
-    <div class="result-box" id="precioBox">
+    <div
+      class="result-box"
+      id="precioBox">
       Ingresá las medidas para cotizar
     </div>
 
@@ -690,6 +1068,11 @@ TAB COTIZADOR
       id="txt"
       placeholder="El texto aparece acá después de calcular…"></textarea>
 
+    <div
+      class="status"
+      id="copyStatus">
+    </div>
+
     <button
       class="btn-dark"
       onclick="limpiarCotizador()"
@@ -702,10 +1085,12 @@ TAB COTIZADOR
 </div>
 
 <!-- =====================================================
-TAB FICHA
+     FICHA
 ===================================================== -->
 
-<div class="tab-panel" id="tab-ficha">
+<div
+  class="tab-panel"
+  id="tab-ficha">
 
   <div class="card">
 
@@ -714,7 +1099,7 @@ TAB FICHA
     </div>
 
     <div class="hint">
-      Utiliza automáticamente el texto, tipografía y tipo de LED seleccionados en Diseño.
+      Utiliza automáticamente texto, tipografía, iluminación y medidas.
     </div>
 
     <button
@@ -745,6 +1130,11 @@ TAB FICHA
       Descargar PNG revendedor
     </button>
 
+    <div
+      class="status"
+      id="fichaStatus">
+    </div>
+
   </div>
 
   <canvas
@@ -760,7 +1150,28 @@ TAB FICHA
 <script>
 
 /* =====================================================
-TABS
+   MENSAJES NO MODALES
+===================================================== */
+
+function status(id,text="",tipo=""){
+
+  const el =
+    document.getElementById(id);
+
+  if(!el){
+    return;
+  }
+
+  el.textContent =
+    text;
+
+  el.className =
+    "status" +
+    (tipo ? " "+tipo : "");
+}
+
+/* =====================================================
+   TABS
 ===================================================== */
 
 function switchTab(name){
@@ -772,31 +1183,47 @@ function switchTab(name){
     "ficha"
   ];
 
-  document.querySelectorAll(".tab").forEach((t,i)=>{
-    t.classList.toggle(
-      "active",
-      nombres[i] === name
-    );
-  });
+  document
+    .querySelectorAll(".tab")
+    .forEach((t,i)=>{
 
-  document.querySelectorAll(".tab-panel").forEach(p=>{
-    p.classList.toggle(
-      "active",
-      p.id === "tab-" + name
-    );
-  });
+      t.classList.toggle(
+        "active",
+        nombres[i]===name
+      );
 
-  if(name === "medidor"){
-    resizeCanvas();
+    });
+
+  document
+    .querySelectorAll(".tab-panel")
+    .forEach(p=>{
+
+      p.classList.toggle(
+        "active",
+        p.id==="tab-"+name
+      );
+
+    });
+
+  if(name==="medidor"){
+    setTimeout(resizeCanvas,10);
   }
+
+  if(name==="diseno"){
+    setTimeout(resizeDesignCanvas,10);
+  }
+
 }
 
 /* =====================================================
-DISEÑO
+   DISEÑO
 ===================================================== */
 
-let colorSeleccionado = "#f5fbff";
-let nombreColorSeleccionado = "Blanco frío";
+let colorSeleccionado =
+  "#f5fbff";
+
+let nombreColorSeleccionado =
+  "Blanco frío";
 
 const textoCartel =
   document.getElementById("textoCartel");
@@ -822,21 +1249,27 @@ function actualizarPreview(){
     textoCartel.value.trim();
 
   if(!texto){
-    texto = "Tu cartel";
+    texto="TU MARCA";
   }
 
   previewTexto.textContent =
     texto;
 
+  /*
+    Las fuentes propias de Deck Led como Milkshake,
+    Nickainley, Grobold, etc. funcionarán automáticamente
+    si sus @font-face ya están cargados en tu sitio.
+  */
+
   previewTexto.style.fontFamily =
     `"${tipografia.value}", Arial, sans-serif`;
 
-  if(tipoLed.value === "pixel"){
+  if(tipoLed.value==="pixel"){
 
     previewTexto.classList.remove("mono");
     previewTexto.classList.add("pixel");
 
-    previewTexto.style.color = "";
+    previewTexto.style.color="";
 
     colorMonoBox.style.display =
       "none";
@@ -856,9 +1289,11 @@ function actualizarPreview(){
       "block";
 
     previewLabel.textContent =
-      "Monocromático · " +
+      "Monocromático · "+
       nombreColorSeleccionado;
+
   }
+
 }
 
 textoCartel.addEventListener(
@@ -876,60 +1311,484 @@ tipoLed.addEventListener(
   actualizarPreview
 );
 
-document.querySelectorAll(".color-btn").forEach(btn=>{
+document
+  .querySelectorAll(".color-btn")
+  .forEach(btn=>{
 
-  btn.addEventListener("click",()=>{
+    btn.addEventListener(
+      "click",
+      ()=>{
 
-    document
-      .querySelectorAll(".color-btn")
-      .forEach(b=>b.classList.remove("active"));
+        document
+          .querySelectorAll(".color-btn")
+          .forEach(
+            b=>b.classList.remove("active")
+          );
 
-    btn.classList.add("active");
+        btn.classList.add("active");
 
-    colorSeleccionado =
-      btn.dataset.color;
+        colorSeleccionado =
+          btn.dataset.color;
 
-    nombreColorSeleccionado =
-      btn.dataset.name;
+        nombreColorSeleccionado =
+          btn.dataset.name;
 
-    actualizarPreview();
+        actualizarPreview();
+
+      }
+    );
+
   });
-
-});
 
 actualizarPreview();
 
 /* =====================================================
-COTIZADOR
+   MEDICIÓN EN DISEÑO
 ===================================================== */
 
-let precioPixel = 0;
-let precioMono = 0;
+const designPreview =
+  document.getElementById("designPreview");
 
-let precioPixelCliente = 0;
-let precioMonoCliente = 0;
+const designCanvas =
+  document.getElementById("designMeasureCanvas");
 
-let porcentajeDescuento = 0;
+const designCtx =
+  designCanvas.getContext("2d");
 
-let modoPrecioActual = "cliente";
+const designResult =
+  document.getElementById("designMeasureResult");
 
-let ultimaMedidaCm = 0;
+let designP1 =
+  null;
 
-function obtenerDescuentoRevendedor(precioReferencia){
+let designP2 =
+  null;
 
-  if(precioReferencia < 1200000){
+let designCmPerPx =
+  null;
+
+let designUltimaMedida =
+  0;
+
+function resizeDesignCanvas(){
+
+  const r =
+    designPreview.getBoundingClientRect();
+
+  designCanvas.width =
+    Math.max(
+      1,
+      Math.round(r.width)
+    );
+
+  designCanvas.height =
+    Math.max(
+      1,
+      Math.round(r.height)
+    );
+
+  drawDesignMeasure();
+
+}
+
+function designDist(a,b){
+
+  return Math.hypot(
+    a.x-b.x,
+    a.y-b.y
+  );
+
+}
+
+function designPoint(p){
+
+  designCtx.beginPath();
+
+  designCtx.fillStyle =
+    "#ffcc00";
+
+  designCtx.arc(
+    p.x,
+    p.y,
+    8,
+    0,
+    Math.PI*2
+  );
+
+  designCtx.fill();
+
+  designCtx.strokeStyle =
+    "#000";
+
+  designCtx.lineWidth =
+    2;
+
+  designCtx.stroke();
+
+}
+
+function drawDesignMeasure(){
+
+  designCtx.clearRect(
+    0,
+    0,
+    designCanvas.width,
+    designCanvas.height
+  );
+
+  if(designP1){
+    designPoint(designP1);
+  }
+
+  if(designP1 && designP2){
+
+    designPoint(designP2);
+
+    designCtx.strokeStyle =
+      "#00ff99";
+
+    designCtx.lineWidth =
+      3;
+
+    designCtx.setLineDash(
+      [8,5]
+    );
+
+    designCtx.beginPath();
+
+    designCtx.moveTo(
+      designP1.x,
+      designP1.y
+    );
+
+    designCtx.lineTo(
+      designP2.x,
+      designP2.y
+    );
+
+    designCtx.stroke();
+
+    designCtx.setLineDash([]);
+
+    if(designCmPerPx){
+
+      designUltimaMedida =
+        designDist(
+          designP1,
+          designP2
+        ) *
+        designCmPerPx;
+
+      designResult.innerHTML =
+        `<div class="medida-diseno">
+          ${designUltimaMedida.toFixed(1)} cm
+        </div>
+        <div class="hint">
+          Escala calibrada
+        </div>`;
+
+    }else{
+
+      designResult.innerHTML =
+        `Ingresá la medida real correspondiente a esta línea y tocá <b>Establecer escala</b>`;
+
+    }
+
+  }
+
+}
+
+designCanvas.addEventListener(
+  "pointerup",
+  e=>{
+
+    const r =
+      designCanvas.getBoundingClientRect();
+
+    const scaleX =
+      designCanvas.width /
+      r.width;
+
+    const scaleY =
+      designCanvas.height /
+      r.height;
+
+    const p={
+      x:(e.clientX-r.left)*scaleX,
+      y:(e.clientY-r.top)*scaleY
+    };
+
+    if(!designP1){
+
+      designP1=p;
+
+      status(
+        "designStatus",
+        "Marcá el segundo punto.",
+        "info"
+      );
+
+    }else if(!designP2){
+
+      designP2=p;
+
+      status(
+        "designStatus",
+        "",
+        ""
+      );
+
+    }else{
+
+      designP1=p;
+      designP2=null;
+
+      status(
+        "designStatus",
+        "Nueva medición iniciada.",
+        "info"
+      );
+
+    }
+
+    drawDesignMeasure();
+
+  }
+);
+
+document
+  .getElementById("designSetScale")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(
+        !designP1 ||
+        !designP2
+      ){
+
+        status(
+          "designStatus",
+          "Marcá dos puntos sobre el cartel.",
+          "error"
+        );
+
+        return;
+      }
+
+      const real =
+        parseFloat(
+          document.getElementById(
+            "designRealValue"
+          ).value
+        );
+
+      if(
+        !Number.isFinite(real) ||
+        real<=0
+      ){
+
+        status(
+          "designStatus",
+          "Ingresá una medida real válida.",
+          "error"
+        );
+
+        return;
+      }
+
+      const distancia =
+        designDist(
+          designP1,
+          designP2
+        );
+
+      if(distancia<=0){
+        return;
+      }
+
+      designCmPerPx =
+        real /
+        distancia;
+
+      designUltimaMedida =
+        real;
+
+      status(
+        "designStatus",
+        "Escala guardada.",
+        "ok"
+      );
+
+      drawDesignMeasure();
+
+    }
+  );
+
+document
+  .getElementById("designNewMeasure")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      designP1=null;
+      designP2=null;
+      designUltimaMedida=0;
+
+      designResult.innerHTML =
+        designCmPerPx
+          ? "Escala guardada. Tocá dos puntos para medir."
+          : "Marcá 2 puntos y luego guardá la escala";
+
+      status(
+        "designStatus",
+        "",
+        ""
+      );
+
+      drawDesignMeasure();
+
+    }
+  );
+
+document
+  .getElementById("designClearMeasure")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      designP1=null;
+      designP2=null;
+      designUltimaMedida=0;
+
+      drawDesignMeasure();
+
+      designResult.innerHTML =
+        designCmPerPx
+          ? "Escala guardada. Tocá dos puntos para medir."
+          : "Marcá 2 puntos y luego guardá la escala";
+
+      status(
+        "designStatus",
+        "",
+        ""
+      );
+
+    }
+  );
+
+document
+  .getElementById("designResetScale")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      designCmPerPx=null;
+      designP1=null;
+      designP2=null;
+      designUltimaMedida=0;
+
+      document.getElementById(
+        "designRealValue"
+      ).value="";
+
+      designResult.innerHTML =
+        "Marcá 2 puntos y luego guardá la escala";
+
+      status(
+        "designStatus",
+        "",
+        ""
+      );
+
+      drawDesignMeasure();
+
+    }
+  );
+
+document
+  .getElementById("designUseWidth")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(designUltimaMedida<=0){
+        return;
+      }
+
+      document.getElementById(
+        "ancho"
+      ).value =
+        designUltimaMedida.toFixed(1);
+
+      status(
+        "designStatus",
+        "Medida cargada como ancho.",
+        "ok"
+      );
+
+    }
+  );
+
+document
+  .getElementById("designUseHeight")
+  .addEventListener(
+    "click",
+    ()=>{
+
+      if(designUltimaMedida<=0){
+        return;
+      }
+
+      document.getElementById(
+        "alto"
+      ).value =
+        designUltimaMedida.toFixed(1);
+
+      status(
+        "designStatus",
+        "Medida cargada como alto.",
+        "ok"
+      );
+
+    }
+  );
+
+/* =====================================================
+   COTIZADOR
+===================================================== */
+
+let precioPixel=0;
+let precioMono=0;
+
+let precioPixelCliente=0;
+let precioMonoCliente=0;
+
+let porcentajeDescuento=0;
+
+let modoPrecioActual=
+  "cliente";
+
+let ultimaMedidaCm=0;
+
+function obtenerDescuentoRevendedor(
+  precioReferencia
+){
+
+  if(precioReferencia<1200000){
     return 5;
   }
 
-  if(precioReferencia >= 1500000){
+  if(precioReferencia>=1500000){
     return 10;
   }
 
   return 5 +
     (
-      (precioReferencia - 1200000) /
-      (1500000 - 1200000)
-    ) * 5;
+      (precioReferencia-1200000) /
+      (1500000-1200000)
+    )*5;
+
 }
 
 function calcular(modo="cliente"){
@@ -944,107 +1803,137 @@ function calcular(modo="cliente"){
       document.getElementById("alto").value
     );
 
-  if(!a || !b){
+  if(
+    !Number.isFinite(a) ||
+    !Number.isFinite(b) ||
+    a<=0 ||
+    b<=0
+  ){
 
-    alert("Ingresá ancho y alto");
+    status(
+      "cotizadorStatus",
+      "Completá ancho y alto para calcular.",
+      "error"
+    );
 
-    return;
+    return false;
   }
 
-  const area =
-    (a/100) * (b/100);
+  status(
+    "cotizadorStatus",
+    "",
+    ""
+  );
 
-  if(area <= 2){
+  const area =
+    (a/100)*(b/100);
+
+  if(area<=2){
 
     precioPixelCliente =
       660000 +
-      area * 800000;
+      area*800000;
 
   }else{
 
     precioPixelCliente =
       2260000 +
-      (area-2) * 450000;
+      (area-2)*450000;
+
   }
 
   precioPixelCliente =
     Math.round(
-      precioPixelCliente / 10000
-    ) * 10000;
+      precioPixelCliente/10000
+    )*10000;
 
   precioMonoCliente =
     Math.round(
-      (precioPixelCliente / 1.1) / 10000
-    ) * 10000;
+      (precioPixelCliente/1.1)/10000
+    )*10000;
 
   modoPrecioActual =
     modo;
 
   porcentajeDescuento =
-    modo === "revendedor"
+    modo==="revendedor"
       ? obtenerDescuentoRevendedor(
           precioPixelCliente
         )
       : 0;
 
   const factor =
-    1 - porcentajeDescuento / 100;
+    1 -
+    porcentajeDescuento/100;
 
   precioPixel =
     Math.round(
       precioPixelCliente *
       factor /
       10000
-    ) * 10000;
+    )*10000;
 
   precioMono =
     Math.round(
       precioMonoCliente *
       factor /
       10000
-    ) * 10000;
+    )*10000;
 
   let tipo;
 
-  if(area <= 0.7){
+  if(area<=0.7){
 
-    tipo =
+    tipo=
       "Cartel chico";
 
-  }else if(area <= 2){
+  }else if(area<=2){
 
-    tipo =
+    tipo=
       "Cartel mediano";
 
   }else{
 
-    tipo =
+    tipo=
       "Cartel grande";
+
   }
 
   const etiquetaModo =
-    modo === "revendedor"
+    modo==="revendedor"
       ? `REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% OFF`
       : "CLIENTE FINAL";
 
-  document.getElementById("precioBox").innerHTML = `
+  document.getElementById(
+    "precioBox"
+  ).innerHTML=`
 
     <div class="tipo-badge">
-      ${tipo} · ${a}×${b} cm · ${area.toFixed(2)} m²
+      ${tipo} ·
+      ${a}×${b} cm ·
+      ${area.toFixed(2)} m²
     </div>
 
     <br>
 
     <div
       class="tipo-badge"
-      style="color:${modo==="revendedor" ? "#4da3ff" : "#00c853"}">
+      style="color:${
+        modo==="revendedor"
+          ? "#4da3ff"
+          : "#00c853"
+      }">
+
       ${etiquetaModo}
+
     </div>
 
     <div
       class="precio-label"
       style="margin-top:10px">
+
       Monocromático · Blanco frío / color fijo
+
     </div>
 
     <div class="precio-mono">
@@ -1054,7 +1943,9 @@ function calcular(modo="cliente"){
     <div
       class="precio-label"
       style="margin-top:12px">
+
       Pixel LED RGB · control app celular
+
     </div>
 
     <div class="precio-val">
@@ -1064,14 +1955,20 @@ function calcular(modo="cliente"){
   `;
 
   generarTexto(a,b);
+
+  return true;
+
 }
 
 function fmt(n){
-  return Number(n).toLocaleString("es-AR");
+
+  return Number(n)
+    .toLocaleString("es-AR");
+
 }
 
 /* =====================================================
-MENSAJE WHATSAPP
+   WHATSAPP
 ===================================================== */
 
 function generarTexto(a,b){
@@ -1081,11 +1978,14 @@ function generarTexto(a,b){
   }
 
   const encabezado =
-    modoPrecioActual === "revendedor"
+    modoPrecioActual==="revendedor"
       ? `PRECIO REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% de descuento\n\n`
       : "";
 
-  document.getElementById("txt").value =
+  document.getElementById(
+    "txt"
+  ).value=
+
 `${encabezado}❗️En blanco frío o color fijo el valor es $${fmt(precioMono)}
 
 ✅ En pixel led con control app celular el valor es $${fmt(precioPixel)}
@@ -1099,56 +1999,118 @@ https://www.instagram.com/corporeos.deckled?igsh=MTdncHo2bm4xdG1naQ
 
 ✅ Visita nuestra Web:
 www.deckled.com.ar/corporeos`;
+
 }
 
-function copiar(){
+async function copiar(){
 
   const campo =
     document.getElementById("txt");
 
   if(!campo.value){
 
-    alert("Primero calculá");
+    status(
+      "copyStatus",
+      "Primero generá un presupuesto.",
+      "error"
+    );
 
     return;
   }
 
-  campo.select();
+  try{
 
-  campo.setSelectionRange(
-    0,
-    99999
-  );
+    if(navigator.clipboard){
 
-  document.execCommand("copy");
+      await navigator.clipboard.writeText(
+        campo.value
+      );
 
-  alert("✅ Texto copiado");
+    }else{
+
+      campo.select();
+
+      campo.setSelectionRange(
+        0,
+        99999
+      );
+
+      document.execCommand(
+        "copy"
+      );
+
+    }
+
+    status(
+      "copyStatus",
+      "Texto copiado.",
+      "ok"
+    );
+
+  }catch(e){
+
+    campo.select();
+
+    document.execCommand(
+      "copy"
+    );
+
+    status(
+      "copyStatus",
+      "Texto copiado.",
+      "ok"
+    );
+
+  }
+
 }
 
 function limpiarCotizador(){
 
-  document.getElementById("ancho").value = "";
+  document.getElementById(
+    "ancho"
+  ).value="";
 
-  document.getElementById("alto").value = "";
+  document.getElementById(
+    "alto"
+  ).value="";
 
-  document.getElementById("precioBox").innerHTML =
+  document.getElementById(
+    "precioBox"
+  ).innerHTML=
     "Ingresá las medidas para cotizar";
 
-  document.getElementById("txt").value = "";
+  document.getElementById(
+    "txt"
+  ).value="";
 
-  precioPixel = 0;
-  precioMono = 0;
+  precioPixel=0;
+  precioMono=0;
 
-  precioPixelCliente = 0;
-  precioMonoCliente = 0;
+  precioPixelCliente=0;
+  precioMonoCliente=0;
 
-  porcentajeDescuento = 0;
+  porcentajeDescuento=0;
 
-  modoPrecioActual = "cliente";
+  modoPrecioActual=
+    "cliente";
+
+  status(
+    "cotizadorStatus",
+    "",
+    ""
+  );
+
+  status(
+    "copyStatus",
+    "",
+    ""
+  );
+
 }
 
 /* =====================================================
-MEDIDOR
+   MEDIDOR PRINCIPAL
 ===================================================== */
 
 const canvas =
@@ -1169,29 +2131,28 @@ const resultBox =
 let img =
   new Image();
 
-let imgLoaded =
-  false;
+let imgLoaded=false;
 
-let baseScale = 1;
-let baseOffX = 0;
-let baseOffY = 0;
+let baseScale=1;
+let baseOffX=0;
+let baseOffY=0;
 
-let zoom = 1;
+let zoom=1;
 
-let panX = 0;
-let panY = 0;
+let panX=0;
+let panY=0;
 
-let p1 = null;
-let p2 = null;
+let p1=null;
+let p2=null;
 
-let cmPerPx = null;
+let cmPerPx=null;
 
-let lastCanvasWidth = 0;
+let lastCanvasWidth=0;
 
-let isPinching = false;
+let isPinching=false;
 
-let lastDist = null;
-let lastCenter = null;
+let lastDist=null;
+let lastCenter=null;
 
 function resizeCanvas(){
 
@@ -1212,43 +2173,44 @@ function resizeCanvas(){
 
   if(
     imgLoaded &&
-    Math.abs(w-lastCanvasWidth) < 5
+    Math.abs(
+      w-lastCanvasWidth
+    )<5
   ){
     return;
   }
 
-  canvas.width =
-    w;
+  canvas.width=w;
+  canvas.height=h;
 
-  canvas.height =
-    h;
-
-  lastCanvasWidth =
-    w;
+  lastCanvasWidth=w;
 
   if(imgLoaded){
     fitImage(false);
   }
 
   draw();
+
 }
 
-function fitImage(resetView=false){
+function fitImage(
+  resetView=false
+){
 
   const sx =
-    canvas.width / img.width;
+    canvas.width/img.width;
 
   const sy =
-    canvas.height / img.height;
+    canvas.height/img.height;
 
   baseScale =
     Math.min(sx,sy);
 
   const w =
-    img.width * baseScale;
+    img.width*baseScale;
 
   const h =
-    img.height * baseScale;
+    img.height*baseScale;
 
   baseOffX =
     (canvas.width-w)/2;
@@ -1258,23 +2220,24 @@ function fitImage(resetView=false){
 
   if(resetView){
 
-    zoom = 1;
+    zoom=1;
+    panX=0;
+    panY=0;
 
-    panX = 0;
-    panY = 0;
   }
+
 }
 
 function currentScale(){
-  return baseScale * zoom;
+  return baseScale*zoom;
 }
 
 function imageX(){
-  return baseOffX + panX;
+  return baseOffX+panX;
 }
 
 function imageY(){
-  return baseOffY + panY;
+  return baseOffY+panY;
 }
 
 function draw(){
@@ -1294,8 +2257,8 @@ function draw(){
     img,
     imageX(),
     imageY(),
-    img.width * currentScale(),
-    img.height * currentScale()
+    img.width*currentScale(),
+    img.height*currentScale()
   );
 
   if(p1){
@@ -1312,12 +2275,14 @@ function draw(){
     );
 
     showMeasure();
+
   }
+
 }
 
 function drawPoint(p){
 
-  ctx.fillStyle =
+  ctx.fillStyle=
     "#ffcc00";
 
   ctx.beginPath();
@@ -1332,31 +2297,21 @@ function drawPoint(p){
 
   ctx.fill();
 
-  ctx.strokeStyle =
+  ctx.strokeStyle=
     "#000";
 
-  ctx.lineWidth =
-    2;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    p.x,
-    p.y,
-    8,
-    0,
-    Math.PI*2
-  );
+  ctx.lineWidth=2;
 
   ctx.stroke();
+
 }
 
 function drawLine(a,b){
 
-  ctx.strokeStyle =
+  ctx.strokeStyle=
     "#00ff99";
 
-  ctx.lineWidth =
+  ctx.lineWidth=
     2.5;
 
   ctx.setLineDash(
@@ -1378,6 +2333,7 @@ function drawLine(a,b){
   ctx.stroke();
 
   ctx.setLineDash([]);
+
 }
 
 function dist(a,b){
@@ -1386,14 +2342,15 @@ function dist(a,b){
     a.x-b.x,
     a.y-b.y
   );
+
 }
 
 function showMeasure(){
 
   if(!cmPerPx){
 
-    resultBox.innerHTML =
-      "<span style='color:#e02020'>Calibrá primero la escala</span>";
+    resultBox.innerHTML=
+      "<span style='color:#777'>Calibrá primero la escala</span>";
 
     return;
   }
@@ -1402,10 +2359,10 @@ function showMeasure(){
     dist(p1,p2) *
     cmPerPx;
 
-  ultimaMedidaCm =
+  ultimaMedidaCm=
     cm;
 
-  resultBox.innerHTML = `
+  resultBox.innerHTML=`
 
     <div class="medida">
       ${cm.toFixed(1)} cm
@@ -1418,30 +2375,49 @@ function showMeasure(){
       <button
         class="btn-green"
         onclick="usarAncho()">
+
         → Usar como ancho
+
       </button>
 
       <button
         class="btn-blue"
         onclick="usarAlto()">
+
         → Usar como alto
+
       </button>
 
     </div>
 
   `;
+
 }
 
 function usarAncho(){
 
-  document.getElementById("ancho").value =
+  if(ultimaMedidaCm<=0){
+    return;
+  }
+
+  document.getElementById(
+    "ancho"
+  ).value=
     ultimaMedidaCm.toFixed(1);
+
 }
 
 function usarAlto(){
 
-  document.getElementById("alto").value =
+  if(ultimaMedidaCm<=0){
+    return;
+  }
+
+  document.getElementById(
+    "alto"
+  ).value=
     ultimaMedidaCm.toFixed(1);
+
 }
 
 fileInput.addEventListener(
@@ -1455,46 +2431,48 @@ fileInput.addEventListener(
       return;
     }
 
-    const reader =
+    const reader=
       new FileReader();
 
-    reader.onload = ()=>{
+    reader.onload=()=>{
 
-      const newImg =
+      const newImg=
         new Image();
 
-      newImg.onload = ()=>{
+      newImg.onload=()=>{
 
-        img =
-          newImg;
+        img=newImg;
 
-        imgLoaded =
-          true;
+        imgLoaded=true;
 
-        p1 =
-          null;
+        p1=null;
+        p2=null;
+        cmPerPx=null;
 
-        p2 =
-          null;
-
-        cmPerPx =
-          null;
-
-        resultBox.innerHTML =
+        resultBox.innerHTML=
           "Imagen cargada. Marcá 2 puntos para calibrar.";
+
+        status(
+          "medidorStatus",
+          "",
+          ""
+        );
 
         resizeCanvas();
 
         fitImage(true);
 
         draw();
+
       };
 
-      newImg.src =
+      newImg.src=
         reader.result;
+
     };
 
     reader.readAsDataURL(f);
+
   }
 );
 
@@ -1512,127 +2490,132 @@ canvas.addEventListener(
     const r =
       canvas.getBoundingClientRect();
 
-    const p = {
+    const p={
       x:e.clientX-r.left,
       y:e.clientY-r.top
     };
 
     if(!p1){
 
-      p1 =
-        p;
+      p1=p;
 
     }else if(!p2){
 
-      p2 =
-        p;
+      p2=p;
 
     }else{
 
-      p1 =
-        p;
+      p1=p;
+      p2=null;
 
-      p2 =
-        null;
     }
 
     draw();
+
   }
 );
 
-document.getElementById("setScale")
-.addEventListener(
-  "click",
-  ()=>{
+document
+  .getElementById("setScale")
+  .addEventListener(
+    "click",
+    ()=>{
 
-    if(!p1 || !p2){
+      if(!p1 || !p2){
 
-      alert("Marcá 2 puntos primero");
+        status(
+          "medidorStatus",
+          "Marcá dos puntos primero.",
+          "error"
+        );
 
-      return;
-    }
+        return;
+      }
 
-    const real =
-      parseFloat(
-        realInput.value
+      const real =
+        parseFloat(
+          realInput.value
+        );
+
+      if(
+        !Number.isFinite(real) ||
+        real<=0
+      ){
+
+        status(
+          "medidorStatus",
+          "Ingresá una medida real.",
+          "error"
+        );
+
+        return;
+      }
+
+      cmPerPx =
+        real /
+        dist(p1,p2);
+
+      ultimaMedidaCm=
+        real;
+
+      status(
+        "medidorStatus",
+        "Escala guardada.",
+        "ok"
       );
 
-    if(!real || real<=0){
+      draw();
 
-      alert("Ingresá la medida real en cm");
-
-      return;
     }
+  );
 
-    cmPerPx =
-      real /
-      dist(p1,p2);
+document
+  .getElementById("resetPoints")
+  .addEventListener(
+    "click",
+    ()=>{
 
-    ultimaMedidaCm =
-      real;
+      p1=null;
+      p2=null;
 
-    draw();
-  }
-);
+      resultBox.innerHTML=
+        cmPerPx
+          ? "Escala guardada. Marcá dos puntos."
+          : "Puntos reseteados";
 
-document.getElementById("resetPoints")
-.addEventListener(
-  "click",
-  ()=>{
+      draw();
 
-    p1 =
-      null;
+    }
+  );
 
-    p2 =
-      null;
+document
+  .getElementById("resetZoom")
+  .addEventListener(
+    "click",
+    ()=>{
 
-    resultBox.innerHTML =
-      "Puntos reseteados";
+      zoom=1;
+      panX=0;
+      panY=0;
 
-    draw();
-  }
-);
+      draw();
 
-document.getElementById("resetZoom")
-.addEventListener(
-  "click",
-  ()=>{
-
-    zoom =
-      1;
-
-    panX =
-      0;
-
-    panY =
-      0;
-
-    draw();
-  }
-);
+    }
+  );
 
 function limpiarMedidor(){
 
-  imgLoaded =
-    false;
+  imgLoaded=false;
 
-  p1 =
-    null;
+  p1=null;
+  p2=null;
 
-  p2 =
-    null;
+  cmPerPx=null;
 
-  cmPerPx =
-    null;
+  zoom=1;
 
-  zoom =
-    1;
-
-  panX =
-    0;
-
-  panY =
-    0;
+  panX=0;
+  panY=0;
 
   ctx.clearRect(
     0,
@@ -1641,18 +2624,22 @@ function limpiarMedidor(){
     canvas.height
   );
 
-  resultBox.innerHTML =
+  resultBox.innerHTML=
     "Subí una foto para comenzar";
 
-  fileInput.value =
-    "";
+  fileInput.value="";
+  realInput.value="";
 
-  realInput.value =
-    "";
+  status(
+    "medidorStatus",
+    "",
+    ""
+  );
+
 }
 
 /* =====================================================
-PINCH ZOOM
+   PINCH ZOOM
 ===================================================== */
 
 function getDist(t1,t2){
@@ -1661,6 +2648,7 @@ function getDist(t1,t2){
     t1.clientX-t2.clientX,
     t1.clientY-t2.clientY
   );
+
 }
 
 function getCenter(t1,t2){
@@ -1669,6 +2657,7 @@ function getCenter(t1,t2){
     x:(t1.clientX+t2.clientX)/2,
     y:(t1.clientY+t2.clientY)/2
   };
+
 }
 
 function clamp(v,mn,mx){
@@ -1677,6 +2666,7 @@ function clamp(v,mn,mx){
     mn,
     Math.min(mx,v)
   );
+
 }
 
 canvas.addEventListener(
@@ -1685,21 +2675,22 @@ canvas.addEventListener(
 
     if(e.touches.length===2){
 
-      isPinching =
-        true;
+      isPinching=true;
 
-      lastDist =
+      lastDist=
         getDist(
           e.touches[0],
           e.touches[1]
         );
 
-      lastCenter =
+      lastCenter=
         getCenter(
           e.touches[0],
           e.touches[1]
         );
+
     }
+
   },
   {passive:true}
 );
@@ -1733,6 +2724,7 @@ canvas.addEventListener(
         panY +=
           centerNow.y -
           lastCenter.y;
+
       }
 
       if(lastDist){
@@ -1752,17 +2744,17 @@ canvas.addEventListener(
           centerNow.y -
           rect.top;
 
-        const prev =
+        const prev=
           currentScale();
 
-        zoom =
+        zoom=
           clamp(
-            zoom * factor,
+            zoom*factor,
             1,
             8
           );
 
-        const nw =
+        const nw=
           currentScale();
 
         panX +=
@@ -1772,16 +2764,19 @@ canvas.addEventListener(
         panY +=
           (cy-imageY()) *
           (1-nw/prev);
+
       }
 
-      lastDist =
+      lastDist=
         distNow;
 
-      lastCenter =
+      lastCenter=
         centerNow;
 
       draw();
+
     }
+
   },
   {passive:false}
 );
@@ -1792,11 +2787,8 @@ canvas.addEventListener(
 
     if(e.touches.length<2){
 
-      lastDist =
-        null;
-
-      lastCenter =
-        null;
+      lastDist=null;
+      lastCenter=null;
 
       setTimeout(
         ()=>{
@@ -1804,22 +2796,36 @@ canvas.addEventListener(
         },
         80
       );
+
     }
+
   }
 );
 
 window.addEventListener(
   "resize",
-  resizeCanvas
+  ()=>{
+
+    resizeCanvas();
+    resizeDesignCanvas();
+
+  }
 );
 
 resizeCanvas();
 
 /* =====================================================
-FICHA PNG
+   FICHA PNG
 ===================================================== */
 
-function roundRectPath(c,x,y,w,h,r){
+function roundRectPath(
+  c,
+  x,
+  y,
+  w,
+  h,
+  r
+){
 
   c.beginPath();
 
@@ -1861,37 +2867,41 @@ function roundRectPath(c,x,y,w,h,r){
   );
 
   c.closePath();
+
 }
 
-function rbox(c,x,y,w,h,fill,stroke,r){
+function rbox(
+  c,
+  x,
+  y,
+  w,
+  h,
+  fill,
+  stroke,
+  r=10
+){
 
-  r =
-    r || 10;
-
-  c.fillStyle =
+  c.fillStyle=
     fill;
 
-  c.strokeStyle =
+  c.strokeStyle=
     stroke;
 
-  c.lineWidth =
+  c.lineWidth=
     1.5;
 
   roundRectPath(
-    c,
-    x,
-    y,
-    w,
-    h,
-    r
+    c,x,y,w,h,r
   );
 
   c.fill();
-
   c.stroke();
+
 }
 
-function generarRender(modo="cliente"){
+async function generarRender(
+  modo="cliente"
+){
 
   const a =
     parseFloat(
@@ -1903,26 +2913,66 @@ function generarRender(modo="cliente"){
       document.getElementById("alto").value
     );
 
-  if(!a || !b){
+  if(
+    !Number.isFinite(a) ||
+    !Number.isFinite(b) ||
+    a<=0 ||
+    b<=0
+  ){
 
-    alert("Ingresá ancho y alto en Cotizar");
+    status(
+      "fichaStatus",
+      "Completá ancho y alto en Cotizar.",
+      "error"
+    );
 
-    return;
+    return false;
   }
 
-  calcular(modo);
+  if(!calcular(modo)){
+    return false;
+  }
+
+  const nombre =
+    textoCartel.value.trim() ||
+    "CARTEL";
+
+  const fuente =
+    tipografia.value;
+
+  /*
+    Intenta esperar a que la tipografía esté lista,
+    sin mostrar ninguna advertencia.
+  */
+
+  try{
+
+    if(document.fonts){
+
+      await document.fonts.load(
+        `60px "${fuente}"`
+      );
+
+    }
+
+  }catch(e){}
+
+  const tipoIluminacion =
+    tipoLed.value==="pixel"
+      ? "Pixel LED RGB · Control app"
+      : "Monocromático · "+
+        nombreColorSeleccionado;
 
   const rc =
-    document.getElementById("renderCanvas");
+    document.getElementById(
+      "renderCanvas"
+    );
 
   const c =
     rc.getContext("2d");
 
-  const W =
-    1200;
-
-  const H =
-    900;
+  const W=1200;
+  const H=900;
 
   c.clearRect(
     0,
@@ -1931,28 +2981,7 @@ function generarRender(modo="cliente"){
     H
   );
 
-  const nombre =
-    textoCartel.value ||
-    "CARTEL";
-
-  const fuente =
-    tipografia.value;
-
-  const tipoIluminacion =
-    tipoLed.value === "pixel"
-      ? "Pixel LED RGB · Control app"
-      : "Monocromático · " +
-        nombreColorSeleccionado;
-
-  const ancho =
-    document.getElementById("ancho").value;
-
-  const alto =
-    document.getElementById("alto").value;
-
-  /* FONDO */
-
-  c.fillStyle =
+  c.fillStyle=
     "#080808";
 
   c.fillRect(
@@ -1962,32 +2991,27 @@ function generarRender(modo="cliente"){
     H
   );
 
-  c.strokeStyle =
+  c.strokeStyle=
     "#151515";
 
-  c.lineWidth =
-    1;
-
-  for(let x=0;x<W;x+=40){
+  for(
+    let x=0;
+    x<W;
+    x+=40
+  ){
 
     c.beginPath();
 
-    c.moveTo(
-      x,
-      0
-    );
-
-    c.lineTo(
-      x,
-      H
-    );
+    c.moveTo(x,0);
+    c.lineTo(x,H);
 
     c.stroke();
+
   }
 
   /* HEADER */
 
-  c.fillStyle =
+  c.fillStyle=
     "#c41010";
 
   c.fillRect(
@@ -1997,13 +3021,13 @@ function generarRender(modo="cliente"){
     60
   );
 
-  c.fillStyle =
+  c.fillStyle=
     "#fff";
 
-  c.font =
+  c.font=
     "bold 24px Arial";
 
-  c.textAlign =
+  c.textAlign=
     "left";
 
   c.fillText(
@@ -2012,66 +3036,58 @@ function generarRender(modo="cliente"){
     39
   );
 
-  c.textAlign =
+  c.textAlign=
     "right";
 
-  c.font =
+  c.font=
     "16px Arial";
 
-  c.fillStyle =
+  c.fillStyle=
     "#ffaaaa";
 
-  const tipoFicha =
+  c.fillText(
     modo==="revendedor"
       ? `Ficha revendedor · ${porcentajeDescuento.toFixed(1)}% OFF`
-      : "Ficha cliente";
-
-  c.fillText(
-    tipoFicha,
+      : "Ficha cliente",
     W-24,
     39
   );
 
-  c.textAlign =
+  c.textAlign=
     "left";
 
-  const LX =
-    24;
+  const LX=24;
+  const LY=80;
+  const LW=500;
 
-  const LY =
-    80;
+  /* TEXTO */
 
-  const LW =
-    500;
-
-  /* NOMBRE */
-
-  c.fillStyle =
+  c.fillStyle=
     tipoLed.value==="mono"
       ? colorSeleccionado
       : "#ffffff";
 
-  c.shadowColor =
+  c.shadowColor=
     tipoLed.value==="mono"
       ? colorSeleccionado
       : "#00aaff";
 
-  c.shadowBlur =
-    15;
+  c.shadowBlur=15;
 
-  c.font =
-    `bold 60px "${fuente}"`;
+  c.font=
+    `60px "${fuente}", Arial`;
 
   c.fillText(
-    nombre.toUpperCase().slice(0,16),
+    nombre
+      .toUpperCase()
+      .slice(0,18),
     LX,
     LY+62
   );
 
-  c.shadowBlur =
-    0;
+  c.shadowBlur=0;
 
-  c.fillStyle =
+  c.fillStyle=
     "#c41010";
 
   c.fillRect(
@@ -2081,10 +3097,10 @@ function generarRender(modo="cliente"){
     5
   );
 
-  c.fillStyle =
+  c.fillStyle=
     "#888";
 
-  c.font =
+  c.font=
     "20px Arial";
 
   c.fillText(
@@ -2093,12 +3109,12 @@ function generarRender(modo="cliente"){
     LY+108
   );
 
-  /* FOTO */
+  /* FOTO / SIMULACIÓN */
 
-  const imgY =
+  const imgY=
     LY+126;
 
-  const imgH =
+  const imgH=
     200;
 
   if(imgLoaded){
@@ -2122,20 +3138,6 @@ function generarRender(modo="cliente"){
       imgH
     );
 
-    c.fillStyle =
-      "rgba(0,0,0,.25)";
-
-    roundRectPath(
-      c,
-      LX,
-      imgY,
-      LW,
-      imgH,
-      10
-    );
-
-    c.fill();
-
   }else{
 
     rbox(
@@ -2148,50 +3150,42 @@ function generarRender(modo="cliente"){
       "#222"
     );
 
-    c.textAlign =
+    c.textAlign=
       "center";
 
-    c.shadowBlur =
-      22;
+    c.shadowBlur=20;
 
-    if(tipoLed.value==="mono"){
+    c.fillStyle=
+      tipoLed.value==="mono"
+        ? colorSeleccionado
+        : "#ffffff";
 
-      c.fillStyle =
-        colorSeleccionado;
+    c.shadowColor=
+      tipoLed.value==="mono"
+        ? colorSeleccionado
+        : "#00aaff";
 
-      c.shadowColor =
-        colorSeleccionado;
-
-    }else{
-
-      c.fillStyle =
-        "#ffffff";
-
-      c.shadowColor =
-        "#00aaff";
-    }
-
-    c.font =
-      `bold 50px "${fuente}"`;
+    c.font=
+      `50px "${fuente}", Arial`;
 
     c.fillText(
       nombre.slice(0,18),
       LX+LW/2,
-      imgY+110
+      imgY+115
     );
 
-    c.shadowBlur =
-      0;
+    c.shadowBlur=0;
 
-    c.textAlign =
+    c.textAlign=
       "left";
+
   }
 
   /* DIMENSIONES */
 
   const DY =
-    imgY +
-    imgH +
+    imgY+
+    imgH+
     16;
 
   rbox(
@@ -2204,11 +3198,8 @@ function generarRender(modo="cliente"){
     "#2a2a2a"
   );
 
-  c.fillStyle =
-    "#666";
-
-  c.font =
-    "12px Arial";
+  c.fillStyle="#666";
+  c.font="12px Arial";
 
   c.fillText(
     "DIMENSIONES",
@@ -2216,23 +3207,17 @@ function generarRender(modo="cliente"){
     DY+22
   );
 
-  c.fillStyle =
-    "#fff";
-
-  c.font =
-    "bold 38px Arial";
+  c.fillStyle="#fff";
+  c.font="bold 38px Arial";
 
   c.fillText(
-    ancho+" × "+alto,
+    `${a} × ${b}`,
     LX+16,
     DY+68
   );
 
-  c.fillStyle =
-    "#888";
-
-  c.font =
-    "16px Arial";
+  c.fillStyle="#888";
+  c.font="16px Arial";
 
   c.fillText(
     "cm",
@@ -2241,9 +3226,7 @@ function generarRender(modo="cliente"){
   );
 
   const area =
-    (parseFloat(ancho)||0) *
-    (parseFloat(alto)||0) /
-    10000;
+    (a*b)/10000;
 
   rbox(
     c,
@@ -2255,11 +3238,8 @@ function generarRender(modo="cliente"){
     "#2a2a2a"
   );
 
-  c.fillStyle =
-    "#666";
-
-  c.font =
-    "12px Arial";
+  c.fillStyle="#666";
+  c.font="12px Arial";
 
   c.fillText(
     "SUPERFICIE",
@@ -2267,11 +3247,8 @@ function generarRender(modo="cliente"){
     DY+22
   );
 
-  c.fillStyle =
-    "#fff";
-
-  c.font =
-    "bold 38px Arial";
+  c.fillStyle="#fff";
+  c.font="bold 38px Arial";
 
   c.fillText(
     area.toFixed(2),
@@ -2279,11 +3256,8 @@ function generarRender(modo="cliente"){
     DY+68
   );
 
-  c.fillStyle =
-    "#888";
-
-  c.font =
-    "16px Arial";
+  c.fillStyle="#888";
+  c.font="16px Arial";
 
   c.fillText(
     "m²",
@@ -2293,7 +3267,7 @@ function generarRender(modo="cliente"){
 
   /* PRECIOS */
 
-  const PY =
+  const PY=
     DY+112;
 
   rbox(
@@ -2306,11 +3280,8 @@ function generarRender(modo="cliente"){
     "#00c853"
   );
 
-  c.fillStyle =
-    "#00c853";
-
-  c.font =
-    "bold 13px Arial";
+  c.fillStyle="#00c853";
+  c.font="bold 13px Arial";
 
   c.fillText(
     "PIXEL LED RGB · CONTROL APP CELULAR",
@@ -2318,11 +3289,8 @@ function generarRender(modo="cliente"){
     PY+24
   );
 
-  c.fillStyle =
-    "#fff";
-
-  c.font =
-    "bold 48px Arial";
+  c.fillStyle="#fff";
+  c.font="bold 48px Arial";
 
   c.fillText(
     "$"+fmt(precioPixel),
@@ -2340,11 +3308,8 @@ function generarRender(modo="cliente"){
     "#2a2a2a"
   );
 
-  c.fillStyle =
-    "#888";
-
-  c.font =
-    "bold 13px Arial";
+  c.fillStyle="#888";
+  c.font="bold 13px Arial";
 
   c.fillText(
     "MONOCROMÁTICO · BLANCO FRÍO / COLOR FIJO",
@@ -2352,11 +3317,8 @@ function generarRender(modo="cliente"){
     PY+142
   );
 
-  c.fillStyle =
-    "#ccc";
-
-  c.font =
-    "bold 38px Arial";
+  c.fillStyle="#ccc";
+  c.font="bold 38px Arial";
 
   c.fillText(
     "$"+fmt(precioMono),
@@ -2366,14 +3328,9 @@ function generarRender(modo="cliente"){
 
   /* DERECHA */
 
-  const RX =
-    548;
-
-  const RY =
-    80;
-
-  const RW =
-    W-RX-24;
+  const RX=548;
+  const RY=80;
+  const RW=W-RX-24;
 
   rbox(
     c,
@@ -2385,11 +3342,8 @@ function generarRender(modo="cliente"){
     "#1e1e1e"
   );
 
-  c.fillStyle =
-    "#c41010";
-
-  c.font =
-    "bold 14px Arial";
+  c.fillStyle="#c41010";
+  c.font="bold 14px Arial";
 
   c.fillText(
     "ESPECIFICACIONES TÉCNICAS",
@@ -2397,17 +3351,11 @@ function generarRender(modo="cliente"){
     RY+30
   );
 
-  const specs = [
+  const specs=[
 
-    [
-      "TEXTO",
-      nombre
-    ],
+    ["TEXTO",nombre],
 
-    [
-      "TIPOGRAFÍA",
-      fuente
-    ],
+    ["TIPOGRAFÍA",fuente],
 
     [
       "VISTA SELECCIONADA",
@@ -2441,17 +3389,14 @@ function generarRender(modo="cliente"){
 
   ];
 
-  let sy =
+  let sy=
     RY+64;
 
   specs.forEach(
     ([k,v])=>{
 
-      c.fillStyle =
-        "#555";
-
-      c.font =
-        "11px Arial";
+      c.fillStyle="#555";
+      c.font="11px Arial";
 
       c.fillText(
         k,
@@ -2459,11 +3404,8 @@ function generarRender(modo="cliente"){
         sy
       );
 
-      c.fillStyle =
-        "#fff";
-
-      c.font =
-        "16px Arial";
+      c.fillStyle="#fff";
+      c.font="16px Arial";
 
       c.fillText(
         String(v).slice(0,43),
@@ -2471,8 +3413,7 @@ function generarRender(modo="cliente"){
         sy+22
       );
 
-      c.strokeStyle =
-        "#1a1a1a";
+      c.strokeStyle="#1a1a1a";
 
       c.beginPath();
 
@@ -2488,19 +3429,15 @@ function generarRender(modo="cliente"){
 
       c.stroke();
 
-      sy +=
-        58;
+      sy+=58;
+
     }
   );
 
-  sy +=
-    5;
+  sy+=5;
 
-  c.fillStyle =
-    "#c41010";
-
-  c.font =
-    "bold 13px Arial";
+  c.fillStyle="#c41010";
+  c.font="bold 13px Arial";
 
   c.fillText(
     "MÁS INFORMACIÓN",
@@ -2508,14 +3445,10 @@ function generarRender(modo="cliente"){
     sy
   );
 
-  sy +=
-    23;
+  sy+=23;
 
-  c.fillStyle =
-    "#4488ff";
-
-  c.font =
-    "14px Arial";
+  c.fillStyle="#4488ff";
+  c.font="14px Arial";
 
   c.fillText(
     "instagram.com/corporeos.deckled",
@@ -2523,8 +3456,7 @@ function generarRender(modo="cliente"){
     sy
   );
 
-  sy +=
-    22;
+  sy+=22;
 
   c.fillText(
     "www.deckled.com.ar/corporeos",
@@ -2532,7 +3464,7 @@ function generarRender(modo="cliente"){
     sy
   );
 
-  const LOGOY =
+  const LOGOY=
     H-72;
 
   rbox(
@@ -2545,13 +3477,12 @@ function generarRender(modo="cliente"){
     "#222"
   );
 
-  c.fillStyle =
-    "#c41010";
+  c.fillStyle="#c41010";
 
-  c.font =
+  c.font=
     "italic bold 32px Arial";
 
-  c.textAlign =
+  c.textAlign=
     "center";
 
   c.fillText(
@@ -2560,14 +3491,30 @@ function generarRender(modo="cliente"){
     LOGOY+36
   );
 
-  c.textAlign =
+  c.textAlign=
     "left";
+
+  status(
+    "fichaStatus",
+    "Ficha generada.",
+    "ok"
+  );
+
+  return true;
+
 }
 
-function drawCover(c,image,x,y,w,h){
+function drawCover(
+  c,
+  image,
+  x,
+  y,
+  w,
+  h
+){
 
   const ir =
-    image.width /
+    image.width/
     image.height;
 
   const rr =
@@ -2580,31 +3527,26 @@ function drawCover(c,image,x,y,w,h){
 
   if(ir>rr){
 
-    dh =
-      h;
+    dh=h;
 
-    dw =
-      h*ir;
+    dw=h*ir;
 
-    dx =
+    dx=
       x-(dw-w)/2;
 
-    dy =
-      y;
+    dy=y;
 
   }else{
 
-    dw =
-      w;
+    dw=w;
 
-    dh =
-      w/ir;
+    dh=w/ir;
 
-    dx =
-      x;
+    dx=x;
 
-    dy =
+    dy=
       y-(dh-h)/2;
+
   }
 
   c.save();
@@ -2629,17 +3571,25 @@ function drawCover(c,image,x,y,w,h){
   );
 
   c.restore();
+
 }
 
 /* =====================================================
-DESCARGAR PNG
+   DESCARGA
 ===================================================== */
 
-async function descargarRender(modo="cliente"){
+async function descargarRender(
+  modo="cliente"
+){
 
   try{
 
-    generarRender(modo);
+    const generado =
+      await generarRender(modo);
+
+    if(!generado){
+      return;
+    }
 
     const rc =
       document.getElementById(
@@ -2653,31 +3603,22 @@ async function descargarRender(modo="cliente"){
 
     const blob =
       await new Promise(
-        (resolve,reject)=>{
+        resolve=>{
 
           rc.toBlob(
             resultado=>{
-
-              if(resultado){
-
-                resolve(
-                  resultado
-                );
-
-              }else{
-
-                reject(
-                  new Error(
-                    "No se pudo crear el archivo PNG"
-                  )
-                );
-              }
+              resolve(resultado);
             },
             "image/png",
             1
           );
+
         }
       );
+
+    if(!blob){
+      return;
+    }
 
     const archivo =
       new File(
@@ -2688,6 +3629,10 @@ async function descargarRender(modo="cliente"){
         }
       );
 
+    /*
+      iPhone / iPad
+    */
+
     if(
       navigator.share &&
       navigator.canShare &&
@@ -2696,37 +3641,40 @@ async function descargarRender(modo="cliente"){
       })
     ){
 
-      await navigator.share({
-        files:[archivo],
-        title:"Ficha DeckLed",
-        text:"Ficha técnica DeckLed"
-      });
+      try{
+
+        await navigator.share({
+          files:[archivo],
+          title:"Ficha DeckLed"
+        });
+
+      }catch(e){
+        /*
+          Cancelación silenciosa.
+          No aparece ninguna alerta.
+        */
+      }
 
       return;
+
     }
 
+    /*
+      PC / Android
+    */
+
     const url =
-      URL.createObjectURL(
-        blob
-      );
+      URL.createObjectURL(blob);
 
     const link =
-      document.createElement(
-        "a"
-      );
+      document.createElement("a");
 
-    link.href =
-      url;
+    link.href=url;
 
-    link.download =
+    link.download=
       nombreArchivo;
 
-    link.style.display =
-      "none";
-
-    document.body.appendChild(
-      link
-    );
+    document.body.appendChild(link);
 
     link.click();
 
@@ -2734,74 +3682,26 @@ async function descargarRender(modo="cliente"){
 
     setTimeout(
       ()=>{
-        URL.revokeObjectURL(
-          url
-        );
+        URL.revokeObjectURL(url);
       },
       60000
     );
 
-  }catch(err){
+  }catch(e){
 
-    if(
-      err &&
-      err.name==="AbortError"
-    ){
-      return;
-    }
+    /*
+      Error silencioso.
+      Sin alert().
+    */
 
-    try{
+    status(
+      "fichaStatus",
+      "No se pudo descargar la ficha.",
+      "error"
+    );
 
-      const rc =
-        document.getElementById(
-          "renderCanvas"
-        );
-
-      const dataUrl =
-        rc.toDataURL(
-          "image/png"
-        );
-
-      const nuevaVentana =
-        window.open();
-
-      if(nuevaVentana){
-
-        nuevaVentana.document.write(
-          '<html>' +
-          '<head><title>Ficha DeckLed</title></head>' +
-          '<body style="margin:0;background:#111;text-align:center">' +
-          '<img src="' +
-          dataUrl +
-          '" style="max-width:100%;height:auto">' +
-          '<p style="color:white;font-family:Arial;padding:16px">' +
-          'Mantené presionada la imagen y elegí Guardar en Fotos.' +
-          '</p>' +
-          '</body>' +
-          '</html>'
-        );
-
-        nuevaVentana.document.close();
-
-      }else{
-
-        alert(
-          "Permití las ventanas emergentes para guardar el PNG."
-        );
-      }
-
-    }catch(fallbackError){
-
-      alert(
-        "Error al generar el PNG: " +
-        fallbackError.message
-      );
-
-      console.error(
-        fallbackError
-      );
-    }
   }
+
 }
 
 </script>
