@@ -11,7 +11,27 @@
 
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Audiowide&family=Baloo+2:wght@400;700;800&family=Bebas+Neue&family=Bungee&family=League+Spartan:wght@400;700;900&family=Lobster&family=Luckiest+Guy&family=Michroma&family=Nosifer&family=Orbitron:wght@400;700;900&family=Oxanium:wght@400;700;800&family=Pacifico&family=Pixelify+Sans:wght@400;700&family=Yellowtail&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Audiowide&family=Baloo+2:wght@400;700;800&family=Bebas+Neue&family=Bungee&family=League+Spartan:wght@400;700;900&family=Lobster&family=Luckiest+Guy&family=Michroma&family=Orbitron:wght@400;700;900&family=Oxanium:wght@400;700;800&family=Pacifico&family=Pixelify+Sans:wght@400;700&family=Yellowtail&display=swap');
+
+@font-face{
+  font-family:"Deck Led Drip Neon";
+  src:
+    url("assets/fonts/DeckLedDripNeon.woff2") format("woff2"),
+    url("assets/fonts/DeckLedDripNeon.woff") format("woff"),
+    url("assets/fonts/DeckLedDripNeon.ttf") format("truetype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+@font-face{
+  font-family:"Deck Led Drippy Bubble";
+  src:
+    url("assets/fonts/DeckLedDrippyBubble.woff2") format("woff2"),
+    url("assets/fonts/DeckLedDrippyBubble.woff") format("woff"),
+    url("assets/fonts/DeckLedDrippyBubble.ttf") format("opentype");
+  font-display:swap;
+}
 
 *{
   box-sizing:border-box;
@@ -334,7 +354,7 @@ button:active{
 }
 
 .preview-text.deckled-drip{
-  font-family:"Nosifer","Arial Black",sans-serif !important;
+  font-family:"Deck Led Drip Neon","Deck Led Drippy Bubble","Arial Black",sans-serif !important;
   font-weight:400;
   letter-spacing:-1px;
   line-height:1.1;
@@ -1359,7 +1379,7 @@ function obtenerFuentePreview(){
     tipografia.value;
 
   if(f==="Deck Led Graffiti Drip"){
-    return '"Nosifer","Arial Black",sans-serif';
+    return '"Deck Led Drip Neon","Deck Led Drippy Bubble","Arial Black",sans-serif';
   }
 
   if(f==="Cursiva"){
@@ -3546,7 +3566,7 @@ function fuenteCanvas(){
     tipografia.value;
 
   if(f==="Deck Led Graffiti Drip"){
-    return '"Nosifer"';
+    return '"Deck Led Drip Neon","Deck Led Drippy Bubble","Arial Black"';
   }
 
   if(f==="Cursiva"){
@@ -3758,9 +3778,28 @@ async function generarRender(
 
       if(document.fonts){
 
-        await document.fonts.load(
-          `70px ${fuente}`
-        );
+        if(
+          tipografia.value===
+          "Deck Led Graffiti Drip"
+        ){
+
+          await Promise.all([
+            document.fonts.load(
+              '70px "Deck Led Drip Neon"'
+            ),
+            document.fonts.load(
+              '70px "Deck Led Drippy Bubble"'
+            )
+          ]);
+
+        }else{
+
+          await document.fonts.load(
+            `70px ${fuente}`
+          );
+        }
+
+        await document.fonts.ready;
       }
 
     }catch(e){}
