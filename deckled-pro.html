@@ -646,7 +646,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v2.9
+    v3.0
   </div>
 
 </div>
@@ -1133,6 +1133,18 @@ button:active{
       style="margin-top:6px">
       Calcular precio revendedor
     </button>
+
+    <button
+      id="toggleBordesPixel"
+      class="btn-dark"
+      onclick="toggleBordesPixel()"
+      style="margin-top:10px">
+      ＋ Agregar opción Bordes Pixel
+    </button>
+
+    <div class="hint" id="bordesPixelHint">
+      Opcional · activalo solo cuando el diseño permita realizar bordes Pixel.
+    </div>
 
   </div>
 
@@ -2196,9 +2208,14 @@ document
 
 let precioPixel = 0;
 let precioMono = 0;
+let precioBordesPixel = 0;
 
 let precioPixelCliente = 0;
 let precioMonoCliente = 0;
+
+// Esta opción la decide el vendedor para cada presupuesto.
+// Cuando está activa, Bordes Pixel se muestra como tercera alternativa.
+let mostrarBordesPixel = false;
 
 let porcentajeDescuento = 0;
 
@@ -2207,6 +2224,77 @@ let modoPrecioActual =
 
 let ultimaMedidaCm =
   0;
+
+function actualizarBotonBordesPixel(){
+
+  const btn =
+    document.getElementById(
+      "toggleBordesPixel"
+    );
+
+  if(!btn){
+    return;
+  }
+
+  if(mostrarBordesPixel){
+
+    btn.textContent =
+      "✓ Bordes Pixel incluido · Quitar opción";
+
+    btn.style.borderColor =
+      "#00b8d4";
+
+    btn.style.color =
+      "#63e8ff";
+
+  }else{
+
+    btn.textContent =
+      "＋ Agregar opción Bordes Pixel";
+
+    btn.style.borderColor =
+      "#34363c";
+
+    btn.style.color =
+      "#ccc";
+  }
+}
+
+function toggleBordesPixel(){
+
+  mostrarBordesPixel =
+    !mostrarBordesPixel;
+
+  actualizarBotonBordesPixel();
+
+  const a =
+    parseFloat(
+      document
+        .getElementById("ancho")
+        .value
+    );
+
+  const b =
+    parseFloat(
+      document
+        .getElementById("alto")
+        .value
+    );
+
+  // Si ya hay medidas cargadas, refresca el mismo modo
+  // (cliente o revendedor) sin obligar a recalcular manualmente.
+  if(
+    Number.isFinite(a) &&
+    Number.isFinite(b) &&
+    a>0 &&
+    b>0
+  ){
+
+    calcular(
+      modoPrecioActual
+    );
+  }
+}
 
 function obtenerDescuentoRevendedor(
   precioReferencia
@@ -2383,6 +2471,14 @@ function calcular(
       10000
     ) * 10000;
 
+  // Bordes Pixel = 1,40 veces el valor Pixel del modo actual.
+  // Se redondea a $10.000 igual que los demás precios.
+  precioBordesPixel =
+    Math.round(
+      (precioPixel * 1.40) /
+      10000
+    ) * 10000;
+
   const etiquetaModo =
     modo==="revendedor"
       ? `REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% OFF`
@@ -2451,6 +2547,30 @@ function calcular(
         $${fmt(precioPixel)}
       </div>
 
+      ${
+        mostrarBordesPixel
+          ? `
+
+            <div
+              class="precio-label"
+              style="margin-top:14px">
+
+              Bordes Pixel LED RGB · opción especial
+
+            </div>
+
+            <div class="precio-val">
+              $${fmt(precioBordesPixel)}
+            </div>
+
+            <div class="hint" style="margin-top:4px">
+              Incluido solo cuando el diseño permite realizar esta terminación.
+            </div>
+
+          `
+          : ""
+      }
+
     `;
 
   generarTexto();
@@ -2484,13 +2604,18 @@ function generarTexto(){
       ? `PRECIO REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% de descuento\n\n`
       : "";
 
+  const lineaBordesPixel =
+    mostrarBordesPixel
+      ? `\n\n⭐ En BORDES PIXEL LED RGB el valor es $${fmt(precioBordesPixel)}`
+      : "";
+
   document
     .getElementById("txt")
     .value =
 
 `${encabezado}❗️En blanco frío o color fijo el valor es $${fmt(precioMono)}
 
-✅ En pixel led con control app celular el valor es $${fmt(precioPixel)}
+✅ En pixel led con control app celular el valor es $${fmt(precioPixel)}${lineaBordesPixel}
 
 💳 Con una seña del 30% ya tomamos el pedido
 
@@ -2585,6 +2710,14 @@ function limpiarCotizador(){
 
   precioMono =
     0;
+
+  precioBordesPixel =
+    0;
+
+  mostrarBordesPixel =
+    false;
+
+  actualizarBotonBordesPixel();
 
   precioPixelCliente =
     0;
@@ -4436,121 +4569,233 @@ async function generarRender(
     845
   );
 
-  /* MONO */
+  if(!mostrarBordesPixel){
 
-  rbox(
-    c,
-    70,
-    875,
-    510,
-    175,
-    "rgba(12,15,21,.9)",
-    "#30333b",
-    24
-  );
+    /* MONO */
 
-  c.fillStyle =
-    "#979aa2";
-
-  c.font =
-    "bold 14px Arial";
-
-  c.fillText(
-    "MONOCROMÁTICO",
-    100,
-    915
-  );
-
-  c.fillStyle =
-    "#666b74";
-
-  c.font =
-    "15px Arial";
-
-  c.fillText(
-    "Blanco frío / color fijo",
-    100,
-    945
-  );
-
-  c.fillStyle =
-    "#fff";
-
-  c.font =
-    "900 49px Arial";
-
-  c.fillText(
-    "$"+fmt(precioMono),
-    100,
-    1015
-  );
-
-  /* PIXEL */
-
-  const priceGrad =
-    c.createLinearGradient(
-      610,
-      0,
-      1130,
-      0
+    rbox(
+      c,
+      70,
+      875,
+      510,
+      175,
+      "rgba(12,15,21,.9)",
+      "#30333b",
+      24
     );
 
-  priceGrad.addColorStop(
-    0,
-    "rgba(0,97,125,.26)"
-  );
+    c.fillStyle =
+      "#979aa2";
 
-  priceGrad.addColorStop(
-    1,
-    "rgba(31,41,115,.36)"
-  );
+    c.font =
+      "bold 14px Arial";
 
-  rbox(
-    c,
-    610,
-    875,
-    520,
-    175,
-    priceGrad,
-    "#21cdea",
-    24
-  );
+    c.fillText(
+      "MONOCROMÁTICO",
+      100,
+      915
+    );
 
-  c.fillStyle =
-    "#22dcff";
+    c.fillStyle =
+      "#666b74";
 
-  c.font =
-    "bold 14px Arial";
+    c.font =
+      "15px Arial";
 
-  c.fillText(
-    "PIXEL LED RGB",
-    640,
-    915
-  );
+    c.fillText(
+      "Blanco frío / color fijo",
+      100,
+      945
+    );
 
-  c.fillStyle =
-    "#7e8490";
+    c.fillStyle =
+      "#fff";
 
-  c.font =
-    "15px Arial";
+    c.font =
+      "900 49px Arial";
 
-  c.fillText(
-    "Control por app celular",
-    640,
-    945
-  );
+    c.fillText(
+      "$"+fmt(precioMono),
+      100,
+      1015
+    );
 
-  c.fillStyle =
-    "#fff";
+    /* PIXEL */
 
-  c.font =
-    "900 49px Arial";
+    const priceGrad =
+      c.createLinearGradient(
+        610,
+        0,
+        1130,
+        0
+      );
 
-  c.fillText(
-    "$"+fmt(precioPixel),
-    640,
-    1015
-  );
+    priceGrad.addColorStop(
+      0,
+      "rgba(0,97,125,.26)"
+    );
+
+    priceGrad.addColorStop(
+      1,
+      "rgba(31,41,115,.36)"
+    );
+
+    rbox(
+      c,
+      610,
+      875,
+      520,
+      175,
+      priceGrad,
+      "#21cdea",
+      24
+    );
+
+    c.fillStyle =
+      "#22dcff";
+
+    c.font =
+      "bold 14px Arial";
+
+    c.fillText(
+      "PIXEL LED RGB",
+      640,
+      915
+    );
+
+    c.fillStyle =
+      "#7e8490";
+
+    c.font =
+      "15px Arial";
+
+    c.fillText(
+      "Control por app celular",
+      640,
+      945
+    );
+
+    c.fillStyle =
+      "#fff";
+
+    c.font =
+      "900 49px Arial";
+
+    c.fillText(
+      "$"+fmt(precioPixel),
+      640,
+      1015
+    );
+
+  }else{
+
+    /* =================================================
+       3 OPCIONES: MONO + PIXEL + BORDES PIXEL
+    ================================================= */
+
+    const cardW = 343;
+    const gap = 15;
+    const xMono = 70;
+    const xPixel = xMono + cardW + gap;
+    const xBordes = xPixel + cardW + gap;
+
+    /* MONO */
+
+    rbox(
+      c,
+      xMono,
+      875,
+      cardW,
+      175,
+      "rgba(12,15,21,.9)",
+      "#30333b",
+      24
+    );
+
+    c.fillStyle = "#979aa2";
+    c.font = "bold 13px Arial";
+    c.fillText("MONOCROMÁTICO",xMono+24,915);
+
+    c.fillStyle = "#666b74";
+    c.font = "14px Arial";
+    c.fillText("Blanco frío / color fijo",xMono+24,945);
+
+    c.fillStyle = "#fff";
+    c.font = "900 38px Arial";
+    c.fillText("$"+fmt(precioMono),xMono+24,1013);
+
+    /* PIXEL */
+
+    const priceGrad3 =
+      c.createLinearGradient(
+        xPixel,
+        0,
+        xPixel+cardW,
+        0
+      );
+
+    priceGrad3.addColorStop(0,"rgba(0,97,125,.26)");
+    priceGrad3.addColorStop(1,"rgba(31,41,115,.36)");
+
+    rbox(
+      c,
+      xPixel,
+      875,
+      cardW,
+      175,
+      priceGrad3,
+      "#21cdea",
+      24
+    );
+
+    c.fillStyle = "#22dcff";
+    c.font = "bold 13px Arial";
+    c.fillText("PIXEL LED RGB",xPixel+24,915);
+
+    c.fillStyle = "#7e8490";
+    c.font = "14px Arial";
+    c.fillText("Control por app celular",xPixel+24,945);
+
+    c.fillStyle = "#fff";
+    c.font = "900 38px Arial";
+    c.fillText("$"+fmt(precioPixel),xPixel+24,1013);
+
+    /* BORDES PIXEL */
+
+    const bordesGrad =
+      c.createLinearGradient(
+        xBordes,
+        0,
+        xBordes+cardW,
+        0
+      );
+
+    bordesGrad.addColorStop(0,"rgba(87,36,135,.34)");
+    bordesGrad.addColorStop(1,"rgba(0,121,150,.32)");
+
+    rbox(
+      c,
+      xBordes,
+      875,
+      cardW,
+      175,
+      bordesGrad,
+      "#9d4cff",
+      24
+    );
+
+    c.fillStyle = "#c694ff";
+    c.font = "bold 13px Arial";
+    c.fillText("BORDES PIXEL",xBordes+24,915);
+
+    c.fillStyle = "#7e8490";
+    c.font = "14px Arial";
+    c.fillText("Opción especial · Pixel RGB",xBordes+24,945);
+
+    c.fillStyle = "#fff";
+    c.font = "900 38px Arial";
+    c.fillText("$"+fmt(precioBordesPixel),xBordes+24,1013);
+  }
 
   /* =================================================
      DETALLES
@@ -4874,7 +5119,9 @@ window.addEventListener(
 requestAnimationFrame(
   ()=>{
 
-    actualizarPreview();
+    actualizarBotonBordesPixel();
+
+actualizarPreview();
 
     actualizarOrigenVisual();
 
