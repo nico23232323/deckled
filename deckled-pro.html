@@ -646,7 +646,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v3.0
+    v3.1
   </div>
 
 </div>
@@ -2359,26 +2359,55 @@ function calcular(
     (a/100) *
     (b/100);
 
+  /* =====================================================
+     CURVA BASE DE PRECIO
+
+     Hasta 2 m² conserva la fórmula original.
+     De 2 a 4 m² conserva la fórmula grande original.
+     Más de 4 m² usa una curva XL específica para evitar
+     que los carteles de mucha superficie queden baratos.
+
+     La curva XL es continua con Grande:
+     4.00 m² = $3.030.000
+     luego suma $788.000 por cada m² adicional.
+  ===================================================== */
+
+  const esXL =
+    area > 4;
+
   if(area<=2){
 
     precioPixelCliente =
       660000 +
       area * 800000;
 
-  }else{
+  }else if(area<=4){
 
     precioPixelCliente =
       2260000 +
       (area-2) * 450000;
+
+  }else{
+
+    // Precio FINAL cliente para categoría XL.
+    // Ejemplo: 12 m x 0.70 m = 8.40 m² -> $6.500.000 aprox.
+    precioPixelCliente =
+      3030000 +
+      (area-4) * 788000;
   }
 
   /* =====================================================
      BAJA PROGRESIVA POR CATEGORÍA
 
-     Mini     hasta 0.40 m²  -> 10%
-     Chico    0.40 a 0.80 m² -> 8%
-     Mediano  0.80 a 2.00 m² -> 6%
-     Grande   más de 2.00 m² -> 4%
+     Mini     hasta 0.40 m²   -> 10%
+     Chico    0.40 a 0.80 m²  -> 8%
+     Mediano  0.80 a 2.00 m²  -> 6%
+     Grande   2.00 a 4.00 m²  -> 4%
+     XL       más de 4.00 m²   -> curva XL directa
+
+     IMPORTANTE:
+     La fórmula XL ya representa el precio final cliente,
+     por eso no recibe una segunda baja porcentual.
   ===================================================== */
 
   let tipo;
@@ -2408,31 +2437,43 @@ function calcular(
     porcentajeBajaCategoria =
       6;
 
-  }else{
+  }else if(area<=4){
 
     tipo =
       "Cartel grande";
 
     porcentajeBajaCategoria =
       4;
+
+  }else{
+
+    tipo =
+      "Cartel XL";
+
+    porcentajeBajaCategoria =
+      0;
   }
 
-  // Primero conserva el redondeo del precio original.
+  // Primero redondea el precio calculado a $10.000.
   precioPixelCliente =
     Math.round(
       precioPixelCliente /
       10000
     ) * 10000;
 
-  // Luego aplica la baja progresiva y vuelve a redondear a $10.000.
-  precioPixelCliente =
-    Math.round(
-      (
-        precioPixelCliente *
-        (1 - porcentajeBajaCategoria/100)
-      ) /
-      10000
-    ) * 10000;
+  // Mini/Chico/Mediano/Grande mantienen su baja progresiva.
+  // XL ya viene con precio final desde su curva específica.
+  if(!esXL){
+
+    precioPixelCliente =
+      Math.round(
+        (
+          precioPixelCliente *
+          (1 - porcentajeBajaCategoria/100)
+        ) /
+        10000
+      ) * 10000;
+  }
 
   precioMonoCliente =
     Math.round(
