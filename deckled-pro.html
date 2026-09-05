@@ -646,7 +646,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v3.1
+    v3.2
   </div>
 
 </div>
@@ -2475,6 +2475,57 @@ function calcular(
       ) * 10000;
   }
 
+  /* =====================================================
+     RECARGO POR FORMATO ALARGADO
+
+     Se aplica SOLO hasta 2 m² para corregir carteles que
+     tienen poca superficie pero mucho desarrollo lineal.
+
+     Relación = lado mayor / lado menor
+     Hasta 3:1                    -> 0%
+     Más de 3:1                   -> +13,75% por cada punto
+     Tope máximo                  -> +35%
+
+     Ejemplo calibrado:
+     200 x 41,5 cm = 0,83 m²
+     relación = 4,82:1
+     recargo ≈ 25%
+     Pixel pasa de $1.240.000 a $1.550.000 aprox.
+  ===================================================== */
+
+  const ladoMayor =
+    Math.max(a,b);
+
+  const ladoMenor =
+    Math.min(a,b);
+
+  const relacionFormato =
+    ladoMayor / ladoMenor;
+
+  let porcentajeRecargoFormato =
+    0;
+
+  if(
+    area<=2 &&
+    relacionFormato>3
+  ){
+
+    porcentajeRecargoFormato =
+      Math.min(
+        35,
+        (relacionFormato-3) * 13.75
+      );
+
+    precioPixelCliente =
+      Math.round(
+        (
+          precioPixelCliente *
+          (1 + porcentajeRecargoFormato/100)
+        ) /
+        10000
+      ) * 10000;
+  }
+
   precioMonoCliente =
     Math.round(
       (
@@ -2547,6 +2598,21 @@ function calcular(
         · ${area.toFixed(2)} m²
 
       </div>
+
+      ${
+        porcentajeRecargoFormato>0
+          ? `
+
+            <br>
+
+            <div class="tipo-badge" style="color:#ffb84d">
+              Formato alargado · ${relacionFormato.toFixed(2)}:1
+              · +${porcentajeRecargoFormato.toFixed(1)}%
+            </div>
+
+          `
+          : ""
+      }
 
       <br>
 
