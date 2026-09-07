@@ -1212,6 +1212,39 @@ button:active{
       Si existe una imagen en Medidor, tiene prioridad sobre el texto de Diseño.
     </div>
 
+    <div class="auto-dim-box" style="margin-top:12px">
+      <div class="auto-dim-title">
+        Precios personalizados para la ficha (opcional)
+      </div>
+
+      <div class="hint" style="text-align:left;margin:0 0 8px">
+        Dejá un casillero vacío para usar el precio automático. Si escribís un valor, solo reemplaza ese precio en la imagen final.
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div>
+          <div class="dim-label">MONOCROMÁTICO</div>
+          <input id="fichaPrecioMono" type="text" inputmode="numeric" placeholder="Automático">
+        </div>
+        <div>
+          <div class="dim-label">PIXEL LED RGB</div>
+          <input id="fichaPrecioPixel" type="text" inputmode="numeric" placeholder="Automático">
+        </div>
+        <div>
+          <div class="dim-label">BORDES PIXEL</div>
+          <input id="fichaPrecioBordes" type="text" inputmode="numeric" placeholder="Automático">
+        </div>
+      </div>
+
+      <button
+        class="btn-dark"
+        type="button"
+        onclick="limpiarPreciosFicha()"
+        style="margin-top:8px">
+        Restablecer precios automáticos
+      </button>
+    </div>
+
     <button
       class="btn-red"
       onclick="generarRender('cliente')"
@@ -2697,6 +2730,31 @@ function fmt(n){
    WHATSAPP
 ===================================================== */
 
+function obtenerPreciosParaTexto(){
+
+  const mono =
+    leerPrecioFicha("fichaPrecioMono", precioMono);
+
+  const pixel =
+    leerPrecioFicha("fichaPrecioPixel", precioPixel);
+
+  const bordes =
+    leerPrecioFicha("fichaPrecioBordes", precioBordesPixel);
+
+  return { mono, pixel, bordes };
+}
+
+function refrescarTextoWhatsApp(){
+
+  if(
+    precioPixel ||
+    precioMono ||
+    precioBordesPixel
+  ){
+    generarTexto();
+  }
+}
+
 function generarTexto(){
 
   if(
@@ -2711,18 +2769,21 @@ function generarTexto(){
       ? `PRECIO REVENDEDOR · ${porcentajeDescuento.toFixed(1)}% de descuento\n\n`
       : "";
 
+  const preciosTexto =
+    obtenerPreciosParaTexto();
+
   const lineaBordesPixel =
     mostrarBordesPixel
-      ? `\n\n⭐ En BORDES PIXEL LED RGB el valor es $${fmt(precioBordesPixel)}`
+      ? `\n\n⭐ En BORDES PIXEL LED RGB el valor es $${fmt(preciosTexto.bordes)}`
       : "";
 
   document
     .getElementById("txt")
     .value =
 
-`${encabezado}❗️En blanco frío o color fijo el valor es $${fmt(precioMono)}
+`${encabezado}❗️En blanco frío o color fijo el valor es $${fmt(preciosTexto.mono)}
 
-✅ En pixel led con control app celular el valor es $${fmt(precioPixel)}${lineaBordesPixel}
+✅ En pixel led con control app celular el valor es $${fmt(preciosTexto.pixel)}${lineaBordesPixel}
 
 💳 Con una seña del 30% ya tomamos el pedido
 
@@ -2736,6 +2797,8 @@ www.deckled.com.ar/corporeos`;
 }
 
 async function copiar(){
+
+  refrescarTextoWhatsApp();
 
   const campo =
     document.getElementById("txt");
@@ -4000,6 +4063,68 @@ function dibujarImagenContain(
 }
 
 /* =====================================================
+   PRECIOS PERSONALIZADOS DE FICHA
+===================================================== */
+
+function leerPrecioFicha(id, precioAutomatico){
+
+  const el = document.getElementById(id);
+
+  if(!el){
+    return precioAutomatico;
+  }
+
+  const raw = String(el.value || "").trim();
+
+  if(!raw){
+    return precioAutomatico;
+  }
+
+  // Permite escribir, por ejemplo: 1550000, 1.550.000 o $1.550.000
+  const limpio = raw.replace(/[^0-9]/g, "");
+  const valor = parseInt(limpio, 10);
+
+  return Number.isFinite(valor) && valor > 0
+    ? valor
+    : precioAutomatico;
+}
+
+function limpiarPreciosFicha(){
+
+  [
+    "fichaPrecioMono",
+    "fichaPrecioPixel",
+    "fichaPrecioBordes"
+  ].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+
+  status(
+    "fichaStatus",
+    "Precios de ficha restablecidos a cálculo automático.",
+    "ok"
+  );
+
+  refrescarTextoWhatsApp();
+}
+
+[
+  "fichaPrecioMono",
+  "fichaPrecioPixel",
+  "fichaPrecioBordes"
+].forEach(id=>{
+
+  const el = document.getElementById(id);
+
+  if(!el){
+    return;
+  }
+
+  el.addEventListener("input", refrescarTextoWhatsApp);
+});
+
+/* =====================================================
    GENERAR FICHA
 ===================================================== */
 
@@ -4035,6 +4160,17 @@ async function generarRender(
   ){
     return false;
   }
+
+  // Estos valores afectan únicamente la ficha/render final.
+  // Si los casilleros están vacíos, conserva el cálculo automático.
+  const precioMonoFicha =
+    leerPrecioFicha("fichaPrecioMono", precioMono);
+
+  const precioPixelFicha =
+    leerPrecioFicha("fichaPrecioPixel", precioPixel);
+
+  const precioBordesFicha =
+    leerPrecioFicha("fichaPrecioBordes", precioBordesPixel);
 
   const hayImagenMedidor =
     usarImagenMedidor();
@@ -4722,7 +4858,7 @@ async function generarRender(
       "900 49px Arial";
 
     c.fillText(
-      "$"+fmt(precioMono),
+      "$"+fmt(precioMonoFicha),
       100,
       1015
     );
@@ -4789,7 +4925,7 @@ async function generarRender(
       "900 49px Arial";
 
     c.fillText(
-      "$"+fmt(precioPixel),
+      "$"+fmt(precioPixelFicha),
       640,
       1015
     );
@@ -4829,7 +4965,7 @@ async function generarRender(
 
     c.fillStyle = "#fff";
     c.font = "900 38px Arial";
-    c.fillText("$"+fmt(precioMono),xMono+24,1013);
+    c.fillText("$"+fmt(precioMonoFicha),xMono+24,1013);
 
     /* PIXEL */
 
@@ -4865,7 +5001,7 @@ async function generarRender(
 
     c.fillStyle = "#fff";
     c.font = "900 38px Arial";
-    c.fillText("$"+fmt(precioPixel),xPixel+24,1013);
+    c.fillText("$"+fmt(precioPixelFicha),xPixel+24,1013);
 
     /* BORDES PIXEL */
 
@@ -4901,7 +5037,7 @@ async function generarRender(
 
     c.fillStyle = "#fff";
     c.font = "900 38px Arial";
-    c.fillText("$"+fmt(precioBordesPixel),xBordes+24,1013);
+    c.fillText("$"+fmt(precioBordesFicha),xBordes+24,1013);
   }
 
   /* =================================================
