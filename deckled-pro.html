@@ -646,7 +646,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v3.2
+    v3.3
   </div>
 
 </div>
@@ -2483,14 +2483,14 @@ function calcular(
 
      Relación = lado mayor / lado menor
      Hasta 3:1                    -> 0%
-     Más de 3:1                   -> +13,75% por cada punto
-     Tope máximo                  -> +35%
+     Más de 3:1                   -> +10% por cada punto
+     Tope máximo                  -> +30%
 
      Ejemplo calibrado:
      200 x 41,5 cm = 0,83 m²
      relación = 4,82:1
-     recargo ≈ 25%
-     Pixel pasa de $1.240.000 a $1.550.000 aprox.
+     recargo ≈ 18,2%
+     Pixel pasa de $1.240.000 a $1.470.000 aprox.
   ===================================================== */
 
   const ladoMayor =
@@ -2512,8 +2512,8 @@ function calcular(
 
     porcentajeRecargoFormato =
       Math.min(
-        35,
-        (relacionFormato-3) * 13.75
+        30,
+        (relacionFormato-3) * 10
       );
 
     precioPixelCliente =
@@ -4539,19 +4539,19 @@ async function generarRender(
   c.fillText(
     `${ancho} × ${alto}`,
     95,
-    748
+    742
   );
 
   c.fillStyle =
     "#71757d";
 
   c.font =
-    "15px Arial";
+    "bold 13px Arial";
 
   c.fillText(
-    "centímetros",
+    `ANCHO ${ancho} cm  ×  ALTO ${alto} cm`,
     95,
-    770
+    771
   );
 
   rbox(
