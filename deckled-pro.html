@@ -627,6 +627,23 @@ button:active{
   }
 }
 
+
+/* Medidor de precisión v3.4 */
+.precision-toolbar {display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:9px}
+.precision-toolbar button,.precision-nudge button{font-size:12px;padding:10px 3px}
+.precision-stage{position:relative}
+#canvas{height:55vw;min-height:300px;max-height:65vw;touch-action:none;cursor:crosshair}
+#precisionLoupe{position:absolute;z-index:9;width:126px;height:126px;border:3px solid #00efaa;border-radius:50%;box-shadow:0 4px 22px #000;background:#111;pointer-events:none;display:none;left:0;top:0}
+.precision-nudge{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-top:9px}
+.precision-nudge button.selected{background:#126b57;color:#fff;border-color:#00efaa}
+.precision-fullscreen{position:fixed!important;z-index:99999;inset:0;background:#08090d!important;border-radius:0!important;overflow:auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top,8px) 8px env(safe-area-inset-bottom,8px)!important}
+.precision-fullscreen .precision-stage{flex:1;min-height:0;display:flex}
+.precision-fullscreen #canvas{height:100%!important;max-height:none!important;min-height:0!important;flex:1}
+.precision-fullscreen #result{margin-top:5px;padding:6px}
+.precision-fullscreen #result .medida{font-size:24px}
+.precision-fullscreen #precisionHint{display:none}
+.precision-fullscreen>button:last-child{display:none}
+@media(max-width:480px){.precision-nudge button{font-size:11px}}
 </style>
 </head>
 
@@ -646,7 +663,7 @@ button:active{
 
   <div class="header-sub">
     Cotizador &amp; Medidor<br>
-    v3.3
+    v3.4
   </div>
 
 </div>
@@ -735,14 +752,31 @@ button:active{
     </div>
 
     <div class="hint">
-      1 dedo: marcar puntos · 2 dedos: zoom / mover
+      1 dedo: marcar o corregir puntos · 2 dedos: zoom / mover · lupa activa
     </div>
 
   </div>
 
   <div class="card">
 
-    <canvas id="canvas"></canvas>
+    <div class="precision-toolbar">
+      <button class="btn-blue" id="precisionFullscreen" type="button">⛶ Pantalla completa</button>
+      <button class="btn-dark" id="precisionZoomIn" type="button">＋ Zoom</button>
+      <button class="btn-dark" id="precisionZoomOut" type="button">－ Zoom</button>
+    </div>
+    <div class="precision-stage" id="precisionStage">
+      <canvas id="canvas"></canvas>
+      <canvas id="precisionLoupe" width="180" height="180"></canvas>
+    </div>
+    <div class="precision-nudge">
+      <button type="button" class="btn-dark" id="precisionSelectP1">Punto 1</button>
+      <button type="button" class="btn-dark" id="precisionSelectP2">Punto 2</button>
+      <button type="button" class="btn-dark" data-nudge="0,-1">↑</button>
+      <button type="button" class="btn-dark" data-nudge="-1,0">←</button>
+      <button type="button" class="btn-dark" data-nudge="1,0">→</button>
+      <button type="button" class="btn-dark" data-nudge="0,1">↓</button>
+    </div>
+    <div class="hint" id="precisionHint">La lupa aparece al tocar. Para marcar sin tapar el punto, la cruz está 45 px arriba de tu dedo. Las flechas mueven 1 píxel de imagen.</div>
 
     <div
       class="result-box"
@@ -2903,837 +2937,189 @@ function limpiarCotizador(){
 }
 
 /* =====================================================
-   MEDIDOR ORIGINAL
+   MEDIDOR DE PRECISIÓN v3.4
+   Puntos y escala SIEMPRE en coordenadas originales de la imagen.
 ===================================================== */
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const fileInput = document.getElementById('file');
+const realInput = document.getElementById('realValue');
+const resultBox = document.getElementById('result');
+const precisionStage = document.getElementById('precisionStage');
+const loupe = document.getElementById('precisionLoupe');
+const lctx = loupe.getContext('2d');
+const fullCard = canvas.closest('.card');
+let baseScale=1,baseOffX=0,baseOffY=0,zoom=1,panX=0,panY=0;
+let p1=null,p2=null,cmPerPx=null;
+let selectedPoint=1;
+let activePointers=new Map(), gesture=null, gestureUsed=false, editingPoint=null;
+let loupePosition=null;
 
-const canvas =
-  document.getElementById("canvas");
-
-const ctx =
-  canvas.getContext("2d");
-
-const fileInput =
-  document.getElementById("file");
-
-const realInput =
-  document.getElementById("realValue");
-
-const resultBox =
-  document.getElementById("result");
-
-let baseScale =
-  1;
-
-let baseOffX =
-  0;
-
-let baseOffY =
-  0;
-
-let zoom =
-  1;
-
-let panX =
-  0;
-
-let panY =
-  0;
-
-let p1 =
-  null;
-
-let p2 =
-  null;
-
-let cmPerPx =
-  null;
-
-let isPinching =
-  false;
-
-let lastDist =
-  null;
-
-let lastCenter =
-  null;
-
-/* =====================================================
-   RESIZE
-===================================================== */
-
+function currentScale(){return baseScale*zoom;}
+function imageX(){return baseOffX+panX;}
+function imageY(){return baseOffY+panY;}
+function toImage(p){return {x:(p.x-imageX())/currentScale(),y:(p.y-imageY())/currentScale()};}
+function toScreen(p){return {x:imageX()+p.x*currentScale(),y:imageY()+p.y*currentScale()};}
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+function insideImage(p){return p.x>=0&&p.y>=0&&p.x<=img.naturalWidth&&p.y<=img.naturalHeight;}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+function screenPos(e){const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height};}
+function touchTarget(p,type){return type==='touch'?{x:p.x,y:p.y-45}:p;}
 function resizeCanvas(){
-
-  const r =
-    canvas.getBoundingClientRect();
-
-  canvas.width =
-    Math.max(
-      1,
-      Math.round(r.width)
-    );
-
-  canvas.height =
-    Math.max(
-      1,
-      Math.round(r.height)
-    );
-
-  if(imgLoaded){
-
-    fitImage(false);
-  }
-
+  const r=canvas.getBoundingClientRect();
+  const oldCenter=imgLoaded?toImage({x:canvas.width/2,y:canvas.height/2}):null;
+  canvas.width=Math.max(1,Math.round(r.width)); canvas.height=Math.max(1,Math.round(r.height));
+  if(imgLoaded){fitImage(false);if(oldCenter){panX=canvas.width/2-baseOffX-oldCenter.x*currentScale();panY=canvas.height/2-baseOffY-oldCenter.y*currentScale();}}
   draw();
 }
-
-function fitImage(
-  resetView=false
-){
-
-  if(
-    !img ||
-    !img.naturalWidth ||
-    !img.naturalHeight
-  ){
-    return;
-  }
-
-  const sx =
-    canvas.width /
-    img.naturalWidth;
-
-  const sy =
-    canvas.height /
-    img.naturalHeight;
-
-  baseScale =
-    Math.min(
-      sx,
-      sy
-    );
-
-  const w =
-    img.naturalWidth *
-    baseScale;
-
-  const h =
-    img.naturalHeight *
-    baseScale;
-
-  baseOffX =
-    (canvas.width-w)/2;
-
-  baseOffY =
-    (canvas.height-h)/2;
-
-  if(resetView){
-
-    zoom =
-      1;
-
-    panX =
-      0;
-
-    panY =
-      0;
-  }
+function fitImage(resetView=false){
+  if(!imgLoaded||!img.naturalWidth)return;
+  baseScale=Math.min(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight);
+  baseOffX=(canvas.width-img.naturalWidth*baseScale)/2;
+  baseOffY=(canvas.height-img.naturalHeight*baseScale)/2;
+  if(resetView){zoom=1;panX=0;panY=0;}
 }
-
-function currentScale(){
-
-  return baseScale *
-    zoom;
+function drawPoint(p,label){
+  const s=toScreen(p);
+  ctx.fillStyle=label===selectedPoint?'#00efaa':'#ffcc00';ctx.strokeStyle='#090909';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(s.x,s.y,8,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.font='bold 13px Arial';ctx.fillStyle='#fff';ctx.fillText(String(label),s.x+12,s.y-10);
 }
-
-function imageX(){
-
-  return baseOffX +
-    panX;
-}
-
-function imageY(){
-
-  return baseOffY +
-    panY;
-}
-
 function draw(){
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  if(
-    !imgLoaded ||
-    !img ||
-    !img.naturalWidth
-  ){
-    return;
-  }
-
-  ctx.drawImage(
-    img,
-    imageX(),
-    imageY(),
-    img.naturalWidth * currentScale(),
-    img.naturalHeight * currentScale()
-  );
-
-  if(p1){
-
-    drawPoint(
-      p1
-    );
-  }
-
-  if(
-    p1 &&
-    p2
-  ){
-
-    drawPoint(
-      p2
-    );
-
-    drawLine(
-      p1,
-      p2
-    );
-
-    showMeasure();
-  }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!imgLoaded||!img.naturalWidth)return;
+  ctx.drawImage(img,imageX(),imageY(),img.naturalWidth*currentScale(),img.naturalHeight*currentScale());
+  if(p1&&p2){const a=toScreen(p1),b=toScreen(p2);ctx.strokeStyle='#00efaa';ctx.lineWidth=2.5;ctx.setLineDash([8,4]);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.setLineDash([]);}
+  if(p1)drawPoint(p1,1);
+  if(p2)drawPoint(p2,2);
+  if(p1&&p2)showMeasure();
 }
-
-function drawPoint(p){
-
-  ctx.fillStyle =
-    "#ffcc00";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    p.x,
-    p.y,
-    8,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-  ctx.strokeStyle =
-    "#000";
-
-  ctx.lineWidth =
-    2;
-
-  ctx.stroke();
-}
-
-function drawLine(a,b){
-
-  ctx.strokeStyle =
-    "#00efaa";
-
-  ctx.lineWidth =
-    2.5;
-
-  ctx.setLineDash(
-    [8,4]
-  );
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    a.x,
-    a.y
-  );
-
-  ctx.lineTo(
-    b.x,
-    b.y
-  );
-
-  ctx.stroke();
-
-  ctx.setLineDash([]);
-}
-
-function dist(a,b){
-
-  return Math.hypot(
-    a.x-b.x,
-    a.y-b.y
-  );
-}
-
 function showMeasure(){
-
-  if(!cmPerPx){
-
-    resultBox.innerHTML =
-      "<span style='color:#777'>Calibrá primero la escala</span>";
-
-    return;
-  }
-
-  const cm =
-    dist(
-      p1,
-      p2
-    ) *
-    cmPerPx;
-
-  ultimaMedidaCm =
-    cm;
-
-  resultBox.innerHTML = `
-
-    <div class="medida">
-      ${cm.toFixed(1)} cm
-    </div>
-
-    <div
-      class="row"
-      style="margin-top:8px">
-
-      <button
-        class="btn-green"
-        onclick="usarAncho()">
-
-        → Usar como ancho
-
-      </button>
-
-      <button
-        class="btn-blue"
-        onclick="usarAlto()">
-
-        → Usar como alto
-
-      </button>
-
-    </div>
-
-  `;
+  if(!cmPerPx){resultBox.innerHTML="<span style='color:#888'>Ingresá la medida real de esta línea y tocá Guardar escala</span>";return;}
+  const cm=dist(p1,p2)*cmPerPx;
+  ultimaMedidaCm=cm;
+  resultBox.innerHTML=`<div class="medida">${cm.toFixed(1)} cm</div><div class="row" style="margin-top:8px"><button class="btn-green" onclick="usarAncho()">→ Usar como ancho</button><button class="btn-blue" onclick="usarAlto()">→ Usar como alto</button></div>`;
 }
-
-/*
-  MEDIDOR ORIGINAL:
-  NO CALCULA AUTOMÁTICAMENTE LA OTRA MEDIDA
-*/
-
-function usarAncho(){
-
-  if(
-    ultimaMedidaCm<=0
-  ){
-    return;
-  }
-
-  document
-    .getElementById("ancho")
-    .value =
-    ultimaMedidaCm.toFixed(1);
-
-  designAncho.value =
-    ultimaMedidaCm.toFixed(1);
+function usarAncho(){if(ultimaMedidaCm<=0)return;document.getElementById('ancho').value=ultimaMedidaCm.toFixed(1);designAncho.value=ultimaMedidaCm.toFixed(1);}
+function usarAlto(){if(ultimaMedidaCm<=0)return;document.getElementById('alto').value=ultimaMedidaCm.toFixed(1);designAlto.value=ultimaMedidaCm.toFixed(1);}
+function updateSelection(){document.getElementById('precisionSelectP1').classList.toggle('selected',selectedPoint===1);document.getElementById('precisionSelectP2').classList.toggle('selected',selectedPoint===2);}
+function setPoint(p,index){if(!insideImage(p))return;if(index===1)p1=p;else p2=p;selectedPoint=index;updateSelection();draw();}
+function pointNear(pos){let best=null,bestDist=32;for(const [index,p] of [[1,p1],[2,p2]]){if(!p)continue;const d=dist(pos,toScreen(p));if(d<bestDist){best=index;bestDist=d;}}return best;}
+function showLoupe(screen){
+  if(!imgLoaded)return;
+  loupePosition=screen;
+  const ratio=3.5;
+  lctx.clearRect(0,0,loupe.width,loupe.height);
+  lctx.fillStyle='#111';lctx.fillRect(0,0,loupe.width,loupe.height);
+  const wp=toImage(screen);
+  const area=loupe.width/ratio;
+  lctx.save();lctx.beginPath();lctx.arc(90,90,89,0,Math.PI*2);lctx.clip();
+  lctx.imageSmoothingEnabled=false;
+  lctx.drawImage(img,wp.x-area/2,wp.y-area/2,area,area,0,0,180,180);
+  lctx.restore();
+  lctx.strokeStyle='#00ff9e';lctx.lineWidth=1.5;
+  lctx.beginPath();lctx.moveTo(90,0);lctx.lineTo(90,180);lctx.moveTo(0,90);lctx.lineTo(180,90);lctx.stroke();
+  const view=canvas.getBoundingClientRect();
+  const x=screen.x*view.width/canvas.width,y=screen.y*view.height/canvas.height;
+  loupe.style.left=clamp(x+24,0,Math.max(0,view.width-126))+'px';
+  loupe.style.top=clamp(y-165,0,Math.max(0,view.height-126))+'px';
+  loupe.style.display='block';
 }
-
-function usarAlto(){
-
-  if(
-    ultimaMedidaCm<=0
-  ){
-    return;
-  }
-
-  document
-    .getElementById("alto")
-    .value =
-    ultimaMedidaCm.toFixed(1);
-
-  designAlto.value =
-    ultimaMedidaCm.toFixed(1);
+function hideLoupe(){loupe.style.display='none';loupePosition=null;}
+function zoomAt(factor,center){
+  const world=toImage(center);
+  zoom=clamp(zoom*factor,1,20);
+  panX=center.x-baseOffX-world.x*currentScale();
+  panY=center.y-baseOffY-world.y*currentScale();
+  draw();
 }
-
-/* =====================================================
-   CARGA DE FOTO - CORREGIDA V2.9
-===================================================== */
-
-fileInput.addEventListener(
-  "change",
-  e=>{
-
-    const f =
-      e.target.files &&
-      e.target.files[0];
-
-    if(!f){
-      return;
+function updateGesture(){
+  const points=[...activePointers.values()];if(points.length<2){gesture=null;return;}
+  const center={x:(points[0].pos.x+points[1].pos.x)/2,y:(points[0].pos.y+points[1].pos.y)/2};
+  const distance=Math.max(1,dist(points[0].pos,points[1].pos));
+  if(!gesture){gesture={center,distance};return;}
+  const world=toImage(gesture.center);
+  zoom=clamp(zoom*distance/gesture.distance,1,20);
+  panX=center.x-baseOffX-world.x*currentScale();
+  panY=center.y-baseOffY-world.y*currentScale();
+  gesture={center,distance};draw();
+}
+canvas.addEventListener('pointerdown',e=>{
+  if(!imgLoaded)return;
+  e.preventDefault();canvas.setPointerCapture(e.pointerId);
+  const screen=screenPos(e),target=touchTarget(screen,e.pointerType);
+  activePointers.set(e.pointerId,{pos:screen,type:e.pointerType,start:screen});
+  if(activePointers.size>=2){gestureUsed=true;editingPoint=null;hideLoupe();updateGesture();return;}
+  gestureUsed=false;editingPoint=pointNear(target);
+  if(editingPoint){selectedPoint=editingPoint;updateSelection();}
+  showLoupe(target);
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!activePointers.has(e.pointerId))return;
+  const item=activePointers.get(e.pointerId);item.pos=screenPos(e);
+  if(activePointers.size>=2){gestureUsed=true;updateGesture();return;}
+  const target=touchTarget(item.pos,item.type);
+  if(editingPoint)setPoint(toImage(target),editingPoint);
+  showLoupe(target);
+});
+function endPointer(e){
+  const item=activePointers.get(e.pointerId);if(!item)return;
+  if(activePointers.size===1&&!gestureUsed){
+    const target=touchTarget(screenPos(e),item.type),world=toImage(target);
+    if(insideImage(world)){
+      if(editingPoint){setPoint(world,editingPoint);}
+      else if(!p1)setPoint(world,1);
+      else if(!p2)setPoint(world,2);
+      else {p1=world;p2=null;selectedPoint=1;updateSelection();resultBox.innerHTML='Primer punto marcado. Marcá el segundo.';draw();}
     }
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      event=>{
-
-        const data =
-          event.target.result;
-
-        if(!data){
-          return;
-        }
-
-        const newImg =
-          new Image();
-
-        newImg.onload =
-          ()=>{
-
-            /*
-              Primero asignamos la imagen ya cargada.
-            */
-
-            img =
-              newImg;
-
-            imgDataUrl =
-              data;
-
-            imgLoaded =
-              true;
-
-            /*
-              Reiniciamos sólo calibración / vista.
-            */
-
-            p1 =
-              null;
-
-            p2 =
-              null;
-
-            cmPerPx =
-              null;
-
-            ultimaMedidaCm =
-              0;
-
-            zoom =
-              1;
-
-            panX =
-              0;
-
-            panY =
-              0;
-
-            resultBox.innerHTML =
-              "Imagen cargada. Marcá 2 puntos para calibrar.";
-
-            /*
-              Ajustamos el canvas después de tener
-              la imagen disponible.
-            */
-
-            requestAnimationFrame(
-              ()=>{
-
-                resizeCanvas();
-
-                fitImage(true);
-
-                draw();
-
-                actualizarOrigenVisual();
-              }
-            );
-          };
-
-        newImg.onerror =
-          ()=>{
-
-            imgLoaded =
-              false;
-
-            imgDataUrl =
-              "";
-
-            resultBox.innerHTML =
-              "No se pudo abrir esta imagen.";
-          };
-
-        newImg.src =
-          data;
-      };
-
-    reader.readAsDataURL(
-      f
-    );
   }
-);
-
-/* =====================================================
-   CLICK MEDIDOR
-===================================================== */
-
-canvas.addEventListener(
-  "click",
-  e=>{
-
-    if(
-      !imgLoaded ||
-      isPinching
-    ){
-      return;
-    }
-
-    const r =
-      canvas.getBoundingClientRect();
-
-    const scaleX =
-      canvas.width /
-      r.width;
-
-    const scaleY =
-      canvas.height /
-      r.height;
-
-    const p = {
-
-      x:
-        (e.clientX-r.left) *
-        scaleX,
-
-      y:
-        (e.clientY-r.top) *
-        scaleY
-
+  activePointers.delete(e.pointerId);
+  if(activePointers.size<2)gesture=null;
+  if(!activePointers.size){editingPoint=null;hideLoupe();setTimeout(()=>{gestureUsed=false;},0);}
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',e=>{activePointers.delete(e.pointerId);gesture=null;editingPoint=null;hideLoupe();gestureUsed=true;});
+canvas.addEventListener('wheel',e=>{if(!imgLoaded)return;e.preventDefault();zoomAt(e.deltaY<0?1.2:1/1.2,screenPos(e));},{passive:false});
+fileInput.addEventListener('change',e=>{
+  const f=e.target.files?.[0];if(!f)return;
+  const reader=new FileReader();reader.onload=event=>{
+    const data=event.target.result;if(!data)return;
+    const newImg=new Image();newImg.onload=()=>{
+      img=newImg;imgDataUrl=data;imgLoaded=true;p1=null;p2=null;cmPerPx=null;ultimaMedidaCm=0;selectedPoint=1;updateSelection();
+      resultBox.innerHTML='Imagen cargada. Marcá dos puntos para calibrar.';
+      requestAnimationFrame(()=>{resizeCanvas();fitImage(true);draw();actualizarOrigenVisual();});
     };
-
-    if(!p1){
-
-      p1 =
-        p;
-
-    }else if(!p2){
-
-      p2 =
-        p;
-
-    }else{
-
-      p1 =
-        p;
-
-      p2 =
-        null;
-    }
-
-    draw();
-  }
-);
-
-document
-  .getElementById("setScale")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      if(
-        !p1 ||
-        !p2
-      ){
-        return;
-      }
-
-      const real =
-        parseFloat(
-          realInput.value
-        );
-
-      if(
-        !Number.isFinite(real) ||
-        real<=0
-      ){
-        return;
-      }
-
-      const d =
-        dist(
-          p1,
-          p2
-        );
-
-      if(d<=0){
-        return;
-      }
-
-      cmPerPx =
-        real /
-        d;
-
-      ultimaMedidaCm =
-        real;
-
-      draw();
-    }
-  );
-
-document
-  .getElementById("resetPoints")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      p1 =
-        null;
-
-      p2 =
-        null;
-
-      resultBox.innerHTML =
-        cmPerPx
-          ? "Escala guardada. Marcá dos puntos."
-          : "Puntos reseteados";
-
-      draw();
-    }
-  );
-
-document
-  .getElementById("resetZoom")
-  .addEventListener(
-    "click",
-    ()=>{
-
-      zoom =
-        1;
-
-      panX =
-        0;
-
-      panY =
-        0;
-
-      if(imgLoaded){
-
-        fitImage(true);
-      }
-
-      draw();
-    }
-  );
-
-/* =====================================================
-   LIMPIAR MEDIDOR
-===================================================== */
-
+    newImg.onerror=()=>{resultBox.innerHTML='No se pudo abrir esta imagen.';};newImg.src=data;
+  };reader.readAsDataURL(f);
+});
+document.getElementById('setScale').addEventListener('click',()=>{
+  if(!p1||!p2){resultBox.textContent='Primero marcá los dos puntos de referencia.';return;}
+  const real=parseFloat(realInput.value),d=dist(p1,p2);
+  if(!Number.isFinite(real)||real<=0||d<=0){resultBox.textContent='Ingresá una medida real válida.';return;}
+  cmPerPx=real/d;ultimaMedidaCm=real;draw();
+});
+document.getElementById('resetPoints').addEventListener('click',()=>{p1=null;p2=null;ultimaMedidaCm=0;selectedPoint=1;updateSelection();resultBox.innerHTML=cmPerPx?'Escala guardada. Marcá dos puntos para medir.':'Puntos reiniciados. Marcá dos puntos para calibrar.';draw();});
+document.getElementById('resetZoom').addEventListener('click',()=>{fitImage(true);draw();});
 function limpiarMedidor(){
-
-  img =
-    new Image();
-
-  imgLoaded =
-    false;
-
-  imgDataUrl =
-    "";
-
-  p1 =
-    null;
-
-  p2 =
-    null;
-
-  cmPerPx =
-    null;
-
-  ultimaMedidaCm =
-    0;
-
-  zoom =
-    1;
-
-  panX =
-    0;
-
-  panY =
-    0;
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  resultBox.innerHTML =
-    "Subí una foto para comenzar";
-
-  fileInput.value =
-    "";
-
-  realInput.value =
-    "";
-
-  actualizarOrigenVisual();
+  img=new Image();imgLoaded=false;imgDataUrl='';p1=null;p2=null;cmPerPx=null;ultimaMedidaCm=0;zoom=1;panX=0;panY=0;
+  activePointers.clear();hideLoupe();ctx.clearRect(0,0,canvas.width,canvas.height);
+  resultBox.innerHTML='Subí una foto para comenzar';fileInput.value='';realInput.value='';actualizarOrigenVisual();
 }
-
-/* =====================================================
-   PINCH ZOOM
-===================================================== */
-
-function getDist(t1,t2){
-
-  return Math.hypot(
-    t1.clientX-t2.clientX,
-    t1.clientY-t2.clientY
-  );
-}
-
-function getCenter(t1,t2){
-
-  return {
-
-    x:
-      (t1.clientX+t2.clientX)/2,
-
-    y:
-      (t1.clientY+t2.clientY)/2
-
-  };
-}
-
-function clamp(v,mn,mx){
-
-  return Math.max(
-    mn,
-    Math.min(
-      mx,
-      v
-    )
-  );
-}
-
-canvas.addEventListener(
-  "touchstart",
-  e=>{
-
-    if(
-      e.touches.length===2
-    ){
-
-      isPinching =
-        true;
-
-      lastDist =
-        getDist(
-          e.touches[0],
-          e.touches[1]
-        );
-
-      lastCenter =
-        getCenter(
-          e.touches[0],
-          e.touches[1]
-        );
-    }
-  },
-  {
-    passive:true
-  }
-);
-
-canvas.addEventListener(
-  "touchmove",
-  e=>{
-
-    if(
-      e.touches.length===2
-    ){
-
-      e.preventDefault();
-
-      const distNow =
-        getDist(
-          e.touches[0],
-          e.touches[1]
-        );
-
-      const centerNow =
-        getCenter(
-          e.touches[0],
-          e.touches[1]
-        );
-
-      if(lastCenter){
-
-        panX +=
-          centerNow.x -
-          lastCenter.x;
-
-        panY +=
-          centerNow.y -
-          lastCenter.y;
-      }
-
-      if(lastDist){
-
-        const factor =
-          distNow /
-          lastDist;
-
-        zoom =
-          clamp(
-            zoom * factor,
-            1,
-            8
-          );
-      }
-
-      lastDist =
-        distNow;
-
-      lastCenter =
-        centerNow;
-
-      draw();
-    }
-  },
-  {
-    passive:false
-  }
-);
-
-canvas.addEventListener(
-  "touchend",
-  e=>{
-
-    if(
-      e.touches.length<2
-    ){
-
-      lastDist =
-        null;
-
-      lastCenter =
-        null;
-
-      setTimeout(
-        ()=>{
-          isPinching=false;
-        },
-        80
-      );
-    }
-  }
-);
+document.getElementById('precisionSelectP1').addEventListener('click',()=>{selectedPoint=1;updateSelection();});
+document.getElementById('precisionSelectP2').addEventListener('click',()=>{selectedPoint=2;updateSelection();});
+document.querySelectorAll('[data-nudge]').forEach(btn=>btn.addEventListener('click',()=>{
+  const p=selectedPoint===1?p1:p2;if(!p||!imgLoaded)return;
+  const [dx,dy]=btn.dataset.nudge.split(',').map(Number);
+  setPoint({x:clamp(p.x+dx,0,img.naturalWidth),y:clamp(p.y+dy,0,img.naturalHeight)},selectedPoint);
+}));
+document.getElementById('precisionZoomIn').addEventListener('click',()=>zoomAt(1.5,{x:canvas.width/2,y:canvas.height/2}));
+document.getElementById('precisionZoomOut').addEventListener('click',()=>zoomAt(1/1.5,{x:canvas.width/2,y:canvas.height/2}));
+document.getElementById('precisionFullscreen').addEventListener('click',()=>{
+  const on=fullCard.classList.toggle('precision-fullscreen');
+  document.getElementById('precisionFullscreen').textContent=on?'✕ Salir de pantalla completa':'⛶ Pantalla completa';
+  requestAnimationFrame(resizeCanvas);
+});
+updateSelection();
 
 /* =====================================================
    FICHA PREMIUM
